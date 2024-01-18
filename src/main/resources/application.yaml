@@ -1,0 +1,49 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/test_qr
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+
+  liquibase:
+    enabled: true
+    change-log: db/changelog/main-changelog.xml
+
+#  kafka:
+#    producer:
+#      bootstrap-servers: localhost:9092
+#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+#      #        - org.springframework.kafka.support.serializer.JsonSerializer
+#      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+#    #        - org.apache.kafka.common.serialization.StringSerializer
+#    #    batch-size: 16384
+#
+#    consumer:
+#      bootstrap-servers: localhost:9092
+#      group-id: myGroup
+#      auto-offset-reset: earliest
+#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      #        - org.springframework.kafka.support.serializer.JsonDeserializer
+#      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+#      #        - org.apache.kafka.common.serialization.StringSerializer
+#      properties:
+#        spring:
+#          json:
+#            trusted:
+#              packages: "*"
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+
+jwt:
+  secret: 984hg493gh0439rthr0429uruj2309yh937gc763fe87t3f89723gf
+  lifetime: 100m
+
