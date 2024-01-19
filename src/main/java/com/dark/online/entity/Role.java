@@ -1,6 +1,8 @@
 package com.dark.online.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Data;
 
@@ -8,12 +10,9 @@ import lombok.Data;
 @Data
 public class Role {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private ERole role;
 
-    public enum ERole {
-        USER,
-        ADMIN
-    }
+    private String name;
 
 }

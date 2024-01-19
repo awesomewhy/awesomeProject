@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class MfaVerificationRequest {
-    private String username;
-    private String totp;
+    private String nickname;
+    private String code;
 }

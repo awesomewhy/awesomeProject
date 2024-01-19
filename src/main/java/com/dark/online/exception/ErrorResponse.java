@@ -5,7 +5,7 @@ import lombok.Setter;
 import org.springframework.http.HttpStatus;
 
 public record ErrorResponse(
-        HttpStatus code,
+        Integer code,
         String message)
 {
 

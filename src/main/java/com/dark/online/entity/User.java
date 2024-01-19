@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Collection;
 import java.util.UUID;
 
 @Entity
@@ -17,7 +18,6 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-    private String email;
     private String password;
     private String nickname;
 
@@ -26,6 +26,13 @@ public class User {
 
     private String firstName;
     private String lastName;
-    private boolean active;
     private boolean accountVerified;
+
+    @ManyToMany
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Collection<Role> roles;
 }

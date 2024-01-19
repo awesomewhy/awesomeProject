@@ -38,7 +38,7 @@ public class TotpManagerImpl implements TotpManagerService {
     }
 
     @Override
-    public boolean verifyTotp(String code, String secret) {
+    public boolean verifyTotp(String secret, String code) {
         return myCodeVerifier.isValidCode(secret, code);
     }
 }

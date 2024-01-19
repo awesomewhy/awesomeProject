@@ -1,0 +1,19 @@
+-- create table service (
+--     id bigint primary key,
+--     name text not null,
+--     rating float check (rating >= 0 and rating <= 5),
+--     payment text not null,
+--
+-- )
+--
+--
+--     {
+--         "payment" : "visa"
+--     }
+--
+-- select service where payment = 'cash' and 'crypto' and 'visa'
+--
+-- create table category (
+--     id bigint primary key,
+--     type text
+-- )

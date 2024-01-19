@@ -1,11 +1,10 @@
 package com.dark.online.configuration;
 
 import com.dark.online.service.UserService;
+import com.dark.online.util.JwtRequestFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -14,15 +13,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -55,6 +47,7 @@ public class SecurityConfiguration {
 
     private final PasswordEncoderConfiguration passwordEncoderConfiguration;
     private final UserService userService;
+    private final JwtRequestFilter jwtRequestFilter;
 
 
     private void sharedSecurityConfiguration(HttpSecurity httpSecurity) throws Exception {
@@ -68,25 +61,39 @@ public class SecurityConfiguration {
     }
 
     @Bean
+    public SecurityFilterChain securityFilterChainUsersAPI(HttpSecurity httpSecurity) throws Exception {
+        sharedSecurityConfiguration(httpSecurity);
+        httpSecurity
+                .securityMatcher(ADD_ITEM, PROFILE, UPDATE, CHANGE_PASSWORD, DELETE_PROFILE,
+                        MY_PRODUCTS, DELETE_PRODUCT, GET_MY_REVIEWS, ADD_REVIEW, AVERAGE)
+                .authorizeHttpRequests(auth -> {
+                    auth.anyRequest().authenticated();
+                })
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return httpSecurity.build();
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChainAdminsAPI(HttpSecurity httpSecurity) throws Exception {
         sharedSecurityConfiguration(httpSecurity);
         httpSecurity
                 .securityMatcher(SET_ADMIN_ROLE, SET_USER_ROLE)
                 .authorizeHttpRequests(auth -> {
                     auth.anyRequest().hasRole("ADMIN");
-                });
-//                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+                })
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
     }
 
-//    @Bean
-//    public DaoAuthenticationProvider daoAuthenticationProvider() {
-//        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-//        daoAuthenticationProvider.setPasswordEncoder(passwordEncoderConfiguration.passwordEncoder());
-//        daoAuthenticationProvider.setUserDetailsService(userService);
-//        return daoAuthenticationProvider;
-//    }
+    @Bean
+    public DaoAuthenticationProvider daoAuthenticationProvider() {
+        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+        daoAuthenticationProvider.setPasswordEncoder(passwordEncoderConfiguration.passwordEncoder());
+        daoAuthenticationProvider.setUserDetailsService(userService);
+        return daoAuthenticationProvider;
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -105,16 +112,15 @@ public class SecurityConfiguration {
 //        return mailSender;
 //    }
 
-
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST"));
-        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type"));
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+//    @Bean
+//    CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+//        configuration.setAllowedMethods(Arrays.asList("GET", "POST"));
+//        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type"));
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//        return source;
+//    }
 }
 
