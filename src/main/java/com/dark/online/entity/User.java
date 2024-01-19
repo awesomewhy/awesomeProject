@@ -15,8 +15,8 @@ import java.util.UUID;
 @Builder
 public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-    private String username;
     private String email;
     private String password;
     private String nickname;

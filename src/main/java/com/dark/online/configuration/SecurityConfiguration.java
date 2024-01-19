@@ -4,6 +4,8 @@ import com.dark.online.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -12,6 +14,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -51,8 +55,6 @@ public class SecurityConfiguration {
 
     private final PasswordEncoderConfiguration passwordEncoderConfiguration;
     private final UserService userService;
-    private final JwtValidationFilter jwtValidationFilter;
-    private final AuthExceptionHandler authExceptionHandler;
 
 
     private void sharedSecurityConfiguration(HttpSecurity httpSecurity) throws Exception {
@@ -66,46 +68,17 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public SecurityFilterChain defaultFilterChain(HttpSecurity httpSecurity) throws Exception {
-        return httpSecurity
-                .cors(cors-> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf-> csrf.disable())
-                .exceptionHandling(handle -> handle.authenticationEntryPoint(authExceptionHandler))
-                .addFilterBefore(jwtValidationFilter, UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement(session-> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth-> auth
-                        .requestMatchers("/error**","confirm-email","/register**","/login**","/verifyTotp**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .build();
-    }
-
-    @Bean
-    public SecurityFilterChain securityFilterChainUsersAPI(HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain securityFilterChainAdminsAPI(HttpSecurity httpSecurity) throws Exception {
         sharedSecurityConfiguration(httpSecurity);
         httpSecurity
-                .securityMatcher(ADD_ITEM, PROFILE, UPDATE, CHANGE_PASSWORD, DELETE_PROFILE,
-                        MY_PRODUCTS, DELETE_PRODUCT, GET_MY_REVIEWS, ADD_REVIEW, AVERAGE)
+                .securityMatcher(SET_ADMIN_ROLE, SET_USER_ROLE)
                 .authorizeHttpRequests(auth -> {
-                    auth.anyRequest().authenticated();
+                    auth.anyRequest().hasRole("ADMIN");
                 });
 //                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
     }
-
-//    @Bean
-//    public SecurityFilterChain securityFilterChainAdminsAPI(HttpSecurity httpSecurity) throws Exception {
-//        sharedSecurityConfiguration(httpSecurity);
-//        httpSecurity
-//                .securityMatcher(SET_ADMIN_ROLE, SET_USER_ROLE)
-//                .authorizeHttpRequests(auth -> {
-//                    auth.anyRequest().hasRole("ADMIN");
-//                });
-////                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-//
-//        return httpSecurity.build();
-//    }
 
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() {
@@ -116,19 +89,32 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST"));
-        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type"));
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
-
-    @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
+
+    //    @Bean
+//    public JavaMailSender javaMailSender() {
+//        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+//        // Configure the mail sender properties
+//        mailSender.setHost("smtp.gmail.com");
+//        mailSender.setPort(587);
+//        mailSender.setUsername("your-email-username");
+//        mailSender.setPassword("your-email-password");
+//        // Additional configuration if needed
+//        return mailSender;
+//    }
+
+
+//    @Bean
+//    CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+//        configuration.setAllowedMethods(Arrays.asList("GET", "POST"));
+//        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type"));
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//        return source;
+//    }
 }
 

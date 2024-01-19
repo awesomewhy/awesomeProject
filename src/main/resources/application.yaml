@@ -38,6 +38,18 @@ spring:
 #          json:
 #            trusted:
 #              packages: "*"
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: postgres
+    password: postgres
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            required: true
+            enable: true
 
 logging:
   level:
@@ -45,5 +57,6 @@ logging:
 
 jwt:
   secret: 984hg493gh0439rthr0429uruj2309yh937gc763fe87t3f89723gf
-  lifetime: 100m
+  lifetime: 5m
+  refreshTokenLifetime: 100m
 
