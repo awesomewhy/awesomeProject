@@ -1,20 +1,16 @@
 package com.dark.online.controller.user;
 
-import com.dark.online.dto.LoginRequest;
-import com.dark.online.dto.MfaVerificationRequest;
-import com.dark.online.dto.MfaVerificationResponse;
+import com.dark.online.dto.mfa.MfaVerificationRequest;
+import com.dark.online.dto.mfa.MfaVerificationResponse;
+import com.dark.online.dto.security.LoginRequestDto;
+import com.dark.online.dto.security.RegistrationUserDto;
 import com.dark.online.entity.User;
-import com.dark.online.service.JWTService;
 import com.dark.online.service.TotpManagerService;
 import com.dark.online.service.UserService;
 import dev.samstevens.totp.exceptions.QrGenerationException;
-import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,8 +23,8 @@ public class AuthController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Validated @RequestBody User user) {
-        return ResponseEntity.ok(userService.registerUser(user));
+    public ResponseEntity<?> register(@RequestBody RegistrationUserDto registrationUserDto) {
+        return ResponseEntity.ok(userService.registerUserByQrCode(registrationUserDto));
     }
 
     @PostMapping("/asd")
@@ -46,7 +42,7 @@ public class AuthController {
 
 
     @PostMapping(value = "/login", produces = "application/json")
-    public ResponseEntity<?> login(@Validated @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@Validated @RequestBody LoginRequestDto loginRequest) {
         // Validate the user credentials and return the JWT / send redirect to MFA page
 //        try {//Get the user and Compare the password
 //            Authentication authentication = authenticationProvider.authenticate(

@@ -1,6 +1,7 @@
 package com.dark.online.service.impl;
 
-import com.dark.online.dto.MfaTokenData;
+import com.dark.online.dto.mfa.MfaTokenData;
+import com.dark.online.dto.security.RegistrationUserDto;
 import com.dark.online.entity.EmailConfirmationToken;
 import com.dark.online.entity.User;
 import com.dark.online.exception.ErrorResponse;
@@ -11,8 +12,10 @@ import com.dark.online.service.TotpManagerService;
 import com.dark.online.service.UserService;
 import dev.samstevens.totp.exceptions.QrGenerationException;
 import jakarta.mail.MessagingException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,9 +24,11 @@ import org.springframework.security.crypto.keygen.BytesKeyGenerator;
 import org.springframework.security.crypto.keygen.KeyGenerators;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -41,17 +46,18 @@ public class UserServiceImpl
     private final EmailConfirmationTokenRepository emailConfirmationTokenRepository;
 
     @Override
-    public ResponseEntity<?> registerUser(User user)  {
+    public ResponseEntity<?> registerUserByQrCode(RegistrationUserDto registrationUserDto) {
         try {
-            Optional<User> u = userRepository.findByEmail(user.getEmail());
+            Optional<User> u = userRepository.findByEmail(registrationUserDto.getEmail());
             if (u.isPresent()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse
                         (HttpStatus.CONFLICT, "user already exists"));
             }
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            registrationUserDto.setPassword(passwordEncoder.encode(registrationUserDto.getPassword()));
+            User user = createNewUser(registrationUserDto);
             user.setSecretKey(totpManager.generateSecretKey());
             User savedUser = userRepository.save(user);
-            if(this.sendRegistrationConfirmationEmail(user).getBody() != HttpStatus.OK) {
+            if (this.sendRegistrationConfirmationEmail(user).getBody() != HttpStatus.OK) {
                 return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST, "56 line problems with sending to email some info"));
             }
             String qrCode = totpManager.getQRCode(savedUser.getSecretKey());
@@ -60,11 +66,23 @@ public class UserServiceImpl
                             .mfaCode(savedUser.getSecretKey())
                             .qrCode(qrCode)
                             .build());
-        } catch (QrGenerationException e ) {
+        } catch (QrGenerationException e) {
             return ResponseEntity.ok().body(new ErrorResponse
                     (HttpStatus.BAD_REQUEST, "QrGenerationException in user service 63 line code"));
         }
 
+    }
+
+    public User createNewUser(@RequestBody RegistrationUserDto registrationUserDto) {
+        User user = User.builder()
+                .email(registrationUserDto.getEmail())
+                .password(passwordEncoder.encode(registrationUserDto.getPassword()))
+                .nickname(registrationUserDto.getNickname())
+                .firstName("First name")
+                .lastName("Last name")
+                .build();
+        userRepository.save(user);
+        return user;
     }
 
     @Override
@@ -76,14 +94,12 @@ public class UserServiceImpl
     @Override
     public ResponseEntity<?> sendRegistrationConfirmationEmail(User user) {
         try {
-            // Generate the token
-//        String tokenValue = new String(Base64.encodeBase64URLSafe(DEFAULT_TOKEN_GENERATOR.generateKey()), US_ASCII);
+//            String tokenValue = new String(Base64.encodeBase64URLSafe(DEFAULT_TOKEN_GENERATOR.generateKey()), US_ASCII);
             EmailConfirmationToken emailConfirmationToken = new EmailConfirmationToken();
-//        emailConfirmationToken.setToken(tokenValue);
+//            emailConfirmationToken.setToken(tokenValue);
             emailConfirmationToken.setTimeStamp(LocalDateTime.now());
             emailConfirmationToken.setUser(user);
             emailConfirmationTokenRepository.save(emailConfirmationToken);
-            // Send email
             emailService.sendConfirmationEmail(emailConfirmationToken);
             return ResponseEntity.ok().body(HttpStatus.OK);
         } catch (MessagingException e) {

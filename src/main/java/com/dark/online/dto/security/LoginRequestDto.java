@@ -1,9 +1,9 @@
-package com.dark.online.dto;
+package com.dark.online.dto.security;
 
 import lombok.Data;
 
 @Data
-public class LoginRequest {
+public class LoginRequestDto {
     String username;
     String password;
 }

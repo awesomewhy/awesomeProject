@@ -1,4 +1,4 @@
-package com.dark.online.dto;
+package com.dark.online.dto.mfa;
 
 import lombok.Builder;
 import lombok.Data;
