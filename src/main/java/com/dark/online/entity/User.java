@@ -2,8 +2,6 @@ package com.dark.online.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
@@ -22,8 +20,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     private String password;
+    @Column(unique = true)
+    @NotBlank
     private String nickname;
-
     @JsonIgnore
     private String secretKey;
     private String firstName;
@@ -37,5 +36,8 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Collection<Role> roles;
+
+    @OneToMany(mappedBy = "sellerId", cascade = CascadeType.ALL)
+    private Collection<Order> orders;
 
 }

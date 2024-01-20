@@ -1,12 +1,12 @@
 package com.dark.online.repository;
 
-import com.dark.online.entity.Order;
+import com.dark.online.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Order, Long> {
-    Optional<Order> findProductById(Long id);
+public interface RoleRepository extends JpaRepository<Role, Long> {
+    Optional<Role> findByName(String name);
 }

@@ -14,6 +14,7 @@ import com.dark.online.service.UserService;
 import com.dark.online.util.JwtTokenUtils;
 import dev.samstevens.totp.exceptions.QrGenerationException;
 import io.micrometer.common.util.StringUtils;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             if (user.isAccountVerified()) {
-                return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.PERMANENT_REDIRECT.value(), "write code from google app"));
+                return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.PERMANENT_REDIRECT.value(), "write code from google app")); // редирект для написания кода и гугл приложения если включена 2fa
             }
         }
         return getAuthenticateUser(authRequest.getNickname(), authRequest.getPassword());
@@ -60,24 +61,25 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResponseEntity<?> register(@RequestBody RegistrationUserDto registrationUserDto) {
-        if (!registrationUserDto.getPassword().equals(registrationUserDto.getConfirmPassword())) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "PASSWORDS_DID_NOT_MATCH"));
-        }
         if (userRepository.findByNickname(registrationUserDto.getNickname()).isPresent()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "USER_WHIT_THIS_EMAIL_EXIST"));
+            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user with this nickname exists"));
+        }
+        if (!registrationUserDto.getPassword().equals(registrationUserDto.getConfirmPassword())) {
+            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "password did not match"));
         }
 //        if(!Validation.isValidEmailAddress(registrationUserDto.getEmail())) {
 //            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), INVALID_EMAIL), HttpStatus.BAD_REQUEST);
-//        }
+//        }@MessageMapping("/chat.sendMessage")
 //        if(!Validation.isValidPassword(registrationUserDto.getPassword())) {
 //            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), INVALID_PASSWORD), HttpStatus.BAD_REQUEST);
 //        }
         userService.createNewUser(registrationUserDto);
         return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "user register"));
-//        return getAuthenticateUser(registrationUserDto.getNickname(), registrationUserDto.getPassword());
+//        return getAuthenticateUser(registrationUserDto.getNickname(), registrationUserDto.getPassword()); если при регистрации надо будет токен выдовать
     }
 
     @Override
+    @Transactional
     public ResponseEntity<?> create2FA() {
         Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
         if (userOptional.isEmpty()) {
@@ -110,10 +112,10 @@ public class AuthServiceImpl implements AuthService {
             if (isCodeValid) {
                 return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "user verified"));
             } else {
-                return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "user not verified"));
+                return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "incorrect code"));
             }
         } else {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not found"));
+            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user with this nickname not exists"));
         }
     }
 
@@ -129,8 +131,8 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
-    private void authenticateUser(String email, String password) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+    private void authenticateUser(String nickname, String password) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(nickname, password));
     }
 
 }

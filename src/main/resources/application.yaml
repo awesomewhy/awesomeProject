@@ -56,7 +56,6 @@ logging:
     org.hibernate.SQL: DEBUG
 
 jwt:
-  secret: jn79v43i4tGERw90jg4lapw4ij0g4pq3km4giajeg9ngWPGPIgeri4gGZDGM0g54oKF
+  secret: pojk2499W4GNOUwgnNUIjytwRNmiraegoanepMGigiwendwanmGNM0min4G9UNwg4OGI4N0
   lifetime: 50m
-  refreshTokenLifetime: 100m
 

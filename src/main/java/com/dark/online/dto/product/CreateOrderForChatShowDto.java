@@ -3,9 +3,11 @@ package com.dark.online.dto.product;
 import com.dark.online.enums.OrderTypeEnum;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
-public class CreateOrderDto {
-    private OrderTypeEnum productTypeEnum;
-    private Long price;
+public class CreateOrderForChatShowDto {
+    private OrderTypeEnum orderTypeEnum;
+    private BigDecimal price;
     private String description;
 }

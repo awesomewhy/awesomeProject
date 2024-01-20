@@ -1,5 +1,5 @@
 package com.dark.online.enums;
 
-public enum ProductTypeEnum {
+public enum OrderTypeEnum {
     SOME
 }

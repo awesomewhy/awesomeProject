@@ -1,25 +1,15 @@
 package com.dark.online.entity;
 
+import com.dark.online.enums.OrderTypeEnum;
 import jakarta.persistence.*;
 
-import java.util.List;
-
 @Entity
-@Table(name = "category")
+@Table(name = "categories")
 public class Category {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @ManyToOne
-//    @JoinColumn(name = "type_id")
-//    private Type type;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "kind_id")
-//    private Kind kind;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "group_id")
-//    private Group group;
+    private OrderTypeEnum orderTypeEnum;
+
 }

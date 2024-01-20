@@ -9,10 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class JwtTokenUtils {
@@ -22,34 +19,22 @@ public class JwtTokenUtils {
     @Value("${jwt.lifetime}")
     private Duration jwtLifetime;
 
-    @Value("${jwt.refreshTokenLifetime}")
-    private Duration refreshTokenLifetime;
-
-//    public String generateRefreshToken(UserDetails userDetails) {
-//        Date issuedDate = new Date();
-//        Date expiredDate = new Date(issuedDate.getTime() + refreshTokenLifetime.toMillis());
-//        return Jwts.builder()
-//                .setSubject(userDetails.getUsername())
-//                .setIssuedAt(issuedDate)
-//                .setExpiration(expiredDate)
-//                .signWith(SignatureAlgorithm.HS256, secret)
-//                .compact();
-//    }
-
     public String generateToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        List<String> roleList = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
+        claims.put("roles", roleList);
+
         Date issuedDate = new Date();
         Date expiredDate = new Date(issuedDate.getTime() + jwtLifetime.toMillis());
-
-//        String refreshToken = generateRefreshToken(userDetails);
-
-
         return Jwts.builder()
-                .setSubject(userDetails.getUsername())
+                .setClaims(claims)
+                .setSubject(userDetails.getUsername()) // email
                 .setIssuedAt(issuedDate)
                 .setExpiration(expiredDate)
                 .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
-
     }
 
     public String getNickname(String token) {
@@ -67,4 +52,3 @@ public class JwtTokenUtils {
                 .getBody();
     }
 }
-

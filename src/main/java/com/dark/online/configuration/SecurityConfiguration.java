@@ -16,6 +16,11 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -30,6 +35,8 @@ public class SecurityConfiguration {
 
 
     // USER
+
+    private static final String CREATE_ORDER = "/order/create";
 
 
     // REVIEW
@@ -46,6 +53,7 @@ public class SecurityConfiguration {
     private final PasswordEncoderConfiguration passwordEncoderConfiguration;
     private final UserService userService;
     private final JwtRequestFilter jwtRequestFilter;
+//    private CustomCorsConfiguration customCorsConfiguration;
 
 
     private void sharedSecurityConfiguration(HttpSecurity httpSecurity) throws Exception {
@@ -62,7 +70,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChainUsersAPI(HttpSecurity httpSecurity) throws Exception {
         sharedSecurityConfiguration(httpSecurity);
         httpSecurity
-                .securityMatcher(GET_MY_REVIEWS, ADD_REVIEW, AVERAGE)
+                .securityMatcher(CREATE_ORDER, GET_MY_REVIEWS, ADD_REVIEW, AVERAGE)
                 .authorizeHttpRequests(auth -> {
                     auth.anyRequest().authenticated();
                 })
@@ -112,8 +120,8 @@ public class SecurityConfiguration {
 //    @Bean
 //    CorsConfigurationSource corsConfigurationSource() {
 //        CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
-//        configuration.setAllowedMethods(Arrays.asList("GET", "POST"));
+//        configuration.setAllowedOrigins(Arrays.asList("http://localhost:8080"));
+//        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
 //        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type"));
 //        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 //        source.registerCorsConfiguration("/**", configuration);
