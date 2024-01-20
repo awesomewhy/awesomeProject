@@ -2,6 +2,9 @@ package com.dark.online.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.Collection;
@@ -23,7 +26,6 @@ public class User {
 
     @JsonIgnore
     private String secretKey;
-
     private String firstName;
     private String lastName;
     private boolean accountVerified;
@@ -35,4 +37,5 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Collection<Role> roles;
+
 }

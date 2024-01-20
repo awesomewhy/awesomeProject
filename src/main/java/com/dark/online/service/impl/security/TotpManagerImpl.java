@@ -1,4 +1,4 @@
-package com.dark.online.service.impl;
+package com.dark.online.service.impl.security;
 
 import com.dark.online.service.TotpManagerService;
 import dev.samstevens.totp.code.CodeVerifier;

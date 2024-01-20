@@ -1,5 +1,6 @@
 package com.dark.online.configuration;
 
+import com.dark.online.service.AuthService;
 import com.dark.online.service.UserService;
 import com.dark.online.util.JwtRequestFilter;
 import lombok.RequiredArgsConstructor;
@@ -21,18 +22,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity(securedEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfiguration {
+    //NOT AUTH
+    private static final String REGISTER = "/auth/register";
+    private static final String LOGIN = "/auth/login";
+    private static final String CREATE2FA = "/auth/create2FA";
+    private static final String VERIFYTOTP = "/auth/verifytotp";
+
 
     // USER
-    private static final String LOGIN = "/auth/login";
-    private static final String REGISTRATION = "/auth/registration";
-    private static final String ADD_ITEM = "/additem";
-    private static final String PROFILE = "/profile";
-    private static final String MY_PRODUCTS = "/myproducts";
-    private static final String ALL_PRODUCTS = "/";
-    private static final String DELETE_PRODUCT = "/profile/safety/deleteproduct/{id}";
-    private static final String UPDATE = "/profile/safety/update";
-    private static final String CHANGE_PASSWORD = "/profile/safety/changepassword";
-    private static final String DELETE_PROFILE = "/profile/safety/deleteprofile";
+
 
     // REVIEW
     private static final String GET_MY_REVIEWS = "/profile/reviews";
@@ -64,8 +62,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChainUsersAPI(HttpSecurity httpSecurity) throws Exception {
         sharedSecurityConfiguration(httpSecurity);
         httpSecurity
-                .securityMatcher(ADD_ITEM, PROFILE, UPDATE, CHANGE_PASSWORD, DELETE_PROFILE,
-                        MY_PRODUCTS, DELETE_PRODUCT, GET_MY_REVIEWS, ADD_REVIEW, AVERAGE)
+                .securityMatcher(GET_MY_REVIEWS, ADD_REVIEW, AVERAGE)
                 .authorizeHttpRequests(auth -> {
                     auth.anyRequest().authenticated();
                 })

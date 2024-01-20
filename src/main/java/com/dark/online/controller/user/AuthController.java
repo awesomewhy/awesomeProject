@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/auth")
 public class AuthController {
 
     private final UserService userService;
@@ -18,12 +19,12 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegistrationUserDto registrationUserDto) {
-        return ResponseEntity.ok(authService.register(registrationUserDto));
+        return authService.register(registrationUserDto);
     }
 
     @PostMapping( "/login")
     public ResponseEntity<?> login(@RequestBody JwtRequestDto loginRequest) {
-        return authService.createAuthToken(loginRequest);
+        return authService.login(loginRequest);
     }
 
     @PostMapping("/create2FA")
@@ -31,8 +32,8 @@ public class AuthController {
         return authService.create2FA();
     }
 
-    @PostMapping("/verifyTotp")
+    @PostMapping("/verifytotp")
     public ResponseEntity<?> verifyTotp(@RequestBody MfaVerificationRequest mfaVerificationRequest) {
-        return userService.verifyTopt(mfaVerificationRequest);
+        return authService.verifyTopt(mfaVerificationRequest);
     }
 }
