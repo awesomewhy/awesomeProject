@@ -57,5 +57,10 @@ public class OrderServiceImpl implements OrderService {
         return ResponseEntity.ok().body(orderRepository.findAll().stream()
                 .map(orderMapper::mapOrderToOrderForShowDto));
     }
+//    @Override
+//    public ResponseEntity<?> getAllOrdersPagin() {
+//        return ResponseEntity.ok().body(orderRepository.findAll().stream()
+//                .map(orderMapper::mapOrderToOrderForShowDto));
+//    }
 
 }
