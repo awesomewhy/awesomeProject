@@ -43,7 +43,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             } catch (SignatureException e) {
                 log.debug("Подпись неправильная");
             } catch (MalformedJwtException e) {
-                log.debug("Токен невалидный lol");
+                log.debug("Токен невалидный");
             }
         }
         if (nickname != null && SecurityContextHolder.getContext().getAuthentication() == null) {

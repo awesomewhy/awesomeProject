@@ -25,8 +25,8 @@ public class User {
     private String nickname;
     @JsonIgnore
     private String secretKey;
-    private String firstName;
-    private String lastName;
+    private String username;
+    private String surname;
     private boolean accountVerified;
 
     @ManyToMany

@@ -14,5 +14,5 @@ public interface AuthService {
     ResponseEntity<?> login(@RequestBody JwtRequestDto authRequest);
     ResponseEntity<?> register(@RequestBody RegistrationUserDto registrationUserDto);
     ResponseEntity<?> create2FA();
-    ResponseEntity<?> verifyTopt(@RequestBody MfaVerificationRequest mfaVerificationRequest);
+    ResponseEntity<?> verifyCode(@RequestBody MfaVerificationRequest mfaVerificationRequest);
 }

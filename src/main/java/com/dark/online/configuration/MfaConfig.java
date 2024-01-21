@@ -31,7 +31,7 @@ public class MfaConfig {
         DefaultCodeVerifier codeVerifier = new DefaultCodeVerifier(codeGenerator, timeProvider);
 
         codeVerifier.setTimePeriod(30);
-        codeVerifier.setAllowedTimePeriodDiscrepancy(2);
+        codeVerifier.setAllowedTimePeriodDiscrepancy(0);
 
         return codeVerifier;
     }

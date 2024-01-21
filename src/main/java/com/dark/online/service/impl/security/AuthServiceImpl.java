@@ -24,6 +24,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -38,20 +39,22 @@ public class AuthServiceImpl implements AuthService {
     private final TotpManagerService totpManagerService;
     private final JwtTokenUtils jwtTokenUtils;
     private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public ResponseEntity<?> login(@RequestBody JwtRequestDto authRequest) {
         if (StringUtils.isEmpty(authRequest.getNickname())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Nickname is required"));
+            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Nickname is required"));
         }
         if (StringUtils.isEmpty(authRequest.getPassword())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Password is required"));
+            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Password is required"));
         }
         Optional<User> userOptional = userRepository.findByNickname(authRequest.getNickname());
+        User user = userOptional.get();
+        if(!passwordEncoder.matches(user.getPassword(), authRequest.getPassword())) {
+            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "password or nickname incorrect"));
+        }
         if (userOptional.isPresent()) {
-            User user = userOptional.get();
             if (user.isAccountVerified()) {
                 return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.PERMANENT_REDIRECT.value(), "write code from google app")); // редирект для написания кода и гугл приложения если включена 2fa
             }
@@ -103,14 +106,15 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ResponseEntity<?> verifyTopt(@RequestBody MfaVerificationRequest mfaVerificationRequest) {
+    public ResponseEntity<?> verifyCode(@RequestBody MfaVerificationRequest mfaVerificationRequest) {
         Optional<User> userOptional = userRepository.findByNickname(mfaVerificationRequest.getNickname());
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             boolean isCodeValid = totpManagerService.verifyTotp(user.getSecretKey(), mfaVerificationRequest.getCode());
             if (isCodeValid) {
-                return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "user verified"));
+                System.out.println(passwordEncoder.encode(user.getPassword()));
+                return getAuthenticateUser(user.getNickname(), passwordEncoder.encode(user.getPassword()));
             } else {
                 return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "incorrect code"));
             }
@@ -123,6 +127,7 @@ public class AuthServiceImpl implements AuthService {
         try {
             authenticateUser(nickname, password);
             UserDetails userDetails = userService.loadUserByUsername(nickname);
+            userDetails.getPassword();
             String token = jwtTokenUtils.generateToken(userDetails);
             return ResponseEntity.ok(new JwtResponseDto(token));
         } catch (BadCredentialsException e) {

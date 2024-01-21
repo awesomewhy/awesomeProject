@@ -5,13 +5,13 @@ services:
     image: postgres:16-alpine
     container_name: postgres
     environment:
-      POSTGRES_DB: avito
+      POSTGRES_DB: test_qr
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - C:\Users\seren\IdeaProjects\dark_online\src\main\resources\db_test:/docker-entrypoint-initdb.d
 
   app:
     build: .
@@ -21,6 +21,6 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres/avito
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres/test_qr
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres

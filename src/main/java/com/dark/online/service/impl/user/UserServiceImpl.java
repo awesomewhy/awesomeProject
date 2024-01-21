@@ -41,7 +41,7 @@ public class UserServiceImpl
     public ResponseEntity<?> createOrder(CreateOrderDto createOrderDto) {
         Optional<User> userOptional = getAuthenticationPrincipalUserByNickname();
 
-        if(userOptional.isEmpty()) {
+        if (userOptional.isEmpty()) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user in spring context not found / user not auth"));
         }
 
@@ -64,8 +64,8 @@ public class UserServiceImpl
                 .password(passwordEncoder.encode(registrationUserDto.getPassword()))
                 .nickname(registrationUserDto.getNickname())
                 .secretKey(totpManagerService.generateSecretKey())
-                .firstName("First name")
-                .lastName("Last name")
+                .username("First name")
+                .surname("Last name")
                 .roles(List.of(roleService.getUserRole().get()))
                 .build();
         userRepository.save(user);

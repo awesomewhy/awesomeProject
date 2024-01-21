@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -31,12 +32,13 @@ public class SecurityConfiguration {
     private static final String REGISTER = "/auth/register";
     private static final String LOGIN = "/auth/login";
     private static final String CREATE2FA = "/auth/create2FA";
-    private static final String VERIFYTOTP = "/auth/verifytotp";
+    private static final String VERIFYCODE = "/auth/verifytotp";
 
 
     // USER
 
     private static final String CREATE_ORDER = "/order/create";
+
 
 
     // REVIEW
@@ -56,10 +58,11 @@ public class SecurityConfiguration {
 //    private CustomCorsConfiguration customCorsConfiguration;
 
 
+
     private void sharedSecurityConfiguration(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
+                .securityMatcher("http://localhost:3000/**")
                 .sessionManagement(httpSecuritySessionManagementConfigurer -> {
                     httpSecuritySessionManagementConfigurer
                             .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
@@ -71,9 +74,6 @@ public class SecurityConfiguration {
         sharedSecurityConfiguration(httpSecurity);
         httpSecurity
                 .securityMatcher(CREATE_ORDER, GET_MY_REVIEWS, ADD_REVIEW, AVERAGE)
-                .authorizeHttpRequests(auth -> {
-                    auth.anyRequest().authenticated();
-                })
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
@@ -105,6 +105,32 @@ public class SecurityConfiguration {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+        configuration.setAllowedMethods(Arrays.asList("GET","POST"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http
+//                .cors(cors -> cors.disable())
+//                .csrf(AbstractHttpConfigurer::disable)
+//                .authorizeHttpRequests(request -> request
+//                        .requestMatchers("/api/auth/**").permitAll()
+//                        .requestMatchers(SYS_ADMIN_PATTERNS).hasAuthority("SYSTEM_ADMIN")
+//                        .requestMatchers("/api/v1/**").authenticated()
+//                )
+//                .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
+//                .authenticationProvider(authenticationProvider())
+//                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+//        return http.build();
+//    }
+
     //    @Bean
 //    public JavaMailSender javaMailSender() {
 //        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
@@ -117,15 +143,5 @@ public class SecurityConfiguration {
 //        return mailSender;
 //    }
 
-//    @Bean
-//    CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.setAllowedOrigins(Arrays.asList("http://localhost:8080"));
-//        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
-//        configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type"));
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
-//        return source;
-//    }
 }
 

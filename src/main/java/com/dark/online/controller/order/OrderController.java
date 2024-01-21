@@ -17,7 +17,7 @@ public class OrderController {
         return orderService.addItem(createOrderForSellDto);
     }
     @GetMapping("/orders")
-    public ResponseEntity<?> createOrder() {
+    public ResponseEntity<?> getOrders() {
         return orderService.getAllOrders();
     }
 }

@@ -34,8 +34,8 @@ public class AuthController {
         return authService.create2FA();
     }
 
-    @PostMapping("/verifytotp")
+    @PostMapping("/verifycode")
     public ResponseEntity<?> verifyTotp(@RequestBody MfaVerificationRequest mfaVerificationRequest) {
-        return authService.verifyTopt(mfaVerificationRequest);
+        return authService.verifyCode(mfaVerificationRequest);
     }
 }
