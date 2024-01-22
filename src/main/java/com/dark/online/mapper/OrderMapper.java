@@ -47,6 +47,7 @@ public class OrderMapper {
 
     public OrderForShowDto mapOrderToOrderForShowDto(Order order) {
         return OrderForShowDto.builder()
+                .id(order.getId())
                 .name(order.getName())
                 .rating(order.getRating())
                 .build();
