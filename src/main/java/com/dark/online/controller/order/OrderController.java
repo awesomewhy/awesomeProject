@@ -20,4 +20,8 @@ public class OrderController {
     public ResponseEntity<?> getOrders() {
         return orderService.getAllOrders();
     }
+    @GetMapping("/findByqwe")
+    public ResponseEntity<?> findRegex() {
+        return orderService.getAllOrders();
+    }
 }
