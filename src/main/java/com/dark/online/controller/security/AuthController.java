@@ -2,11 +2,9 @@ package com.dark.online.controller.security;
 
 import com.dark.online.dto.jwt.JwtRequestDto;
 import com.dark.online.dto.mfa.MfaVerificationRequest;
-import com.dark.online.dto.product.CreateOrderForSellDto;
 import com.dark.online.dto.user.RegistrationUserDto;
 import com.dark.online.service.AuthService;
 import com.dark.online.service.OrderService;
-import com.dark.online.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
-    private final OrderService orderService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegistrationUserDto registrationUserDto) {

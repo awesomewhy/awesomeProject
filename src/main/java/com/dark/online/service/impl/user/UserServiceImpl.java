@@ -1,7 +1,6 @@
 package com.dark.online.service.impl.user;
 
-import com.dark.online.dto.mfa.MfaVerificationRequest;
-import com.dark.online.dto.product.CreateOrderDto;
+import com.dark.online.dto.order.CreateOrderDto;
 import com.dark.online.dto.user.RegistrationUserDto;
 import com.dark.online.entity.User;
 import com.dark.online.exception.ErrorResponse;
@@ -38,7 +37,7 @@ public class UserServiceImpl
     private final RoleService roleService;
 
     @Override
-    public ResponseEntity<?> createOrder(CreateOrderDto createOrderDto) {
+    public ResponseEntity<?> createOrder(@RequestBody CreateOrderDto createOrderDto) {
         Optional<User> userOptional = getAuthenticationPrincipalUserByNickname();
 
         if (userOptional.isEmpty()) {

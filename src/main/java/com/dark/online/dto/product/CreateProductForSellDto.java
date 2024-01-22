@@ -7,7 +7,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-public class CreateOrderForSellDto {
+public class CreateProductForSellDto {
     private String name;
     private String image;
     private BigDecimal price;

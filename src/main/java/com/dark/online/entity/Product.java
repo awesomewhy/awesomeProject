@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Order {
+public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,13 +24,13 @@ public class Order {
     @JoinColumn(name = "seller_id")
     private User sellerId;
 
-    @ManyToOne
-    @JoinColumn(name = "buyer_id")
-    private User buyerId;
-
     private String name;
+    private String image;
+    private BigDecimal rating;
     private BigDecimal price;
+    private BigDecimal discount;
     private LocalDateTime createdAt;
     private String description;
     private OrderTypeEnum orderType;
+    private PaymentTypeEnum paymentType;
 }

@@ -1,4 +1,4 @@
-package com.dark.online.dto.product;
+package com.dark.online.dto.order;
 
 import com.dark.online.enums.OrderTypeEnum;
 import lombok.Data;

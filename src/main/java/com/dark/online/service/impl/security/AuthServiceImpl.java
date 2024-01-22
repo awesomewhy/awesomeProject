@@ -12,6 +12,7 @@ import com.dark.online.service.AuthService;
 import com.dark.online.service.TotpManagerService;
 import com.dark.online.service.UserService;
 import com.dark.online.util.JwtTokenUtils;
+import com.dark.online.validation.Validation;
 import dev.samstevens.totp.exceptions.QrGenerationException;
 import io.micrometer.common.util.StringUtils;
 import jakarta.transaction.Transactional;
@@ -43,21 +44,22 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResponseEntity<?> login(@RequestBody JwtRequestDto authRequest) {
+        Optional<User> userOptional = userRepository.findByNickname(authRequest.getNickname());
+        if(userOptional.isEmpty()) {
+            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "user not auth"));
+        }
         if (StringUtils.isEmpty(authRequest.getNickname())) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Nickname is required"));
         }
         if (StringUtils.isEmpty(authRequest.getPassword())) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Password is required"));
         }
-        Optional<User> userOptional = userRepository.findByNickname(authRequest.getNickname());
         User user = userOptional.get();
-//        if(!passwordEncoder.matches(user.getPassword(), authRequest.getPassword())) {
-//            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "password or nickname incorrect"));
-//        }
-        if (userOptional.isPresent()) {
-            if (user.isAccountVerified()) {
-                return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.PERMANENT_REDIRECT.value(), "write code from google app")); // редирект для написания кода и гугл приложения если включена 2fa
-            }
+        if (!passwordEncoder.matches(authRequest.getPassword(), user.getPassword())) {
+            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "password or nickname incorrect"));
+        }
+        if (user.isAccountVerified()) {
+            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.PERMANENT_REDIRECT.value(), "write code from google app")); // редирект для написания кода и гугл приложения если включена 2fa
         }
         return getAuthenticateUser(authRequest.getNickname(), authRequest.getPassword());
     }
@@ -70,12 +72,12 @@ public class AuthServiceImpl implements AuthService {
         if (!registrationUserDto.getPassword().equals(registrationUserDto.getConfirmPassword())) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "password did not match"));
         }
-//        if(!Validation.isValidEmailAddress(registrationUserDto.getEmail())) {
-//            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), INVALID_EMAIL), HttpStatus.BAD_REQUEST);
-//        }@MessageMapping("/chat.sendMessage")
-//        if(!Validation.isValidPassword(registrationUserDto.getPassword())) {
-//            return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), INVALID_PASSWORD), HttpStatus.BAD_REQUEST);
-//        }
+        if(!Validation.isValidEmailAddress(registrationUserDto.getNickname())) {
+            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "INVALID_EMAIL"));
+        }
+        if(!Validation.isValidPassword(registrationUserDto.getPassword())) {
+            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "INVALID_PASSWORD"));
+        }
         userService.createNewUser(registrationUserDto);
         return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "user register"));
 //        return getAuthenticateUser(registrationUserDto.getNickname(), registrationUserDto.getPassword()); если при регистрации надо будет токен выдовать
