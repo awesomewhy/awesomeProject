@@ -14,31 +14,28 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
+@CrossOrigin(origins = "*")
 public class AuthController {
 
     private final AuthService authService;
     private final OrderService orderService;
 
     @PostMapping("/register")
-    @CrossOrigin("*")
     public ResponseEntity<?> register(@RequestBody RegistrationUserDto registrationUserDto) {
         return authService.register(registrationUserDto);
     }
 
     @PostMapping( "/login")
-    @CrossOrigin("*")
     public ResponseEntity<?> login(@RequestBody JwtRequestDto loginRequest) {
         return authService.login(loginRequest);
     }
 
     @PostMapping("/create2FA")
-    @CrossOrigin("*")
     public ResponseEntity<?> create2FA() {
         return authService.create2FA();
     }
 
     @PostMapping("/verifycode")
-    @CrossOrigin("*")
     public ResponseEntity<?> verifyTotp(@RequestBody MfaVerificationRequest mfaVerificationRequest) {
         return authService.verifyCode(mfaVerificationRequest);
     }
