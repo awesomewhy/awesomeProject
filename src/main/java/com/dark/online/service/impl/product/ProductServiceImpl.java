@@ -9,16 +9,14 @@ import com.dark.online.entity.Product;
 import com.dark.online.entity.User;
 import com.dark.online.exception.ErrorResponse;
 import com.dark.online.mapper.ProductMapper;
-import com.dark.online.repository.OrderRepository;
 import com.dark.online.repository.ProductRepository;
+import com.dark.online.service.ImageService;
 import com.dark.online.service.ProductService;
 import com.dark.online.service.UserService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,8 +31,7 @@ public class ProductServiceImpl implements ProductService {
     private final UserService userService;
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
-    @Getter
-    private User user;
+    private final ImageService imageService;
     @Override
     public ResponseEntity<?> addProduct(@RequestBody CreateProductForSellDto createOrderForSellDto) {
         Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
@@ -43,23 +40,22 @@ public class ProductServiceImpl implements ProductService {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user in spring context not found / user not auth"));
         }
         User user = userOptional.get();
-        this.user = user;
         Product product = productMapper.mapCreateOrderForSellDtoToProductEntity(createOrderForSellDto, user);
-
+//        Long imageId = imageService.uploadImage();
+//        Image photo =
+//        photo.setProductId(product);
         productRepository.save(product);
 
         return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "order added"));
     }
     @Override
     public ResponseEntity<?> addImage(@RequestParam(name = "image") MultipartFile multipartFile) {
-        User user = getUser();
-        productMapper.imageTest(multipartFile, user);
+
         return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "qweasd"));
     }
 
     public ResponseEntity<?> sortByJsonResponse(@RequestBody SortDto sortDto) {
         List<Product> products = productRepository.findAll();
-
 
         if (!sortDto.getCategories().isEmpty()) {
             List<Integer> categoryIndexes = sortDto.getCategories().stream()

@@ -25,8 +25,8 @@ public class UserController {
 //        return ResponseEntity.status(HttpStatus.OK)
 //                .body(uploadImage);
     }
-    @GetMapping("/{fileName}")
-    public ResponseEntity<?> downloadImage(@PathVariable String fileName) {
-       return imageService.downloadImage(fileName);
+    @GetMapping("/{id}")
+    public ResponseEntity<?> downloadImage(@PathVariable Long id) {
+       return imageService.downloadImage(id);
     }
 }

@@ -42,8 +42,8 @@ public class ImageServiceImpl implements ImageService {
         }
     }
 
-    public ResponseEntity<?> downloadImage(String fileName) {
-        Optional<Image> imageOptional = imageRepository.findByName(fileName);
+    public ResponseEntity<?> downloadImage(Long id) {
+        Optional<Image> imageOptional = imageRepository.findById(id);
         if (imageOptional.isEmpty()) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "Image not found"));
         }

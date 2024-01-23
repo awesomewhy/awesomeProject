@@ -48,15 +48,13 @@ public class ProductMapper {
         return product;
     }
 
-    public void imageTest(MultipartFile multipartFile, User user) {
-        Long id = imageService.uploadImage(multipartFile);
-        Optional<Image> image = imageRepository.findById(id);
-        if (image.isEmpty()) {
-            return;
-        }
-        user.setAvatarId(image.get());
-        userRepository.save(user);
-    }
+//    public void imageTest(MultipartFile multipartFile) {
+//        Long id = imageService.uploadImage(multipartFile);
+//        Optional<Image> image = imageRepository.findById(id);
+//        if (image.isEmpty()) {
+//            return;
+//        }
+//    }
 
     public ProductForShowDto mapProductToProductForShowDto(Product product) {
         return ProductForShowDto.builder()

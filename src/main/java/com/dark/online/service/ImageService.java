@@ -11,5 +11,5 @@ import java.io.IOException;
 public interface ImageService {
     ResponseEntity<?> loadImage(@RequestBody LoadImageDto loadImageDto);
     Long uploadImage(MultipartFile file);
-    ResponseEntity<?> downloadImage(String fileName);
+    ResponseEntity<?> downloadImage(Long id);
 }
