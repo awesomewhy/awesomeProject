@@ -58,9 +58,9 @@ public class AuthServiceImpl implements AuthService {
         if (!passwordEncoder.matches(authRequest.getPassword(), user.getPassword())) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "password or nickname incorrect"));
         }
-        if (user.isAccountVerified()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.PERMANENT_REDIRECT.value(), "write code from google app")); // редирект для написания кода и гугл приложения если включена 2fa
-        }
+//        if (user.isAccountVerified()) {
+//            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.PERMANENT_REDIRECT.value(), "write code from google app")); // редирект для написания кода и гугл приложения если включена 2fa
+//        }
         return getAuthenticateUser(authRequest.getNickname(), authRequest.getPassword());
     }
 
@@ -72,12 +72,12 @@ public class AuthServiceImpl implements AuthService {
         if (!registrationUserDto.getPassword().equals(registrationUserDto.getConfirmPassword())) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "password did not match"));
         }
-        if(!Validation.isValidEmailAddress(registrationUserDto.getNickname())) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "INVALID_EMAIL"));
-        }
-        if(!Validation.isValidPassword(registrationUserDto.getPassword())) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "INVALID_PASSWORD"));
-        }
+//        if(!Validation.isValidEmailAddress(registrationUserDto.getNickname())) {
+//            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "INVALID_EMAIL"));
+//        }
+//        if(!Validation.isValidPassword(registrationUserDto.getPassword())) {
+//            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "INVALID_PASSWORD"));
+//        }
         userService.createNewUser(registrationUserDto);
         return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "user register"));
 //        return getAuthenticateUser(registrationUserDto.getNickname(), registrationUserDto.getPassword()); если при регистрации надо будет токен выдовать
@@ -115,7 +115,6 @@ public class AuthServiceImpl implements AuthService {
             User user = userOptional.get();
             boolean isCodeValid = totpManagerService.verifyTotp(user.getSecretKey(), mfaVerificationRequest.getCode());
             if (isCodeValid) {
-                System.out.println(passwordEncoder.encode(user.getPassword()));
                 return getAuthenticateUser(user.getNickname(), passwordEncoder.encode(user.getPassword()));
             } else {
                 return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "incorrect code"));

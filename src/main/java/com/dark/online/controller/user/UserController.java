@@ -1,6 +1,7 @@
 package com.dark.online.controller.user;
 
 import com.dark.online.service.ImageService;
+import com.dark.online.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,32 +16,17 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class UserController {
     private final ImageService imageService;
+    private final ProductService productService;
 
     @PostMapping
-    public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile file) throws IOException {
-        String uploadImage = imageService.uploadImage(file);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(uploadImage);
+    public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile file) {
+        return productService.addImage(file);
+//        Long uploadImage = imageService.uploadImage(file);
+//        return ResponseEntity.status(HttpStatus.OK)
+//                .body(uploadImage);
     }
-    @GetMapping("/{fileName}")
-    public ResponseEntity<?> downloadImage(@PathVariable String fileName) {
-        byte[] imageData = imageService.downloadImage(fileName);
-        return ResponseEntity.status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("image/png"))
-                .body(imageData);
-    }
-    @PostMapping("/fileSystem")
-    public ResponseEntity<?> uploadImageToFIleSystem(@RequestParam("image") MultipartFile file) throws IOException {
-        String uploadImage = imageService.uploadImageToFileSystem(file);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(uploadImage);
-    }
-    @GetMapping("/fileSystem/{fileName}")
-    public ResponseEntity<?> downloadImageFromFileSystem(@PathVariable String fileName) throws IOException {
-        byte[] imageData = imageService.downloadImageFromFileSystem(fileName);
-        return ResponseEntity.status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("image/png"))
-                .body(imageData);
-
+    @GetMapping("/{id}")
+    public ResponseEntity<?> downloadImage(@PathVariable Long id) {
+       return imageService.downloadImage(id);
     }
 }

@@ -2,7 +2,12 @@ package com.dark.online.entity;
 
 import com.dark.online.enums.OrderTypeEnum;
 import com.dark.online.enums.PaymentTypeEnum;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
+import jakarta.validation.Constraint;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -22,11 +27,19 @@ public class Product {
 
     @ManyToOne
     @JoinColumn(name = "seller_id")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
     private User sellerId;
 
+    @OneToOne(mappedBy = "productId", cascade = CascadeType.ALL)
+    @JoinColumn(name = "photo_id")
+    private Image photoId;
+
     private String name;
-    private String image;
+    @DecimalMin(value = "0.0", inclusive = true)
+    @DecimalMax(value = "10.0", inclusive = true)
     private BigDecimal rating;
+    @DecimalMin(value = "0.0", inclusive = true)
     private BigDecimal price;
     private BigDecimal discount;
     private LocalDateTime createdAt;

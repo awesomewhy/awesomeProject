@@ -3,6 +3,8 @@ package com.dark.online.entity;
 import com.dark.online.enums.OrderTypeEnum;
 import com.dark.online.enums.PaymentTypeEnum;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -29,8 +31,10 @@ public class Order {
     private User buyerId;
 
     private String name;
+    @DecimalMin(value = "0.0", inclusive = true)
     private BigDecimal price;
     private LocalDateTime createdAt;
     private String description;
+    @NotNull
     private OrderTypeEnum orderType;
 }

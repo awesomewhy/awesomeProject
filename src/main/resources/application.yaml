@@ -1,9 +1,11 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/test_qr
+    url: jdbc:postgresql://localhost:5432/test
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
+#    hikari:
+#      auto-commit: false
 
   jpa:
     properties:
