@@ -10,8 +10,6 @@ import java.io.IOException;
 
 public interface ImageService {
     ResponseEntity<?> loadImage(@RequestBody LoadImageDto loadImageDto);
-    String uploadImage(MultipartFile file) throws IOException;
-    byte[] downloadImage(String fileName);
-    String uploadImageToFileSystem(MultipartFile file) throws IOException;
-    byte[] downloadImageFromFileSystem(String fileName) throws IOException;
+    Long uploadImage(MultipartFile file);
+    ResponseEntity<?> downloadImage(String fileName);
 }

@@ -21,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -65,6 +66,7 @@ public class UserServiceImpl
                 .secretKey(totpManagerService.generateSecretKey())
                 .username("First name")
                 .surname("Last name")
+                .createdAt(LocalDateTime.now())
                 .roles(List.of(roleService.getUserRole().get()))
                 .build();
         userRepository.save(user);

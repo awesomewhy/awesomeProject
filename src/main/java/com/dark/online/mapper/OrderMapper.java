@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class OrderMapper {
 
-    public Order mapCreateOrderForChatShowDtoToEntity(CreateOrderForChatShowDto createOrderForChatShowDto, User user) {
+    public Order mapCreateOrderForChatShowDtoToEntity(User id, CreateOrderForChatShowDto createOrderForChatShowDto, User user) {
 //        OrderTypeEnum typeEnum = OrderTypeEnum.DEFAULT.ordinal();
 //        for (OrderTypeEnum type : OrderTypeEnum.values()) {
 //            if (type.ordinal() == createOrderForChatShowDto.getOrderTypeEnum().ordinal()) {
@@ -16,7 +16,8 @@ public class OrderMapper {
 //            }
 //        }
         Order order = Order.builder()
-                .sellerId(user)
+                .sellerId(id)
+                .buyerId(user)
                 .orderType(createOrderForChatShowDto.getOrderTypeEnum())
                 .price(createOrderForChatShowDto.getPrice())
                 .description(createOrderForChatShowDto.getDescription())

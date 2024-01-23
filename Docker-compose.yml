@@ -5,7 +5,7 @@ services:
     image: postgres:16-alpine
     container_name: postgres
     environment:
-      POSTGRES_DB: test_qr
+      POSTGRES_DB: test
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
@@ -21,6 +21,6 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres/test_qr
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres/test
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres

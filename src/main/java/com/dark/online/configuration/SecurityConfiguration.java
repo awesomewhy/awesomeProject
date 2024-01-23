@@ -67,6 +67,7 @@ public class SecurityConfiguration {
                     httpSecuritySessionManagementConfigurer
                             .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
                 });
+
     }
 
     @Bean
@@ -74,10 +75,26 @@ public class SecurityConfiguration {
         sharedSecurityConfiguration(httpSecurity);
         httpSecurity
                 .securityMatcher(CREATE_ORDER, GET_MY_REVIEWS, ADD_REVIEW, AVERAGE)
+                .authorizeHttpRequests(auth -> {
+                    auth.anyRequest().hasRole("USER");
+                })
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
     }
+
+//    @Bean
+//    public SecurityFilterChain securityFilterChainModerAPI(HttpSecurity httpSecurity) throws Exception {
+//        sharedSecurityConfiguration(httpSecurity);
+//        httpSecurity
+//                .securityMatcher()
+//                .authorizeHttpRequests(auth -> {
+//                    auth.anyRequest().hasRole("MODERATOR");
+//                })
+//                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+//
+//        return httpSecurity.build();
+//    }
 
     @Bean
     public SecurityFilterChain securityFilterChainAdminsAPI(HttpSecurity httpSecurity) throws Exception {
