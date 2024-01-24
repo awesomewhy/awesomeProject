@@ -2,7 +2,6 @@ package com.dark.online.service.impl.product;
 
 import com.dark.online.dto.product.CreateProductForSellDto;
 import com.dark.online.dto.product.ProductForShowDto;
-import com.dark.online.dto.product.SearchDto;
 import com.dark.online.dto.product.SortDto;
 import com.dark.online.entity.Image;
 import com.dark.online.entity.Product;
@@ -17,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,25 +32,25 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final ImageService imageService;
+
     @Override
-    public ResponseEntity<?> addProduct(@RequestBody CreateProductForSellDto createOrderForSellDto) {
+    public ResponseEntity<?> addProduct(@RequestParam(name = "image") MultipartFile multipartFile, @RequestBody CreateProductForSellDto createOrderForSellDto) {
         Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
 
-        if(userOptional.isEmpty()) {
+        if (userOptional.isEmpty()) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user in spring context not found / user not auth"));
         }
         User user = userOptional.get();
-        Product product = productMapper.mapCreateOrderForSellDtoToProductEntity(createOrderForSellDto, user);
-//        Long imageId = imageService.uploadImage();
-//        Image photo =
-//        photo.setProductId(product);
+        Product product = productMapper.mapCreateOrderForSellDtoToProductEntity(multipartFile, createOrderForSellDto, user);
+
         productRepository.save(product);
 
         return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "order added"));
     }
-    @Override
-    public ResponseEntity<?> addImage(@RequestParam(name = "image") MultipartFile multipartFile) {
 
+    @Override
+    public ResponseEntity<?> addImage(@RequestParam("image") MultipartFile multipartFile) {
+        Image image = imageService.uploadImage(multipartFile);
         return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "qweasd"));
     }
 
@@ -86,13 +86,15 @@ public class ProductServiceImpl implements ProductService {
 
         return ResponseEntity.ok(productForShowDto);
     }
-    public ResponseEntity<?> searchProduct(@RequestBody SearchDto searchDto) {
-        List<Product> products = productRepository.findProductByName(searchDto.getSearch());
+
+    public ResponseEntity<?> searchProduct(@RequestParam String text) {
+        List<Product> products = productRepository.findProductByName(text);
         List<ProductForShowDto> productForShowDto = products.stream()
                 .map(productMapper::mapProductToProductForShowDto)
                 .toList();
-        return ResponseEntity.ok(products);
+        return ResponseEntity.ok(productForShowDto);
     }
+
     @Override
     public ResponseEntity<?> getAllProducts() {
         return ResponseEntity.ok().body(productRepository.findAll().stream()

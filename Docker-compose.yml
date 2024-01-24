@@ -10,8 +10,6 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
-    volumes:
-      - C:\Users\seren\IdeaProjects\dark_online\src\main\resources\db_test:/docker-entrypoint-initdb.d
 
   app:
     build: .

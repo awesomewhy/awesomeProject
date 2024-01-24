@@ -14,6 +14,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/image")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class UserController {
     private final ImageService imageService;
     private final ProductService productService;
@@ -21,9 +22,6 @@ public class UserController {
     @PostMapping
     public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile file) {
         return productService.addImage(file);
-//        Long uploadImage = imageService.uploadImage(file);
-//        return ResponseEntity.status(HttpStatus.OK)
-//                .body(uploadImage);
     }
     @GetMapping("/{id}")
     public ResponseEntity<?> downloadImage(@PathVariable Long id) {

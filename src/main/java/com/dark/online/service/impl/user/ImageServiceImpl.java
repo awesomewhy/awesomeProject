@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -27,7 +28,7 @@ public class ImageServiceImpl implements ImageService {
         return null;
     }
 
-    public Long uploadImage(MultipartFile file) {
+    public Image uploadImage(@RequestParam MultipartFile file) {
         try {
             Image imageData = imageRepository.save(Image.builder()
                     .name(file.getOriginalFilename())
@@ -36,7 +37,7 @@ public class ImageServiceImpl implements ImageService {
 //            if (imageData != null) {
 //                return "file uploaded successfully : " + file.getOriginalFilename();
 //            }
-            return imageData.getId();
+            return imageData;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

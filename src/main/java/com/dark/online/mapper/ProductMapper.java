@@ -33,7 +33,7 @@ public class ProductMapper {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
 
-    public Product mapCreateOrderForSellDtoToProductEntity(CreateProductForSellDto createOrderForSellDto, User user) {
+    public Product mapCreateOrderForSellDtoToProductEntity(MultipartFile multipartFile, CreateProductForSellDto createOrderForSellDto, User user) {
         Product product = Product.builder()
                 .sellerId(user)
                 .name(createOrderForSellDto.getName())
@@ -45,6 +45,8 @@ public class ProductMapper {
                 .orderType(createOrderForSellDto.getOrderTypeEnum())
                 .paymentType(createOrderForSellDto.getPaymentTypeEnum())
                 .build();
+        Image imageId = imageService.uploadImage(multipartFile);
+        product.setPhotoId(imageId);
         return product;
     }
 
@@ -59,7 +61,7 @@ public class ProductMapper {
     public ProductForShowDto mapProductToProductForShowDto(Product product) {
         return ProductForShowDto.builder()
                 .id(product.getId())
-//                .image()
+                .image(product.getPhotoId())
                 .name(product.getName())
                 .rating(product.getRating())
                 .build();
