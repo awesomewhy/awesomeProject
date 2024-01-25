@@ -15,7 +15,7 @@ public interface ProductService {
 
     ResponseEntity<?> addImage(@PathVariable MultipartFile multipartFile);
 
-    ResponseEntity<?> sortByJsonResponse(@RequestBody SortDto sortDto);
+    ResponseEntity<?> sort(@RequestBody SortDto sortDto);
 
-    ResponseEntity<?> searchProduct(@RequestParam("text") String text);
+    ResponseEntity<?> searchProduct(@RequestParam(required = false, name = "text") String text);
 }

@@ -18,4 +18,7 @@ public class Chat {
 
     @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL)
     private List<Message> messages;
+
+    @OneToMany
+    private List<Image> images;
 }

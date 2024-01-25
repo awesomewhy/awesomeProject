@@ -54,7 +54,7 @@ public class ProductServiceImpl implements ProductService {
         return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "qweasd"));
     }
 
-    public ResponseEntity<?> sortByJsonResponse(@RequestBody SortDto sortDto) {
+    public ResponseEntity<?> sort(@RequestBody SortDto sortDto) {
         List<Product> products = productRepository.findAll();
 
         if (!sortDto.getCategories().isEmpty()) {

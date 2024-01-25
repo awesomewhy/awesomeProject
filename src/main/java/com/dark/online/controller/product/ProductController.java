@@ -27,7 +27,7 @@ public class ProductController {
 
     @GetMapping("/sort")
     public ResponseEntity<?> sortProducts(@RequestBody SortDto sortDto) {
-        return productService.sortByJsonResponse(sortDto);
+        return productService.sort(sortDto);
     }
 
     @GetMapping("/products")
