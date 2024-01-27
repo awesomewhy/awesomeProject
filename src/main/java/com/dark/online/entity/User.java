@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -27,9 +28,11 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
+    @NotNull
     private String password;
     @Column(unique = true)
     @NotBlank
+    @NotNull
     private String nickname;
     @DecimalMin(value = "0.0", inclusive = true)
     private BigDecimal balance;
@@ -37,7 +40,9 @@ public class User {
     private String secretKey;
     private String username;
     private String surname;
+    @NotNull
     private LocalDateTime createdAt;
+    @NotNull
     private boolean accountVerified;
 
     @OneToOne(mappedBy = "userId", cascade = CascadeType.ALL)
@@ -55,6 +60,16 @@ public class User {
     @OneToMany(mappedBy = "sellerId", cascade = CascadeType.ALL)
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
-    private Collection<Order> orders;
+    private List<Order> orders;
+
+    @OneToMany(mappedBy = "sellerId", cascade = CascadeType.ALL)
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
+    private List<Product> products;
+
+    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL)
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
+    private List<Chat> chats;
 
 }

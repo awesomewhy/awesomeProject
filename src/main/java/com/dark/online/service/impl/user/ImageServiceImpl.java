@@ -28,16 +28,12 @@ public class ImageServiceImpl implements ImageService {
         return null;
     }
 
-    public Image uploadImage(@RequestParam MultipartFile file) {
+    public Image uploadImage(MultipartFile file) {
         try {
-            Image imageData = imageRepository.save(Image.builder()
+            return imageRepository.save(Image.builder()
                     .name(file.getOriginalFilename())
                     .type(file.getContentType())
                     .imageData(ImageUtils.compressImage(file.getBytes())).build());
-//            if (imageData != null) {
-//                return "file uploaded successfully : " + file.getOriginalFilename();
-//            }
-            return imageData;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

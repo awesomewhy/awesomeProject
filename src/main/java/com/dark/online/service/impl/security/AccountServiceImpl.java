@@ -1,6 +1,8 @@
 package com.dark.online.service.impl.security;
 
+import com.dark.online.dto.order.CreateOrderDto;
 import com.dark.online.dto.security.ChangePasswordDto;
+import com.dark.online.dto.user.ChangeNicknameDto;
 import com.dark.online.entity.User;
 import com.dark.online.exception.ErrorResponse;
 import com.dark.online.repository.UserRepository;
@@ -50,5 +52,16 @@ public class AccountServiceImpl implements AccountService {
         user.setPassword(passwordEncoder.encode(changePasswordDto.getNewPassword()));
         userRepository.save(user);
         return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "PASSWORD_CHANGED_SUCCESSFULLY"));
+    }
+
+    public ResponseEntity<?> changeNickname(@RequestBody ChangeNicknameDto changeNicknameDto) {
+        Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
+        }
+        User user = userOptional.get();
+        user.setNickname(changeNicknameDto.getNickname());
+        userRepository.save(user);
+        return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "NICKNAME_CHANGED_SUCCESSFULLY"));
     }
 }

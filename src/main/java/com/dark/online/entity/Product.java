@@ -2,12 +2,12 @@ package com.dark.online.entity;
 
 import com.dark.online.enums.OrderTypeEnum;
 import com.dark.online.enums.PaymentTypeEnum;
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import jakarta.validation.Constraint;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -37,7 +37,7 @@ public class Product {
 
     private String name;
     @DecimalMin(value = "0.0", inclusive = true)
-    @DecimalMax(value = "10.0", inclusive = true)
+    @DecimalMax(value = "5.0", inclusive = true)
     private BigDecimal rating;
     @DecimalMin(value = "0.0", inclusive = true)
     private BigDecimal price;

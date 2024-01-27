@@ -20,7 +20,7 @@ public class UserController {
     private final ProductService productService;
 
     @PostMapping
-    public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile file) {
+    public ResponseEntity<?> setAvatar(@RequestParam("image") MultipartFile file) {
         return productService.addImage(file);
     }
     @GetMapping("/{id}")

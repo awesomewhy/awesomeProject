@@ -83,7 +83,7 @@ public class UserServiceImpl
                 user.getPassword(),
                 user.getRoles().stream()
                         .map(role -> new SimpleGrantedAuthority(role.getName()))
-                        .collect(Collectors.toList())
+                        .toList()
         );
     }
 
