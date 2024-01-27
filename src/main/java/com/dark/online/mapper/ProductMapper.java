@@ -1,32 +1,26 @@
 package com.dark.online.mapper;
 
-import com.dark.online.dto.order.CreateOrderForChatShowDto;
 import com.dark.online.dto.product.CreateProductForSellDto;
 import com.dark.online.dto.product.ProductForShowDto;
 import com.dark.online.entity.Image;
-import com.dark.online.entity.Order;
 import com.dark.online.entity.Product;
 import com.dark.online.entity.User;
+import com.dark.online.exception.ErrorResponse;
 import com.dark.online.repository.ImageRepository;
 import com.dark.online.repository.ProductRepository;
 import com.dark.online.repository.UserRepository;
 import com.dark.online.service.ImageService;
-import com.dark.online.service.impl.user.ImageServiceImpl;
+import com.dark.online.service.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Base64;
 import java.util.Optional;
 
 @Component
@@ -35,9 +29,11 @@ public class ProductMapper {
     private final ImageService imageService;
     private final ImageRepository imageRepository;
     private final ProductRepository productRepository;
+    private final UserService userService;
     private final UserRepository userRepository;
 
-    public Product mapCreateOrderForSellDtoToProductEntity(MultipartFile multipartFile, CreateProductForSellDto createOrderForSellDto, User user) {
+    public Product mapCreateOrderForSellDtoToProductEntity(CreateProductForSellDto createOrderForSellDto, User user) {
+//        MultipartFile multipartFile
         Product product = Product.builder()
                 .sellerId(user)
                 .name(createOrderForSellDto.getName())
@@ -49,22 +45,27 @@ public class ProductMapper {
                 .orderType(createOrderForSellDto.getOrderTypeEnum())
                 .paymentType(createOrderForSellDto.getPaymentTypeEnum())
                 .build();
-        Image imageId = imageService.uploadImage(multipartFile);
-        product.setPhotoId(imageId);
+//        addPhotoToProduct(multipartFile, product);
         return product;
     }
 
-//    public void imageTest(MultipartFile multipartFile) {
-//        Long id = imageService.uploadImage(multipartFile);
-//        Optional<Image> image = imageRepository.findById(id);
-//        if (image.isEmpty()) {
+//    public void addPhotoToProduct(MultipartFile multipartFile, Product product) {
+//        Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
+//
+//        if (userOptional.isEmpty()) {
 //            return;
 //        }
+//        User user = userOptional.get();
+//        Image image = imageService.uploadImage(multipartFile);
+//        image.setUserId(user);
+//        image.setProductId(product);
+//        user.setProducts(product.getSellerId().getProducts());
+//
+//        imageRepository.save(image);
+//        userRepository.save(user);
 //    }
 
     public ProductForShowDto mapProductToProductForShowDto(Product product) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) authentication;
         return ProductForShowDto.builder()
                 .id(product.getId())
                 .image(product.getPhotoId())

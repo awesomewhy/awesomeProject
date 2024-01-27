@@ -9,11 +9,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface ProductService {
-    ResponseEntity<?> addProduct(@RequestParam("image") MultipartFile multipartFile, @RequestBody CreateProductForSellDto createOrderForSellDto);
+    ResponseEntity<?> addProduct(@RequestBody CreateProductForSellDto createOrderForSellDto);
+//    @RequestParam("image") MultipartFile multipartFile,
 
     ResponseEntity<?> getAllProducts();
 
-    ResponseEntity<?> addImage(@PathVariable MultipartFile multipartFile);
+    ResponseEntity<?> addImage(@RequestParam(name = "image") MultipartFile multipartFile);
 
     ResponseEntity<?> sortByJsonResponse(@RequestBody SortDto sortDto);
 
