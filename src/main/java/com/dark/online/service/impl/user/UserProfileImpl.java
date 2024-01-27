@@ -37,15 +37,5 @@ public class UserProfileImpl implements DeleteService {
         }
     }
 
-    public ResponseEntity<?> getAllChats() {
-        Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
-
-        if(userOptional.isEmpty()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
-        }
-
-        return ResponseEntity.ok().body(userOptional.get().getChats());
-    }
-
 
 }

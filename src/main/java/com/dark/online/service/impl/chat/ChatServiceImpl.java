@@ -14,10 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +25,16 @@ public class ChatServiceImpl implements ChatService {
 
     public void sendMessage(@RequestBody Message message) {
         messageTemplate.send("qwe", message);
+    }
+
+    public ResponseEntity<?> getAllChats() {
+        Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
+
+        if(userOptional.isEmpty()) {
+            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
+        }
+
+        return ResponseEntity.ok().body(userOptional.get().getChats());
     }
 
     public ResponseEntity<?> openChat(@RequestParam User userId) {

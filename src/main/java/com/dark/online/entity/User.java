@@ -28,9 +28,11 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
+    @NotNull
     private String password;
     @Column(unique = true)
     @NotBlank
+    @NotNull
     private String nickname;
     @DecimalMin(value = "0.0", inclusive = true)
     private BigDecimal balance;
@@ -38,7 +40,9 @@ public class User {
     private String secretKey;
     private String username;
     private String surname;
+    @NotNull
     private LocalDateTime createdAt;
+    @NotNull
     private boolean accountVerified;
 
     @OneToOne(mappedBy = "userId", cascade = CascadeType.ALL)
@@ -56,12 +60,12 @@ public class User {
     @OneToMany(mappedBy = "sellerId", cascade = CascadeType.ALL)
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
-    private Collection<Order> orders;
+    private List<Order> orders;
 
     @OneToMany(mappedBy = "sellerId", cascade = CascadeType.ALL)
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
-    private Collection<Product> products;
+    private List<Product> products;
 
     @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL)
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
