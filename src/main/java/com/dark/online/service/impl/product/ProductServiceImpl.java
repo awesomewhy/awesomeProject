@@ -137,7 +137,7 @@ public class ProductServiceImpl implements ProductService {
         return ResponseEntity.ok().body(productRepository.findAll().stream()
                 .map(productMapper::mapProductToProductForShowDto));
     }
-
+    @Override
     public ResponseEntity<?> getMyProducts() {
         Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
         if (userOptional.isEmpty()) {

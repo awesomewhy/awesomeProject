@@ -19,4 +19,5 @@ public interface ProductService {
     ResponseEntity<?> sortByJsonResponse(@RequestBody SortDto sortDto);
 
     ResponseEntity<?> searchProduct(@RequestParam("text") String text);
+    ResponseEntity<?> getMyProducts();
 }

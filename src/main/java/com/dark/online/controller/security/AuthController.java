@@ -2,7 +2,10 @@ package com.dark.online.controller.security;
 
 import com.dark.online.dto.jwt.JwtRequestDto;
 import com.dark.online.dto.mfa.MfaVerificationRequest;
+import com.dark.online.dto.security.ChangePasswordDto;
+import com.dark.online.dto.user.ChangeNicknameDto;
 import com.dark.online.dto.user.RegistrationUserDto;
+import com.dark.online.service.AccountService;
 import com.dark.online.service.AuthService;
 import com.dark.online.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "*")
 public class AuthController {
 
+    private final AccountService accountService;
     private final AuthService authService;
 
     @PostMapping("/register")
@@ -35,5 +39,15 @@ public class AuthController {
     @PostMapping("/verifycode")
     public ResponseEntity<?> verifyTotp(@RequestBody MfaVerificationRequest mfaVerificationRequest) {
         return authService.verifyCode(mfaVerificationRequest);
+    }
+
+    @GetMapping("/changenickname")
+    public ResponseEntity<?> changeNickname(@RequestBody ChangeNicknameDto changeNicknameDto) {
+        return accountService.changeNickname(changeNicknameDto);
+    }
+
+    @GetMapping("/changepassword")
+    public ResponseEntity<?> changeNickname(@RequestBody ChangePasswordDto changePasswordDto) {
+        return accountService.changePassword(changePasswordDto);
     }
 }

@@ -1,5 +1,7 @@
 package com.dark.online.controller.user;
 
+import com.dark.online.dto.user.ChangeNicknameDto;
+import com.dark.online.service.AccountService;
 import com.dark.online.service.ImageService;
 import com.dark.online.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/image")
+@RequestMapping("/user")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class UserController {
@@ -23,8 +25,8 @@ public class UserController {
     public ResponseEntity<?> setAvatar(@RequestParam("image") MultipartFile file) {
         return productService.addImage(file);
     }
-    @GetMapping("/{id}")
-    public ResponseEntity<?> downloadImage(@PathVariable Long id) {
-       return imageService.downloadImage(id);
+    @GetMapping("/avatar")
+    public ResponseEntity<?> downloadImage() {
+       return imageService.downloadImage();
     }
 }

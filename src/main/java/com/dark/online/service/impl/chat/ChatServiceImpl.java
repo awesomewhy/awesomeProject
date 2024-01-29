@@ -24,7 +24,7 @@ public class ChatServiceImpl implements ChatService {
     private final UserService userService;
 
     public void sendMessage(@RequestBody Message message) {
-        messageTemplate.send("qwe", message);
+        messageTemplate.send("chat", message);
     }
 
     public ResponseEntity<?> getAllChats() {

@@ -8,7 +8,7 @@ spring:
     password: postgres
     driver-class-name: org.postgresql.Driver
     hikari:
-      auto-commit: true
+      auto-commit: false
 
   jpa:
     properties:

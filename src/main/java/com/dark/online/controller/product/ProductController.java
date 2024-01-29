@@ -36,6 +36,12 @@ public class ProductController {
     public ResponseEntity<?> getAllProducts() {
         return productService.getAllProducts();
     }
+
+    @GetMapping("/myproducts")
+    public ResponseEntity<?> getMyProducts() {
+        return productService.getMyProducts();
+    }
+
 //    INSERT INTO service (name, price, description, orderTypeEnum, paymentTypeEnum, user_id)
 //    VALUES ('услуга 1', 100, 'description service', 'SOME', 'VISA', 'f725741d-18a4-4818-b09a-ad792c214c66');
 

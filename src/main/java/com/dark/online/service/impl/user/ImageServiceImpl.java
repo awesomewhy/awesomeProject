@@ -3,9 +3,12 @@ package com.dark.online.service.impl.user;
 import com.dark.online.dto.user.LoadImageDto;
 
 import com.dark.online.entity.Image;
+import com.dark.online.entity.User;
 import com.dark.online.exception.ErrorResponse;
 import com.dark.online.repository.ImageRepository;
+import com.dark.online.repository.UserRepository;
 import com.dark.online.service.ImageService;
+import com.dark.online.service.UserService;
 import com.dark.online.util.ImageUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +25,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ImageServiceImpl implements ImageService {
     private final ImageRepository imageRepository;
+    private final UserService userService;
 
     @Override
     public ResponseEntity<?> loadImage(LoadImageDto loadImageDto) {
@@ -39,8 +43,12 @@ public class ImageServiceImpl implements ImageService {
         }
     }
 
-    public ResponseEntity<?> downloadImage(Long id) {
-        Optional<Image> imageOptional = imageRepository.findById(id);
+    public ResponseEntity<?> downloadImage() {
+        Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
+        }
+        Optional<Image> imageOptional = imageRepository.findByUserId(userOptional.get());
         if (imageOptional.isEmpty()) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "Image not found"));
         }
