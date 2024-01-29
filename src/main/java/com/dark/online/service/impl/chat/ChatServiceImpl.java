@@ -37,17 +37,18 @@ public class ChatServiceImpl implements ChatService {
         return ResponseEntity.ok().body(userOptional.get().getChats());
     }
 
-    public ResponseEntity<?> openChat(@RequestParam User userId) {
+    public ResponseEntity<?> openChat(@RequestParam String userId) {
         Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
         if(userOptional.isEmpty()) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
         }
         List<Chat> chats = userOptional.get().getChats();
         for (int i = 0; i < chats.size(); i++) {
-            if(chats.get(i).getCompanionId() == userId) {
+            if(String.valueOf(chats.get(i).getCompanionId().getId()).equals(userId)) {
                 return ResponseEntity.ok().body(chats.get(i).getMessages());
             }
         }
+
         return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "vse ok"));
     }
 }

@@ -23,6 +23,10 @@ public class Image {
     @JoinColumn(name = "photo_id")
     private Product productId;
 
+    @ManyToOne
+    @JoinColumn(name = "chat_id")
+    private Chat chatId;
+
     private String name;
     private String type;
     @Lob

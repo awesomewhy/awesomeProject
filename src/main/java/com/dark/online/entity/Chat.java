@@ -17,14 +17,19 @@ public class Chat {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User userId;
 
     @ManyToOne
+    @JoinColumn(name = "companion_id")
     private User companionId;
 
-    @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "chatId", cascade = CascadeType.ALL)
+    private List<Order> orders;
+
+    @OneToMany(mappedBy = "chatId", cascade = CascadeType.ALL)
     private List<Message> messages;
 
-    @OneToMany
+    @OneToMany(mappedBy = "chatId", cascade = CascadeType.ALL)
     private List<Image> images;
 }

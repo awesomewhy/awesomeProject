@@ -1,7 +1,6 @@
 package com.dark.online.entity;
 
 import com.dark.online.enums.OrderTypeEnum;
-import com.dark.online.enums.PaymentTypeEnum;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
@@ -30,9 +29,14 @@ public class Order {
     @JoinColumn(name = "buyer_id")
     private User buyerId;
 
+    @ManyToOne
+    @JoinColumn(name = "chat_id")
+    private Chat chatId;
+
     private String name;
     @DecimalMin(value = "0.0", inclusive = true)
     private BigDecimal price;
+    @NotNull
     private LocalDateTime createdAt;
     private String description;
     @NotNull

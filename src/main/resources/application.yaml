@@ -1,14 +1,14 @@
 spring:
-  servlet:
-    multipart:
-      enabled: true
+#  servlet:
+#    multipart:
+#      enabled: true
   datasource:
     url: jdbc:postgresql://localhost:5432/test
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
     hikari:
-      auto-commit: false
+      auto-commit: true
 
   jpa:
     properties:
