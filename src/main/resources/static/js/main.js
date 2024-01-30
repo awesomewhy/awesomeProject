@@ -5,20 +5,10 @@ const stompClient = new StompJs.Client({
 stompClient.onConnect = (frame) => {
     setConnected(true);
     console.log('Connected: ' + frame);
-    stompClient.subscribe('/topic/greetings', (greeting) => {
+    stompClient.subscribe('/topic/chat', (greeting) => {
         showGreeting(JSON.parse(greeting.body).content);
     });
 };
-
-stompClient.onWebSocketError = (error) => {
-    console.error('Error with websocket', error);
-};
-
-stompClient.onStompError = (frame) => {
-    console.error('Broker reported error: ' + frame.headers['message']);
-    console.error('Additional details: ' + frame.body);
-};
-
 export function setConnected(connected) {
     $("#connect").prop("disabled", connected);
     $("#disconnect").prop("disabled", !connected);
@@ -31,8 +21,8 @@ export function setConnected(connected) {
     $("#greetings").html("");
 }
 
-export function connect() {
-    stompClient.activate();
+function sendMessage(content) {
+    stompClient.send("/app/message", {}, JSON.stringify({ content: content }));
 }
 
 export function disconnect() {
@@ -48,13 +38,6 @@ export function sendName() {
     });
 }
 
-export function showGreeting(message) {
-    $("#greetings").append("<tr><td>" + message + "</td></tr>");
+export function connect() {
+    stompClient.activate();
 }
-
-$(function () {
-    $("form").on('submit', (e) => e.preventDefault());
-    $( "#connect" ).click(() => connect());
-    $( "#disconnect" ).click(() => disconnect());
-    $( "#send" ).click(() => sendName());
-});

@@ -23,8 +23,8 @@ public class UserController {
     public ResponseEntity<?> setAvatar(@RequestParam("image") MultipartFile file) {
         return productService.addImage(file);
     }
-    @GetMapping("/{id}")
-    public ResponseEntity<?> downloadImage(@PathVariable Long id) {
-       return imageService.downloadImage(id);
+    @GetMapping("/avatar")
+    public ResponseEntity<?> downloadImage() {
+       return imageService.downloadImage();
     }
 }

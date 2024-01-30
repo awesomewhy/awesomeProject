@@ -4,23 +4,23 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "image")
+@Table(name = "product_image")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Image {
+public class Product_Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User userId;
 
     @OneToOne
-    @JoinColumn(name = "photo_id")
+    @JoinColumn(name = "product_id")
     private Product productId;
 
     private String name;

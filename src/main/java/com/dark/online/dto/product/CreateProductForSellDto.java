@@ -3,13 +3,12 @@ package com.dark.online.dto.product;
 import com.dark.online.enums.OrderTypeEnum;
 import com.dark.online.enums.PaymentTypeEnum;
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Data
-public class CreateProductForSellDto {
+public class CreateProductForSellDto implements Serializable {
     private String name;
     private BigDecimal price;
     private String description;

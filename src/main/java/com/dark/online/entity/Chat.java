@@ -26,5 +26,5 @@ public class Chat {
     private List<Message> messages;
 
     @OneToMany
-    private List<Image> images;
+    private List<Product_Image> images;
 }

@@ -8,6 +8,6 @@ public interface ChatService {
 
     ResponseEntity<?> getSome();
     ResponseEntity<?> getAllChats();
-    ResponseEntity<?> openChat(@RequestParam User userId);
+    ResponseEntity<?> openChat(@RequestParam String userId);
 
 }

@@ -33,7 +33,7 @@ public class Product {
 
     @OneToOne(mappedBy = "productId", cascade = CascadeType.ALL)
     @JoinColumn(name = "photo_id")
-    private Image photoId;
+    private Product_Image photoId;
 
     private String name;
     @DecimalMin(value = "0.0", inclusive = true)
