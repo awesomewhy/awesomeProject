@@ -31,5 +31,6 @@ public class Chat {
     private List<Message> messages;
 
     @OneToMany(mappedBy = "chatId", cascade = CascadeType.ALL)
-    private List<Image> images;
+    private List<Product_Image> images;
+
 }

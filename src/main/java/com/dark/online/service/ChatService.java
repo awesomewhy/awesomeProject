@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
 
 public interface ChatService {
+    ResponseEntity<?> getSome();
     ResponseEntity<?> getAllChats();
     ResponseEntity<?> openChat(@RequestParam String userId);
 }

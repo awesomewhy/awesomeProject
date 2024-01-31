@@ -8,7 +8,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/product")
@@ -16,10 +15,10 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProductController {
     private final ProductService productService;
 
-    @PostMapping(value = "/create")
-    public ResponseEntity<?> addProduct(// @RequestParam(name = "image") MultipartFile file,
-                                        @RequestBody CreateProductForSellDto createOrderForSellDto) {
-        return productService.addProduct(createOrderForSellDto);
+    @PostMapping("/create")
+    public ResponseEntity<?> addProduct(@RequestPart(name = "image") MultipartFile multipartFile,
+                                        @RequestPart CreateProductForSellDto createOrderForSellDto) {
+        return productService.addProduct(multipartFile, createOrderForSellDto);
     }
 
     @GetMapping("/product")
@@ -29,7 +28,7 @@ public class ProductController {
 
     @GetMapping("/sort")
     public ResponseEntity<?> sortProducts(@RequestBody SortDto sortDto) {
-        return productService.sortByJsonResponse(sortDto);
+        return productService.sort(sortDto);
     }
 
     @GetMapping("/products")

@@ -5,6 +5,7 @@ import com.dark.online.entity.Message;
 import com.dark.online.entity.User;
 import com.dark.online.exception.ErrorResponse;
 import com.dark.online.service.ChatService;
+import com.dark.online.service.ProductService;
 import com.dark.online.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,12 +21,8 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
-    private final KafkaTemplate<String, Message> messageTemplate;
     private final UserService userService;
-
-    public void sendMessage(@RequestBody Message message) {
-        messageTemplate.send("chat", message);
-    }
+    private final ProductService productService;
 
     public ResponseEntity<?> getAllChats() {
         Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
@@ -50,5 +47,10 @@ public class ChatServiceImpl implements ChatService {
         }
 
         return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "vse ok"));
+    }
+
+    @Override
+    public ResponseEntity<?> getSome() {
+        return productService.getAllProducts();
     }
 }

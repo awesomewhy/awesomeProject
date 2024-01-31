@@ -3,14 +3,14 @@ package com.dark.online.service.impl.product;
 import com.dark.online.dto.product.CreateProductForSellDto;
 import com.dark.online.dto.product.ProductForShowDto;
 import com.dark.online.dto.product.SortDto;
-import com.dark.online.entity.Image;
 import com.dark.online.entity.Product;
 import com.dark.online.entity.User;
+import com.dark.online.entity.User_Avatar;
 import com.dark.online.exception.ErrorResponse;
 import com.dark.online.mapper.ProductMapper;
-import com.dark.online.repository.ImageRepository;
 import com.dark.online.repository.ProductRepository;
 import com.dark.online.repository.UserRepository;
+import com.dark.online.repository.User_AvatarRepository;
 import com.dark.online.service.ImageService;
 import com.dark.online.service.ProductService;
 import com.dark.online.service.UserService;
@@ -20,38 +20,34 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
     private final UserService userService;
     private final UserRepository userRepository;
-    private final ImageRepository imageRepository;
+    private final User_AvatarRepository userAvatarRepository;
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final ImageService imageService;
 
     @Override
     @Transactional
-    public ResponseEntity<?> addProduct(@RequestBody CreateProductForSellDto createOrderForSellDto) {
-//        @RequestParam(name = "image") MultipartFile multipartFile
+    public ResponseEntity<?> addProduct(@RequestParam(name = "image") MultipartFile multipartFile, @RequestBody CreateProductForSellDto createOrderForSellDto) {
         Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
 
         if (userOptional.isEmpty()) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user in spring context not found / user not auth"));
         }
         User user = userOptional.get();
-        Product product = productMapper.mapCreateOrderForSellDtoToProductEntity(createOrderForSellDto, user);
+        Product product = productMapper.mapCreateOrderForSellDtoToProductEntity(multipartFile, createOrderForSellDto, user);
 
         productRepository.save(product);
 
@@ -68,22 +64,22 @@ public class ProductServiceImpl implements ProductService {
         }
         User user = userOptional.get();
         if (user.getAvatarId() == null) {
-            Image image = imageService.uploadImage(multipartFile);
+            User_Avatar image = imageService.uploadImage(multipartFile);
             image.setUserId(user);
             user.setAvatarId(image);
-            imageRepository.save(image);
+            userAvatarRepository.save(image);
             userRepository.save(user);
         } else {
-            Optional<Image> imageOptional = imageRepository.findById(user.getAvatarId().getId());
+            Optional<User_Avatar> imageOptional = userAvatarRepository.findById(user.getAvatarId().getId());
             if (imageOptional.isEmpty()) {
                 return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "image not found"));
             }
             try {
-                Image image = imageOptional.get();
+                User_Avatar image = imageOptional.get();
                 image.setName(multipartFile.getOriginalFilename());
                 image.setType(multipartFile.getContentType());
                 image.setImageData(ImageUtils.compressImage(multipartFile.getBytes()));
-                imageRepository.save(image);
+                userAvatarRepository.save(image);
             } catch (IOException e) {
                 return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "IOException"));
             }
@@ -91,7 +87,7 @@ public class ProductServiceImpl implements ProductService {
         return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "avatar added"));
     }
 
-    public ResponseEntity<?> sortByJsonResponse(@RequestBody SortDto sortDto) {
+    public ResponseEntity<?> sort(@RequestBody SortDto sortDto) {
         List<Product> products = productRepository.findAll();
 
         if (!sortDto.getCategories().isEmpty()) {

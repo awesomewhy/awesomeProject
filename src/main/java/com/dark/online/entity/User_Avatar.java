@@ -4,13 +4,13 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "image")
+@Table(name = "user_avatar")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Image {
+public class User_Avatar {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,14 +18,6 @@ public class Image {
     @OneToOne
     @JoinColumn(name = "user_id")
     private User userId;
-
-    @OneToOne
-    @JoinColumn(name = "photo_id")
-    private Product productId;
-
-    @ManyToOne
-    @JoinColumn(name = "chat_id")
-    private Chat chatId;
 
     private String name;
     private String type;

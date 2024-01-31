@@ -13,7 +13,6 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -42,14 +41,11 @@ public class User {
     private String secretKey;
     private String username;
     private String surname;
-    @NotNull
     private LocalDateTime createdAt;
-    @NotNull
     private boolean accountVerified;
 
     @OneToOne(mappedBy = "userId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private Image avatarId;
+    private User_Avatar avatarId;
 
     @ManyToMany
     @JoinTable(
