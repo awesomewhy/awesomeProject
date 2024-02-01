@@ -17,10 +17,12 @@ public class Chat {
     private Long id;
 
     @ManyToOne
-    private User userId;
+    @JoinColumn(name = "user1_id")
+    private User user1;
 
     @ManyToOne
-    private User companionId;
+    @JoinColumn(name = "user2_id")
+    private User user2;
 
     @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL)
     private List<Message> messages;
@@ -28,3 +30,10 @@ public class Chat {
     @OneToMany
     private List<Product_Image> images;
 }
+
+
+/*
+    {
+        user
+    }
+ */

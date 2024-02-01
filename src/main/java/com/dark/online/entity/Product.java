@@ -20,6 +20,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@NamedEntityGraph(name = "productWithSellerAndPhoto", attributeNodes = {
+        @NamedAttributeNode("sellerId"),
+        @NamedAttributeNode("photoId")
+})
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,11 +31,9 @@ public class Product {
 
     @ManyToOne
     @JoinColumn(name = "seller_id")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     private User sellerId;
 
-    @OneToOne(mappedBy = "productId", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "productId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "photo_id")
     private Product_Image photoId;
 

@@ -42,7 +42,7 @@ public class User {
     private LocalDateTime createdAt;
     private boolean accountVerified;
 
-    @OneToOne(mappedBy = "userId", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "userId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private User_Avatar avatarId;
 
     @ManyToMany
@@ -54,19 +54,16 @@ public class User {
     private Collection<Role> roles;
 
 
-    @OneToMany(mappedBy = "sellerId", cascade = CascadeType.ALL)
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
+    @OneToMany(mappedBy = "sellerId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Order> orders;
 
-    @OneToMany(mappedBy = "sellerId", cascade = CascadeType.ALL)
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
+    @OneToMany(mappedBy = "sellerId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Product> products;
 
-    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL)
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
+    @OneToMany(mappedBy = "user1", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Chat> chats;
+
+    @OneToMany(mappedBy = "user2", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Chat> chatsUser2;
 
 }

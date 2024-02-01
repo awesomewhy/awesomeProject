@@ -1,5 +1,6 @@
 package com.dark.online.entity;
 
+import com.dark.online.enums.MessageStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,11 +22,12 @@ public class Message {
     @JoinColumn(name = "chat_id")
     private Chat chat;
 
-    @OneToOne
+    @ManyToOne
     private User sender;
-    @OneToOne
+    @ManyToOne
     private User recipient;
 
     private String message;
+    private MessageStatus messageStatus;
     private LocalDateTime time;
 }

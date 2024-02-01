@@ -16,8 +16,8 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> addProduct(@RequestPart(name = "image") MultipartFile multipartFile,
-                                        @RequestPart CreateProductForSellDto createOrderForSellDto) {
+    public ResponseEntity<?> addProduct(@RequestPart("image") MultipartFile multipartFile,
+                                        @RequestPart("order") CreateProductForSellDto createOrderForSellDto) {
         return productService.addProduct(multipartFile, createOrderForSellDto);
     }
 
