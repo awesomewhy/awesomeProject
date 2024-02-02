@@ -2,7 +2,9 @@ package com.dark.online.controller.security;
 
 import com.dark.online.dto.jwt.JwtRequestDto;
 import com.dark.online.dto.mfa.MfaVerificationRequest;
+import com.dark.online.dto.security.ChangePasswordDto;
 import com.dark.online.dto.user.RegistrationUserDto;
+import com.dark.online.service.AccountService;
 import com.dark.online.service.AuthService;
 import com.dark.online.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -11,11 +13,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth")
+@RequestMapping("/api/v1/auth")
 @CrossOrigin(origins = "*")
 public class AuthController {
 
     private final AuthService authService;
+    private final AccountService accountService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegistrationUserDto registrationUserDto) {
@@ -35,5 +38,10 @@ public class AuthController {
     @PostMapping("/verifycode")
     public ResponseEntity<?> verifyTotp(@RequestBody MfaVerificationRequest mfaVerificationRequest) {
         return authService.verifyCode(mfaVerificationRequest);
+    }
+
+    @PostMapping("/changepassword")
+    public ResponseEntity<?> verifyTotp(@RequestBody ChangePasswordDto changePasswordDto) {
+        return accountService.changePassword(changePasswordDto);
     }
 }

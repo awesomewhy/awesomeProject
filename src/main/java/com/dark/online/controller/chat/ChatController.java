@@ -1,16 +1,14 @@
 package com.dark.online.controller.chat;
+
 import com.dark.online.dto.chat.MessageDto;
 import com.dark.online.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.socket.config.annotation.EnableWebSocket;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/chat")
+@RequestMapping("/api/v1/chat")
 public class ChatController {
     private final ChatService chatService;
 
@@ -26,8 +24,8 @@ public class ChatController {
 //    }
 
     @GetMapping("/chats")
-    public ResponseEntity<?> getChat(@RequestParam("id") String userId) {
-        return chatService.openChat(userId);
+    public ResponseEntity<?> getChat(@RequestParam("id") Long chatId) {
+        return chatService.openChat(chatId);
     }
 
     @PostMapping("/chats/send")

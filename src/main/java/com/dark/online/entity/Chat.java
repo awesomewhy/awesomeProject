@@ -16,13 +16,21 @@ public class Chat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user1_id")
-    private User user1;
+//    @ManyToMany
+//    @JoinTable(
+//            name = "chat_participants",
+//            joinColumns = @JoinColumn(name = "chat_id"),
+//            inverseJoinColumns = @JoinColumn(name = "user_id")
+//    )
+//    private List<User> participants;
 
     @ManyToOne
-    @JoinColumn(name = "user2_id")
-    private User user2;
+    @JoinColumn(name = "sender_id")
+    private User senderId;
+
+    @ManyToOne
+    @JoinColumn(name = "recipien_id")
+    private User companionId;
 
     @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL)
     private List<Message> messages;
@@ -30,10 +38,3 @@ public class Chat {
     @OneToMany
     private List<Product_Image> images;
 }
-
-
-/*
-    {
-        user
-    }
- */

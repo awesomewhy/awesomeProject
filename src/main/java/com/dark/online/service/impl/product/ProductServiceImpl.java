@@ -140,8 +140,10 @@ public class ProductServiceImpl implements ProductService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "USER_NOT_FOUND"));
         }
         User user = userOptional.get();
-        List<Product> products = user.getProducts();
-        return ResponseEntity.ok().body(products);
+//        List<Product> products = user.getProducts();
+//        return ResponseEntity.ok().body(products);
+        return null;
     }
+
 
 }
