@@ -16,21 +16,21 @@ public class Chat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @ManyToMany
-//    @JoinTable(
-//            name = "chat_participants",
-//            joinColumns = @JoinColumn(name = "chat_id"),
-//            inverseJoinColumns = @JoinColumn(name = "user_id")
-//    )
-//    private List<User> participants;
+    @ManyToMany
+    @JoinTable(
+            name = "chat_participants",
+            joinColumns = @JoinColumn(name = "chat_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> participants;
 
-    @ManyToOne
-    @JoinColumn(name = "sender_id")
-    private User senderId;
-
-    @ManyToOne
-    @JoinColumn(name = "recipien_id")
-    private User companionId;
+//    @ManyToOne
+//    @JoinColumn(name = "sender_id")
+//    private User senderId;
+//
+//    @ManyToOne
+//    @JoinColumn(name = "recipien_id")
+//    private User companionId;
 
     @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL)
     private List<Message> messages;

@@ -57,10 +57,10 @@ public class User {
     @OneToMany(mappedBy = "sellerId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Order> orders;
 
-//    @ManyToMany(mappedBy = "participants")
-//    private List<Chat> chats;
-
-    @OneToMany(mappedBy = "senderId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "participants")
     private List<Chat> chats;
+
+//    @OneToMany(mappedBy = "senderId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    private List<Chat> chats;
 
 }

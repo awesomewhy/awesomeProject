@@ -52,19 +52,19 @@ public class ChatServiceImpl implements ChatService {
                 .id(UUID.fromString(userId))
                 .build();
 
-        Optional<Chat> chatOptional = chatRepository.findChatByUserIds(userOptional.get().getId(), companionOptional.get().getId());
+//        Optional<Chat> chatOptional = chatRepository.findChatByUserIds(userOptional.get().getId(), companionOptional.get().getId());
 
-//        Optional<Chat> chatOptional = chatRepository.findChatByUserIds(List.of(companionOptional.get().getId(),
-//                userOptional.get().getId()), );
+        Optional<Chat> chatOptional = chatRepository.findChatByUserIds(companionOptional.get(), userOptional.get());
         if (chatOptional.isEmpty()) {
             Chat chat = Chat.builder()
                     .messages(new ArrayList<>())
-                    .senderId(userOptional.get())
-                    .companionId(companionOptional.get())
+//                    .senderId(userOptional.get())
+//                    .companionId(companionOptional.get())
                     .images(new ArrayList<>())
+                    .participants(new ArrayList<>())
                     .build();
-//            chat.getParticipants().add(userOptional.get());
-//            chat.getParticipants().add(companionOptional.get());
+            chat.getParticipants().add(userOptional.get());
+            chat.getParticipants().add(companionOptional.get());
             chat.getMessages().add(Message.builder()
                     .chat(chat)
                     .sender(userOptional.get())
@@ -93,15 +93,15 @@ public class ChatServiceImpl implements ChatService {
                     .messageStatus(MessageStatus.DELIVERED)
                     .time(LocalDateTime.now())
                     .build());
-            return ResponseEntity.ok().body(chatOptional.get().getMessages().stream().map(
-                    message -> MessageForChatDto.builder()
-                            .name(message.getSender().getNickname())
-                            .name(userOptional.get().getId().equals(message.getSender().getId())
-                                    ? message.getSender().getNickname() : message.getRecipient().getNickname())
-                            .localDateTime(message.getTime())
-                            .message(message.getMessage())
-                            .build()
-            ));
+            return ResponseEntity.ok().body("message sended");//chatOptional.get().getMessages().stream().map(
+//                    message -> MessageForChatDto.builder()
+//                            .name(message.getSender().getNickname())
+//                            .name(userOptional.get().getId().equals(message.getSender().getId())
+//                                    ? message.getSender().getNickname() : message.getRecipient().getNickname())
+//                            .localDateTime(message.getTime())
+//                            .message(message.getMessage())
+//                            .build()
+//            ));
         }
     }
     @Override
@@ -123,7 +123,7 @@ public class ChatServiceImpl implements ChatService {
                 .stream().map(
                         chat -> ChatsDto.builder()
                                 .messageType(MessageStatus.DELIVERED)
-                                .companionName(chat.getCompanionId().getNickname())
+//                                .companionName(chat.)
                                 .message(chat.getMessages().get(chat.getMessages().size() - 1).getMessage())
                                 .build()
                 ));
