@@ -2,6 +2,8 @@ package com.dark.online.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -34,6 +36,8 @@ public class Chat {
 
     @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL)
     private List<Message> messages;
+
+    private LocalDateTime localDateTime;
 
     @OneToMany
     private List<Product_Image> images;

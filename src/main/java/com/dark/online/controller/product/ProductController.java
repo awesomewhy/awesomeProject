@@ -4,12 +4,10 @@ import com.dark.online.dto.product.CreateProductForSellDto;
 import com.dark.online.dto.product.SortDto;
 import com.dark.online.service.ProductService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor

@@ -54,13 +54,14 @@ public class ChatServiceImpl implements ChatService {
 
 //        Optional<Chat> chatOptional = chatRepository.findChatByUserIds(userOptional.get().getId(), companionOptional.get().getId());
 
-        Optional<Chat> chatOptional = chatRepository.findChatByUserIds(companionOptional.get(), userOptional.get());
+        Optional<Chat> chatOptional = chatRepository.findChatByUserIds(companionOptional.get().getId(), userOptional.get().getId());
         if (chatOptional.isEmpty()) {
             Chat chat = Chat.builder()
                     .messages(new ArrayList<>())
 //                    .senderId(userOptional.get())
 //                    .companionId(companionOptional.get())
                     .images(new ArrayList<>())
+                    .localDateTime(LocalDateTime.now())
                     .participants(new ArrayList<>())
                     .build();
             chat.getParticipants().add(userOptional.get());
@@ -68,7 +69,7 @@ public class ChatServiceImpl implements ChatService {
             chat.getMessages().add(Message.builder()
                     .chat(chat)
                     .sender(userOptional.get())
-                    .recipient(companionOptional.get())
+//                    .recipient(companionOptional.get())
                     .message(messageDto.getMessage())
                     .messageStatus(MessageStatus.DELIVERED)
                     .time(LocalDateTime.now())
@@ -88,20 +89,20 @@ public class ChatServiceImpl implements ChatService {
             messageUserOptional.add(Message.builder()
                     .chat(chatOptional.get())
                     .sender(userOptional.get())
-                    .recipient(companionOptional.get())
+//                    .recipient(companionOptional.get())
                     .message(messageDto.getMessage())
                     .messageStatus(MessageStatus.DELIVERED)
                     .time(LocalDateTime.now())
                     .build());
-            return ResponseEntity.ok().body("message sended");//chatOptional.get().getMessages().stream().map(
-//                    message -> MessageForChatDto.builder()
-//                            .name(message.getSender().getNickname())
+            return ResponseEntity.ok().body(chatOptional.get().getMessages().stream().map(
+                    message -> MessageForChatDto.builder()
+                            .name(message.getSender().getNickname())
 //                            .name(userOptional.get().getId().equals(message.getSender().getId())
 //                                    ? message.getSender().getNickname() : message.getRecipient().getNickname())
-//                            .localDateTime(message.getTime())
-//                            .message(message.getMessage())
-//                            .build()
-//            ));
+                            .localDateTime(message.getTime())
+                            .message(message.getMessage())
+                            .build()
+            ));
         }
     }
     @Override
@@ -123,8 +124,11 @@ public class ChatServiceImpl implements ChatService {
                 .stream().map(
                         chat -> ChatsDto.builder()
                                 .messageType(MessageStatus.DELIVERED)
-//                                .companionName(chat.)
-                                .message(chat.getMessages().get(chat.getMessages().size() - 1).getMessage())
+                                .companionName(chat.getParticipants().get(0).getId().equals(userOptional.get().getId())
+                                        ? chat.getParticipants().get(1).getNickname() : chat.getParticipants().get(0).getNickname())
+//                                .companionId(String.valueOf(chat.getCompanionId().getId()))
+                                .time(chat.getLocalDateTime())
+                                .lastMessage(chat.getMessages().get(chat.getMessages().size() - 1).getMessage())
                                 .build()
                 ));
     }
@@ -136,7 +140,13 @@ public class ChatServiceImpl implements ChatService {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
         }
 
-        return ResponseEntity.ok().body(chatRepository.findById(chatId).get().getMessages().stream().map(
+        Optional<Chat> chat = chatRepository.findById(chatId);
+
+        if(chat.isEmpty()) {
+            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "chat not found"));
+        }
+
+        return ResponseEntity.ok().body(chat.get().getMessages().stream().map(
                         message -> MessageForChatDto.builder()
                                 .name(message.getSender().getNickname())
 //                                .name(userOptional.get().getId().equals(message.getSender().getId())
