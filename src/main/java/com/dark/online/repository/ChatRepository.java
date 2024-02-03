@@ -28,6 +28,8 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
             "WHERE (p1.id = :userId1 AND p2.id = :userId2) OR (p1.id = :userId2 AND p2.id = :userId1)")
     Optional<Chat> findChatByUserIds(@Param("userId1") UUID userId1, @Param("userId2") UUID userId2);
 
+    Optional<Chat> findByIdOrderByMessagesTimeAsc(Long chatId);
+
 //    @Query("SELECT c " +
 //            "FROM Chat c " +
 //            "WHERE (c.senderId.id = :userId1 AND c.companionId.id = :userId2) OR (c.senderId.id = :userId2 AND c.companionId.id = :userId1)")

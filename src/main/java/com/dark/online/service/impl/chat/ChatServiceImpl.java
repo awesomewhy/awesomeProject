@@ -17,6 +17,7 @@ import com.dark.online.service.ProductService;
 import com.dark.online.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.checkerframework.checker.units.qual.C;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -149,13 +150,22 @@ public class ChatServiceImpl implements ChatService {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "chat not found"));
         }
 
-        Optional<Chat> chat = chatRepository.findById(chatId); // переделать в поиск только в своих чатах
+//        Optional<Chat> chat = chatRepository.findById(chatId); // переделать в поиск только в своих чатах
+//        Optional<Chat> chat = chatRepository.findByIdOrderByMessagesTimeAsc(chatId);
+        Optional<Chat> chat = Optional.of(new Chat());
+        for (int i = 0; i < userOptional.get().getChats().size(); i++) {
+            if(userOptional.get().getChats().get(i).getId().equals(chatId)) {
+                chat = Optional.ofNullable(userOptional.get().getChats().get(i));
+                break;
+            }
+        }
 
         if(chat.isEmpty()) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "chat not found"));
         }
 
-        return ResponseEntity.ok().body(chat.get().getMessages().stream().map(
+        return ResponseEntity.ok().body(chat.get().getMessages().stream()
+                .sorted(Comparator.comparing(Message::getTime)).map(
                         message -> MessageForChatDto.builder()
                                 .name(message.getSender().getNickname())
 //                                .name(userOptional.get().getId().equals(message.getSender().getId())
