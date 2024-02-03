@@ -58,16 +58,16 @@ public class User {
 
     @OneToMany(mappedBy = "sellerId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 //    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIgnore
 //    @JsonIdentityReference(alwaysAsId = true)
     private List<Order> orders;
 
     @OneToMany(mappedBy = "sellerId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
     private List<Product> products;
 
-    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
+    @ManyToMany(mappedBy = "participants")
     private List<Chat> chats;
+
+//    @OneToMany(mappedBy = "senderId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    private List<Chat> chats;
 
 }

@@ -27,5 +27,5 @@ logging:
 
 jwt:
   secret: pojk2499W4GNOUwgnNUIjytwRNmiraegoanepMGigiwendwanmGNM0min4G9UNwg4OGI4N0
-  lifetime: 50m
+  lifetime: 1000m
 

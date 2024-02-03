@@ -4,20 +4,21 @@ import com.dark.online.dto.product.CreateProductForSellDto;
 import com.dark.online.dto.product.SortDto;
 import com.dark.online.service.ProductService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/product")
+@RequestMapping("/api/v1/product")
 @CrossOrigin(origins = "*")
 public class ProductController {
     private final ProductService productService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> addProduct(@RequestPart(name = "image") MultipartFile multipartFile,
-                                        @RequestPart CreateProductForSellDto createOrderForSellDto) {
+    public ResponseEntity<?> addProduct(@RequestPart("image") MultipartFile multipartFile,
+                                        @RequestPart("order") CreateProductForSellDto createOrderForSellDto) {
         return productService.addProduct(multipartFile, createOrderForSellDto);
     }
 

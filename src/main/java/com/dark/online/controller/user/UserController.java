@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/v1/profile")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class UserController {

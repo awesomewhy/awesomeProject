@@ -21,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -64,6 +65,7 @@ public class UserServiceImpl
                 .password(passwordEncoder.encode(registrationUserDto.getPassword()))
                 .nickname(registrationUserDto.getNickname())
                 .secretKey(totpManagerService.generateSecretKey())
+                .balance(BigDecimal.ZERO)
                 .username("First name")
                 .surname("Last name")
                 .createdAt(LocalDateTime.now())

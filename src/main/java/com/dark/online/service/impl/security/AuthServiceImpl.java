@@ -45,7 +45,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ResponseEntity<?> login(@RequestBody JwtRequestDto authRequest) {
         Optional<User> userOptional = userRepository.findByNickname(authRequest.getNickname());
-        if(userOptional.isEmpty()) {
+        if (userOptional.isEmpty()) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "user not auth"));
         }
         if (StringUtils.isEmpty(authRequest.getNickname())) {
@@ -61,6 +61,7 @@ public class AuthServiceImpl implements AuthService {
 //        if (user.isAccountVerified()) {
 //            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.PERMANENT_REDIRECT.value(), "write code from google app")); // редирект для написания кода и гугл приложения если включена 2fa
 //        }
+
         return getAuthenticateUser(authRequest.getNickname(), authRequest.getPassword());
     }
 
@@ -102,9 +103,9 @@ public class AuthServiceImpl implements AuthService {
         }
         return ResponseEntity.ok()
                 .body(MfaTokenData.builder()
-                .mfaCode(user.getSecretKey())
-                .qrCode(qrCode)
-                .build());
+                        .mfaCode(user.getSecretKey())
+                        .qrCode(qrCode)
+                        .build());
     }
 
     @Override

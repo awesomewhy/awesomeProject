@@ -3,6 +3,7 @@ package com.dark.online.entity;
 import com.dark.online.enums.MessageStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
 
@@ -15,20 +16,21 @@ import java.time.LocalDateTime;
 @Builder
 public class Message {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "custom-id")
+    @GenericGenerator(name = "custom-id", strategy = "com.dark.online.util.CustomLongIdGenerator")
     private Long id;
 
     @ManyToOne
     @JoinColumn(name = "chat_id")
     private Chat chatId;
 
-    @OneToOne
+    @ManyToOne
     private User sender;
 
-    @OneToOne
+    @ManyToOne
     private User recipient;
 
     private String message;
-    private LocalDateTime time;
     private MessageStatus messageStatus;
+    private LocalDateTime time;
 }
