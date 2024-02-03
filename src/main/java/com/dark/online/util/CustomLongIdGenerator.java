@@ -1,3 +1,19 @@
 package com.dark.online.util;
-public class CustomLongIdGenerator {
+
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
+import org.hibernate.id.IdentifierGenerator;
+
+import java.util.Random;
+
+public class CustomLongIdGenerator implements IdentifierGenerator {
+    @Override
+    public Long generate(SharedSessionContractImplementor sharedSessionContractImplementor, Object o) {
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 12; i++) {
+            int digit = random.nextInt(10);
+            sb.append(digit);
+        }
+        return Long.parseLong(sb.toString());
+    }
 }

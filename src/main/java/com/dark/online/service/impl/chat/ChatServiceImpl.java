@@ -12,6 +12,7 @@ import com.dark.online.repository.ChatRepository;
 import com.dark.online.repository.MessageRepository;
 import com.dark.online.repository.UserRepository;
 import com.dark.online.service.ChatService;
+import com.dark.online.service.ImageService;
 import com.dark.online.service.ProductService;
 import com.dark.online.service.UserService;
 import jakarta.transaction.Transactional;
@@ -33,6 +34,7 @@ public class ChatServiceImpl implements ChatService {
     private final ChatRepository chatRepository;
     private final UserRepository userRepository;
     private final MessageRepository messageRepository;
+    private final ImageService imageService;
 
     @Override
     @Transactional
@@ -143,11 +145,11 @@ public class ChatServiceImpl implements ChatService {
         if (userOptional.isEmpty()) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
         }
-        if (userOptional.get().getChats().stream().anyMatch(chat -> chat.getId().equals(chatId))) {
+        if (userOptional.get().getChats().stream().noneMatch(chat -> chat.getId().equals(chatId))) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "chat not found"));
         }
 
-        Optional<Chat> chat = chatRepository.findById(chatId);
+        Optional<Chat> chat = chatRepository.findById(chatId); // переделать в поиск только в своих чатах
 
         if(chat.isEmpty()) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "chat not found"));
