@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/chat")
+@CrossOrigin(origins = "*")
 public class ChatController {
     private final ChatService chatService;
 
@@ -33,7 +34,7 @@ public class ChatController {
         return chatService.sendMessage(userId, messageDto);
     }
 
-    @PostMapping("/chats/my")
+    @GetMapping("/chats/my")
     public ResponseEntity<?> getChat() {
         return chatService.getMyChats();
     }

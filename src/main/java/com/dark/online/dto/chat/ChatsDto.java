@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class ChatsDto {
+    private Long chatId;
     private String companionName;
     private String companionId;
     private String lastMessage;

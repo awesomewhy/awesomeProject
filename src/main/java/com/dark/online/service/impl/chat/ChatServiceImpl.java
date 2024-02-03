@@ -123,10 +123,13 @@ public class ChatServiceImpl implements ChatService {
         return ResponseEntity.ok().body(userOptional.get().getChats()
                 .stream().map(
                         chat -> ChatsDto.builder()
+                                .chatId(chat.getId())
                                 .messageType(MessageStatus.DELIVERED)
                                 .companionName(chat.getParticipants().get(0).getId().equals(userOptional.get().getId())
                                         ? chat.getParticipants().get(1).getNickname() : chat.getParticipants().get(0).getNickname())
-//                                .companionId(String.valueOf(chat.getCompanionId().getId()))
+
+                                .companionId(String.valueOf(chat.getParticipants().get(0).getId().equals(userOptional.get().getId())
+                                        ? chat.getParticipants().get(1).getId() : chat.getParticipants().get(0).getId()))
                                 .time(chat.getLocalDateTime())
                                 .lastMessage(chat.getMessages().get(chat.getMessages().size() - 1).getMessage())
                                 .build()
@@ -135,9 +138,13 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public ResponseEntity<?> openChat(@RequestParam Long chatId) {
         Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
+//                -> new ResponseEntity<>(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"), HttpStatus.NOT_FOUND)));
 
         if (userOptional.isEmpty()) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
+        }
+        if (userOptional.get().getChats().stream().anyMatch(chat -> chat.getId().equals(chatId))) {
+            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "chat not found"));
         }
 
         Optional<Chat> chat = chatRepository.findById(chatId);
