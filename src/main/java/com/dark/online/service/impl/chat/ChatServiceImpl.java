@@ -40,14 +40,14 @@ public class ChatServiceImpl implements ChatService {
     @Transactional
     public ResponseEntity<?> sendMessage(@RequestParam String userId, @RequestBody MessageDto messageDto) {
         Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
-        Optional<User> companionOptional = userRepository.findById(UUID.fromString(userId));
+        Optional<User> companionOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
         }
         if (companionOptional.isEmpty()) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "companion not found"));
         }
-        if(userId.equals(String.valueOf(userOptional.get().getId()))) {
+        if(userId.equals(userOptional.get().getId())) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "you can't send a message to yourself"));
         }
 

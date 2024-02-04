@@ -62,6 +62,7 @@ public class UserServiceImpl
     @Override
     public void createNewUser(@RequestBody RegistrationUserDto registrationUserDto) {
         User user = User.builder()
+                .id(registrationUserDto.getNickname())
                 .password(passwordEncoder.encode(registrationUserDto.getPassword()))
                 .nickname(registrationUserDto.getNickname())
                 .secretKey(totpManagerService.generateSecretKey())

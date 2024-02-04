@@ -23,10 +23,12 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@NamedEntityGraph(name = "productWithPhoto", attributeNodes = {
+        @NamedAttributeNode("avatarId")
+})
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    private String id;
     @NotNull
     private String password;
     @Column(unique = true)

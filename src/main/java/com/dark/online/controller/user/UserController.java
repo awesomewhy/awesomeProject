@@ -25,6 +25,6 @@ public class UserController {
     }
     @GetMapping("/avatar")
     public ResponseEntity<?> downloadImage() {
-       return imageService.downloadImage();
+       return imageService.downloadAvatar();
     }
 }

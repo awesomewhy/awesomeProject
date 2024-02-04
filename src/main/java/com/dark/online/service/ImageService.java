@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 public interface ImageService {
     ResponseEntity<?> loadImage(@RequestBody LoadImageDto loadImageDto);
     User_Avatar uploadImage(MultipartFile file);
-    ResponseEntity<?> downloadImage();
+    ResponseEntity<?> downloadImage(@RequestBody Long id, Product product);
+    ResponseEntity<?> downloadAvatar();
     Product_Image uploadImageForProduct(MultipartFile file, User user, Product product);
 }
