@@ -134,6 +134,12 @@ public class ProductServiceImpl implements ProductService {
                 .map(productMapper::mapProductToProductForShowDto));
     }
 
+    @Override
+    public ResponseEntity<?> getCorrectProduct(@RequestParam("id") Long id) {
+        return ResponseEntity.ok().body(productRepository.findById(id).stream()
+                .map(productMapper::mapProductCorrectProductDto));
+    }
+
     public ResponseEntity<?> getMyProducts() {
         Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
         if (userOptional.isEmpty()) {

@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 public interface ChatService {
 
-    ResponseEntity<?> getSome();
-
     ResponseEntity<?> getMyChats();
 
     ResponseEntity<?> openChat(@RequestParam Long chatId);

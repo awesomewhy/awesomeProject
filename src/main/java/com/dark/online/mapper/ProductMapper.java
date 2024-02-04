@@ -1,5 +1,6 @@
 package com.dark.online.mapper;
 
+import com.dark.online.dto.product.CorrectProductDto;
 import com.dark.online.dto.product.CreateProductForSellDto;
 import com.dark.online.dto.product.ProductForShowDto;
 import com.dark.online.entity.Product;
@@ -68,9 +69,24 @@ public class ProductMapper {
     public ProductForShowDto mapProductToProductForShowDto(Product product) {
         return ProductForShowDto.builder()
                 .id(product.getId())
+                .sellerId(String.valueOf(product.getSellerId().getId()))
                 .image(productImageRepository.findById(product.getPhotoId().getId()).get().getImageData())
                 .name(product.getName())
                 .rating(product.getRating())
+                .build();
+    }
+
+    public CorrectProductDto mapProductCorrectProductDto(Product product) {
+        return CorrectProductDto.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .sellerId(String.valueOf(product.getSellerId().getId()))
+                .sellerName(String.valueOf(product.getSellerId().getNickname()))
+                .description(product.getDescription())
+                .price(product.getPrice())
+                .discount(product.getDiscount())
+                .rating(product.getRating())
+                .image(productImageRepository.findById(product.getPhotoId().getId()).get().getImageData())
                 .build();
     }
 }

@@ -4,25 +4,24 @@ import com.dark.online.dto.chat.MessageDto;
 import com.dark.online.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/chat")
 @CrossOrigin(origins = "*")
+@EnableWebSocket
 public class ChatController {
     private final ChatService chatService;
 
-//    @MessageMapping("/hello")
-//    @SendTo("/topic/greetings")
-//    public ResponseEntity<?> sendMessage() {z
-//        return chatService.getSome();
-//    }
-//    @MessageMapping("/message")
-//    @SendTo("/topic/chat")
-//    public ResponseEntity<?> sendMessage(@RequestParam("id") String userId, @RequestBody MessageDto messageDto) {
-//        return chatService.sendMessage(userId, messageDto);
-//    }
+    @MessageMapping("/message")
+    @SendTo("/topic/chat")
+    public ResponseEntity<?> sendMessage(@RequestParam("id") String userId, @RequestBody MessageDto messageDto) {
+        return chatService.sendMessage(userId, messageDto);
+    }
 
     @GetMapping("/chats")
     public ResponseEntity<?> getChat(@RequestParam("id") Long chatId) {
@@ -38,10 +37,5 @@ public class ChatController {
     public ResponseEntity<?> getChat() {
         return chatService.getMyChats();
     }
-
-//    @GetMapping("/chats")
-//    public ResponseEntity<?> getMyChats() {
-//        return chatService.getAllChats();
-//    }
 
 }
