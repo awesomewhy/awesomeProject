@@ -17,7 +17,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 public class ChatController {
     private final ChatService chatService;
 
-    @MessageMapping("/message")
+    @MessageMapping("/sendMessage")
     @SendTo("/topic/chat")
     public ResponseEntity<?> sendMessage(@RequestParam("id") String userId, @RequestBody MessageDto messageDto) {
         return chatService.sendMessage(userId, messageDto);
@@ -37,5 +37,4 @@ public class ChatController {
     public ResponseEntity<?> getChat() {
         return chatService.getMyChats();
     }
-
 }

@@ -74,8 +74,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChainUsersAPI(HttpSecurity httpSecurity) throws Exception {
         sharedSecurityConfiguration(httpSecurity);
         httpSecurity
-                .securityMatcher("http://localhost:8080/api/v1/**",
-                        CREATE_ORDER, GET_MY_REVIEWS, ADD_REVIEW, AVERAGE)
+                .securityMatcher(CREATE_ORDER, GET_MY_REVIEWS, ADD_REVIEW, AVERAGE)
                 .authorizeHttpRequests(auth -> {
                     auth.anyRequest().hasRole("USER");
                 })
