@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -50,7 +52,10 @@ public class Chat {
     private List<Message> messages;
 
     @OneToMany(mappedBy = "chatId", cascade = CascadeType.ALL)
+    private List<Chat> chats;
+
+    @OneToMany
     private List<Product_Image> images;
 
-    private LocalDateTime localDateTime;
+    private Timestamp createdAt;
 }

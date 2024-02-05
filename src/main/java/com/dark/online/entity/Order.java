@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Entity
@@ -36,8 +37,12 @@ public class Order {
     private String name;
     @DecimalMin(value = "0.0", inclusive = true)
     private BigDecimal price;
+<<<<<<< HEAD
     @NotNull
     private LocalDateTime createdAt;
+=======
+    private Timestamp createdAt;
+>>>>>>> develop
     private String description;
     @NotNull
     private OrderTypeEnum orderType;

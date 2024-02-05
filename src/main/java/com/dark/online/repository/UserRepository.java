@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, UUID> {
+public interface UserRepository extends JpaRepository<User, String> {
     @Query("SELECT u FROM User u WHERE u.nickname = :nickname")
     Optional<User> findByNickname(@Param("nickname") String nickname);
 }

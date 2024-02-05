@@ -8,36 +8,24 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/chat")
 @CrossOrigin(origins = "*")
+@EnableWebSocket
 public class ChatController {
     private final ChatService chatService;
 
-//    @MessageMapping("/message")
-//    @SendTo("/topic/chat")
-//    public ResponseEntity<?> sendMessage() {
-//        return chatService.getSome();
-//    }
-//
-//    @GetMapping("/chats/{userId}")
-//    public ResponseEntity<?> getChat(@RequestParam("id") String userId) {
-//        return chatService.openChat(userId);
-//    }
-//
-//    @MessageMapping("/hello")
-//    @SendTo("/topic/greetings")
-//    public ResponseEntity<?> sendMessage() {z
-//        return chatService.getSome();
-//    }
-//    @MessageMapping("/message")
-//    @SendTo("/topic/chat")
-//    public ResponseEntity<?> sendMessage(@RequestParam("id") String userId, @RequestBody MessageDto messageDto) {
-//        return chatService.sendMessage(userId, messageDto);
-//    }
+    @MessageMapping("/chat.sendMessage")
+    @SendTo("/topic/public")
+    public ResponseEntity<?> sendMessage(@RequestParam("id") String userId, @RequestBody MessageDto messageDto) {
+        return chatService.sendMessage(userId, messageDto);
+    }
 
     @GetMapping("/chats")
     public ResponseEntity<?> getChat(@RequestParam("id") Long chatId) {
@@ -45,6 +33,7 @@ public class ChatController {
     }
 
     @PostMapping("/chats/send")
+    @SendTo("/topic/public")
     public ResponseEntity<?> getChat(@RequestParam("id") String userId, @RequestBody MessageDto messageDto) {
         return chatService.sendMessage(userId, messageDto);
     }
@@ -63,5 +52,4 @@ public class ChatController {
 //    public ResponseEntity<?> getChatWithUser(@RequestParam("id") String userId) {
 //        return chatService.openChat(userId);
 //    }
-
 }

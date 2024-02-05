@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 public class ProductForShowDto {
     private Long id;
     private String name;
+    private String sellerId;
     private byte[] image;
     private BigDecimal rating;
 }

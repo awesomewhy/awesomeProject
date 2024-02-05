@@ -10,7 +10,7 @@ import com.dark.online.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+//data:image/jpeg;base64,
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")

@@ -14,6 +14,8 @@ public interface ProductService {
 
     ResponseEntity<?> getAllProducts();
 
+    ResponseEntity<?> getCorrectProduct(@RequestParam("id") Long id);
+
     ResponseEntity<?> addImage(@RequestParam(name = "image") MultipartFile multipartFile);
 
     ResponseEntity<?> sort(@RequestBody SortDto sortDto);
