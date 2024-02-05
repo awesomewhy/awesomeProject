@@ -11,6 +11,7 @@ import jakarta.validation.constraints.DecimalMin;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Entity
@@ -44,7 +45,7 @@ public class Product {
     @DecimalMin(value = "0.0", inclusive = true)
     private BigDecimal price;
     private BigDecimal discount;
-    private LocalDateTime createdAt;
+    private Timestamp createdAt;
     private String description;
     private OrderTypeEnum orderType;
     private PaymentTypeEnum paymentType;

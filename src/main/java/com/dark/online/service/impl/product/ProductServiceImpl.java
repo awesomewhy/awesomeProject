@@ -1,5 +1,6 @@
 package com.dark.online.service.impl.product;
 
+import com.dark.online.dto.product.CorrectProductDto;
 import com.dark.online.dto.product.CreateProductForSellDto;
 import com.dark.online.dto.product.ProductForShowDto;
 import com.dark.online.dto.product.SortDto;
@@ -60,7 +61,7 @@ public class ProductServiceImpl implements ProductService {
         Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
 
         if (userOptional.isEmpty()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user in spring context not found / user not auth"));
+            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
         }
         User user = userOptional.get();
         if (user.getAvatarId() == null) {
@@ -136,14 +137,23 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ResponseEntity<?> getCorrectProduct(@RequestParam("id") Long id) {
-        return ResponseEntity.ok().body(productRepository.findById(id).stream()
-                .map(productMapper::mapProductCorrectProductDto));
+        Optional<Product> productOptional = productRepository.findById(id);
+        if (productOptional.isEmpty()) {
+            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "product not found"));
+        }
+        return ResponseEntity.ok().body(productMapper.mapProductCorrectProductDto(productOptional.get()));
     }
+
+//    @Override
+//    public ResponseEntity<?> getCorrectProduct(@RequestParam("id") Long id) {
+//        return ResponseEntity.ok().body(productRepository.findById(id).stream()
+//                .map(productMapper::mapProductCorrectProductDto));
+//    }
 
     public ResponseEntity<?> getMyProducts() {
         Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
         if (userOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "USER_NOT_FOUND"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
         }
         User user = userOptional.get();
 //        List<Product> products = user.getProducts();

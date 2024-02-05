@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -39,7 +40,7 @@ public class ProductMapper {
                 .price(createOrderForSellDto.getPrice())
                 .discount(createOrderForSellDto.getPrice().add(createOrderForSellDto.getPrice()))
                 .rating(BigDecimal.ZERO)
-                .createdAt(LocalDateTime.now())
+                .createdAt(new Timestamp())
                 .description(createOrderForSellDto.getDescription())
                 .orderType(createOrderForSellDto.getOrderTypeEnum())
                 .paymentType(createOrderForSellDto.getPaymentTypeEnum())

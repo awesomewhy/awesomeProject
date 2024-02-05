@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Entity
@@ -31,5 +32,5 @@ public class Message {
 
     private String message;
     private MessageStatus messageStatus;
-    private LocalDateTime time;
+    private Timestamp createdAt;
 }
