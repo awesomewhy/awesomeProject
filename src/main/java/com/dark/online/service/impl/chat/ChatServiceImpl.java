@@ -121,7 +121,6 @@ public class ChatServiceImpl implements ChatService {
 
                                 .companionId(String.valueOf(chat.getParticipants().get(0).getId().equals(userOptional.get().getId())
                                         ? chat.getParticipants().get(1).getId() : chat.getParticipants().get(0).getId()))
-                                .time(chat.getCreatedAt())
                                 .lastMessage(chat.getMessages().get(chat.getMessages().size() - 1).getMessage())
                                 .build()
                 ));
@@ -157,10 +156,10 @@ public class ChatServiceImpl implements ChatService {
         }
 
         return ResponseEntity.ok().body(chatOptional.get().getMessages().stream()
-                .sorted(Comparator.comparing(Message::getTime)).map(
+                .sorted(Comparator.comparing(Message::getCreatedAt)).map(
                         message -> MessageForChatDto.builder()
                                 .name(message.getSender().getNickname())
-                                .localDateTime(message.getTime())
+                                .localDateTime(message.getCreatedAt())
                                 .message(message.getMessage())
                                 .build()));
     }
