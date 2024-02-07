@@ -2,6 +2,7 @@ package com.dark.online.service;
 
 import com.dark.online.dto.product.CreateProductForSellDto;
 import com.dark.online.dto.product.SortDto;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,7 +13,7 @@ public interface ProductService {
     ResponseEntity<?> addProduct(@RequestParam(name = "image") MultipartFile multipartFile,
                                  @RequestBody CreateProductForSellDto createOrderForSellDto);
 
-    ResponseEntity<?> getAllProducts();
+    ResponseEntity<?> getAllProducts(PageRequest pageRequest);
 
     ResponseEntity<?> getCorrectProduct(@RequestParam("id") Long id);
 

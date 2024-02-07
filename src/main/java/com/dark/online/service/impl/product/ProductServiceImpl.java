@@ -18,6 +18,7 @@ import com.dark.online.service.UserService;
 import com.dark.online.util.ImageUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -131,9 +132,12 @@ public class ProductServiceImpl implements ProductService {
     //qqwe
 
     @Override
-    public ResponseEntity<?> getAllProducts() {
-        return ResponseEntity.ok().body(productRepository.findAll().stream()
-                .map(productMapper::mapProductToProductForShowDto));
+    public ResponseEntity<?> getAllProducts(PageRequest pageRequest) {
+        List<Product> products = productRepository.findAll(pageRequest).getContent();
+        List<ProductForShowDto> productForShowDto = products.stream()
+                .map(productMapper::mapProductToProductForShowDto)
+                .toList();
+        return ResponseEntity.ok(productForShowDto);
     }
 
     @Override

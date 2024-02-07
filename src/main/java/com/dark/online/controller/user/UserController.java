@@ -16,7 +16,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/v1/profile")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
     private final ImageService imageService;
     private final ProductService productService;

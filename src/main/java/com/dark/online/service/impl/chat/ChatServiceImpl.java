@@ -72,7 +72,7 @@ public class ChatServiceImpl implements ChatService {
                     .time(LocalDateTime.now())
                     .build());
             chatRepository.save(chat);
-            return ResponseEntity.ok().body(chat.getMessages().stream().map(
+            return ResponseEntity.ok().body(chat.getMessages().stream().map(    
                     message -> MessageForChatDto.builder()
                             .name(message.getSender().getNickname())
                             .localDateTime(message.getTime())

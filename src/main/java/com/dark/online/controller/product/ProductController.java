@@ -4,6 +4,7 @@ import com.dark.online.dto.product.CreateProductForSellDto;
 import com.dark.online.dto.product.SortDto;
 import com.dark.online.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/product")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000")
 public class ProductController {
     private final ProductService productService;
 
@@ -33,14 +34,15 @@ public class ProductController {
     }
 
     @GetMapping("/products")
-    public ResponseEntity<?> getAllProducts() {
-        return productService.getAllProducts();
+    public ResponseEntity<?> getAll(@RequestParam("p") Integer offset) {
+        return productService.getAllProducts(PageRequest.of(offset - 1, 10));
     }
 
     @GetMapping("/myproducts")
     public ResponseEntity<?> getMyProducts() {
         return productService.getMyProducts();
     }
+
     @GetMapping("/correctproduct")
     ResponseEntity<?> getCorrectProduct(@RequestParam("id") Long id) {
         return productService.getCorrectProduct(id);

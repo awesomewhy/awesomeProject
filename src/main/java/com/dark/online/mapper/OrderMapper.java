@@ -19,7 +19,6 @@ public class OrderMapper {
                 .sellerId(id)
                 .buyerId(user)
                 .orderType(createOrderForChatShowDto.getOrderTypeEnum())
-                .price(createOrderForChatShowDto.getPrice())
                 .description(createOrderForChatShowDto.getDescription())
                 .build();
         return order;
