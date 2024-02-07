@@ -11,6 +11,6 @@ import java.time.LocalDateTime;
 public class MessageForChatDto {
     private String name;
     private byte[] avatar;
-    private Timestamp localDateTime;
+    private LocalDateTime localDateTime;
     private String message;
 }

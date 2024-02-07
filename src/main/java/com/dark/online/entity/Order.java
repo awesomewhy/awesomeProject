@@ -34,7 +34,7 @@ public class Order {
     private String name;
     @DecimalMin(value = "0.0", inclusive = true)
     private BigDecimal price;
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
     private String description;
     @NotNull
     private OrderTypeEnum orderType;

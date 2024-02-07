@@ -9,6 +9,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class User {
     private String secretKey;
     private String username;
     private String surname;
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
     private boolean accountVerified;
 
     @OneToOne(mappedBy = "userId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

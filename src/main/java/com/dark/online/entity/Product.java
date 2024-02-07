@@ -45,7 +45,7 @@ public class Product {
     @DecimalMin(value = "0.0", inclusive = true)
     private BigDecimal price;
     private BigDecimal discount;
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
     private String description;
     private OrderTypeEnum orderType;
     private PaymentTypeEnum paymentType;

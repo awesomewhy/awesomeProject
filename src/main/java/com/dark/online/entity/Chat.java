@@ -40,7 +40,7 @@ public class Chat {
     @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL)
     private List<Message> messages;
 
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
     @OneToMany
     private List<Product_Image> images;
