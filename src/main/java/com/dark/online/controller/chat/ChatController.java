@@ -14,7 +14,7 @@ public class ChatController {
     private final ChatService chatService;
 
     @PostMapping("/chats/send")
-    public ResponseEntity<?> sendMessage(@RequestParam("id") String userId, @RequestBody MessageDto messageDto) {
+    public ResponseEntity<?> sendMessage(@RequestPart("id") String userId, @RequestPart MessageDto messageDto) {
         return chatService.sendMessage(userId, messageDto);
     }
 

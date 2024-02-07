@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -39,7 +40,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> sendMessage(@RequestParam String userId, @RequestBody MessageDto messageDto) {
+    public ResponseEntity<?> sendMessage(@RequestPart String userId, @RequestPart MessageDto messageDto) {
         Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
         Optional<User> companionOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {

@@ -4,6 +4,7 @@ import com.dark.online.dto.chat.MessageDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 
 public interface ChatService {
 
@@ -11,5 +12,5 @@ public interface ChatService {
 
     ResponseEntity<?> openChat(@RequestParam Long chatId);
 
-    ResponseEntity<?> sendMessage(@RequestParam String userId, @RequestBody MessageDto messageDto);
+    ResponseEntity<?> sendMessage(@RequestPart String userId, @RequestPart MessageDto messageDto);
 }
