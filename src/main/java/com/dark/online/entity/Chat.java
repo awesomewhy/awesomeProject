@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,14 +21,6 @@ public class Chat {
     @GenericGenerator(name = "custom-id", strategy = "com.dark.online.util.CustomLongIdGenerator")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User userId;
-
-    @ManyToOne
-    @JoinColumn(name = "companion_id")
-    private User companionId;
-
     @ManyToMany
     @JoinTable(
             name = "chat_participants",
@@ -46,14 +37,11 @@ public class Chat {
 //    @JoinColumn(name = "recipien_id")
 //    private User companionId;
 
-    @OneToMany(mappedBy = "chatId", cascade = CascadeType.ALL)
-    private List<Order> orders;
-
-    @OneToMany(mappedBy = "chatId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL)
     private List<Message> messages;
+
+    private LocalDateTime createdAt;
 
     @OneToMany
     private List<Product_Image> images;
-
-    private Timestamp createdAt;
 }
