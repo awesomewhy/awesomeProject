@@ -23,11 +23,10 @@ public class Message {
 
     @ManyToOne
     @JoinColumn(name = "chat_id")
-    private Chat chatId;
+    private Chat chat;
 
     @ManyToOne
     private User sender;
-
     @ManyToOne
     private User recipient;
 
