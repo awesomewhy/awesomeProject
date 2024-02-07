@@ -12,6 +12,7 @@ import com.dark.online.repository.UserRepository;
 import com.dark.online.service.ImageService;
 import com.dark.online.service.ProductService;
 import com.dark.online.service.UserService;
+import com.dark.online.util.ImageUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.Optional;
 
 @Component
@@ -40,7 +43,7 @@ public class ProductMapper {
                 .price(createOrderForSellDto.getPrice())
                 .discount(createOrderForSellDto.getPrice().add(createOrderForSellDto.getPrice()))
                 .rating(BigDecimal.ZERO)
-                .createdAt(new Timestamp())
+                .createdAt(LocalDateTime.now())
                 .description(createOrderForSellDto.getDescription())
                 .orderType(createOrderForSellDto.getOrderTypeEnum())
                 .paymentType(createOrderForSellDto.getPaymentTypeEnum())
@@ -78,6 +81,9 @@ public class ProductMapper {
     }
 
     public CorrectProductDto mapProductCorrectProductDto(Product product) {
+//        byte[] imageData = productImageRepository.findById(product.getPhotoId().getId()).get().getImageData();
+//        byte[] base64ImageData = ImageUtils.decompressImage(productImageRepository.findById(product.getPhotoId().getId()).get().getImageData());
+//        String imageSrc = "data:image/jpg;base64," + Arrays.toString(base64ImageData);
         return CorrectProductDto.builder()
                 .id(product.getId())
                 .name(product.getName())
@@ -87,7 +93,7 @@ public class ProductMapper {
                 .price(product.getPrice())
                 .discount(product.getDiscount())
                 .rating(product.getRating())
-                .image(productImageRepository.findById(product.getPhotoId().getId()).get().getImageData())
+                .image(ImageUtils.decompressImage(productImageRepository.findById(product.getPhotoId().getId()).get().getImageData()))
                 .build();
     }
 }

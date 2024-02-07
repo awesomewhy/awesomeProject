@@ -8,22 +8,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.socket.config.annotation.EnableWebSocket;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/chat")
 @CrossOrigin(origins = "*")
-@EnableWebSocket
 public class ChatController {
     private final ChatService chatService;
 
-    @MessageMapping("/chat.sendMessage")
-    @SendTo("/topic/public")
-    public ResponseEntity<?> sendMessage(@RequestParam("id") String userId, @RequestBody MessageDto messageDto) {
+    @PostMapping("/chats/send")
+    public ResponseEntity<?> sendMessage(@RequestPart("id") String userId, @RequestPart MessageDto messageDto) {
         return chatService.sendMessage(userId, messageDto);
     }
 
@@ -32,11 +27,10 @@ public class ChatController {
         return chatService.openChat(chatId);
     }
 
-    @PostMapping("/chats/send")
-    @SendTo("/topic/public")
-    public ResponseEntity<?> getChat(@RequestParam("id") String userId, @RequestBody MessageDto messageDto) {
-        return chatService.sendMessage(userId, messageDto);
-    }
+//    @PostMapping("/chats/send")
+//    public ResponseEntity<?> sendMessage(@RequestParam("id") String userId, @RequestBody MessageDto messageDto) {
+//        return chatService.sendMessage(userId, messageDto);
+//    }
 
     @GetMapping("/chats/my")
     public ResponseEntity<?> getChat() {

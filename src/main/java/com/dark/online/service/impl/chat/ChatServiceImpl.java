@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -39,7 +40,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> sendMessage(@RequestParam String userId, @RequestBody MessageDto messageDto) {
+    public ResponseEntity<?> sendMessage(@RequestPart String userId, @RequestPart MessageDto messageDto) {
         Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
         Optional<User> companionOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
@@ -58,7 +59,7 @@ public class ChatServiceImpl implements ChatService {
             Chat chat = Chat.builder()
                     .messages(new ArrayList<>())
                     .images(new ArrayList<>())
-                    .createdAt(new Timestamp(System.currentTimeMillis()))
+                    .createdAt(LocalDateTime.now())
                     .participants(new ArrayList<>())
                     .build();
             chat.getParticipants().add(userOptional.get());
@@ -68,13 +69,13 @@ public class ChatServiceImpl implements ChatService {
                     .sender(userOptional.get())
                     .message(messageDto.getMessage())
                     .messageStatus(MessageStatus.DELIVERED)
-                    .createdAt(new Timestamp(System.currentTimeMillis()))
+                    .time(LocalDateTime.now())
                     .build());
             chatRepository.save(chat);
             return ResponseEntity.ok().body(chat.getMessages().stream().map(
                     message -> MessageForChatDto.builder()
                             .name(message.getSender().getNickname())
-                            .localDateTime(message.getCreatedAt())
+                            .localDateTime(message.getTime())
                             .message(message.getMessage())
                             .build()
             ));
@@ -85,12 +86,12 @@ public class ChatServiceImpl implements ChatService {
                     .sender(userOptional.get())
                     .message(messageDto.getMessage())
                     .messageStatus(MessageStatus.DELIVERED)
-                    .createdAt(new Timestamp(System.currentTimeMillis()))
+                    .time(LocalDateTime.now())
                     .build());
             return ResponseEntity.ok().body(chatOptional.get().getMessages().stream().map(
                     message -> MessageForChatDto.builder()
                             .name(message.getSender().getNickname())
-                            .localDateTime(message.getCreatedAt())
+                            .localDateTime(message.getTime())
                             .message(message.getMessage())
                             .build()
             ));
@@ -139,10 +140,10 @@ public class ChatServiceImpl implements ChatService {
         }
 
         return ResponseEntity.ok().body(chatOptional.get().getMessages().stream()
-                .sorted(Comparator.comparing(Message::getCreatedAt)).map(
+                .sorted(Comparator.comparing(Message::getTime)).map(
                         message -> MessageForChatDto.builder()
                                 .name(message.getSender().getNickname())
-                                .localDateTime(message.getCreatedAt())
+                                .localDateTime(message.getTime())
                                 .message(message.getMessage())
                                 .build()));
     }

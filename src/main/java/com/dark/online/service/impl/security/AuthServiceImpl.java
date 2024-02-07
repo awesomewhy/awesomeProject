@@ -12,7 +12,6 @@ import com.dark.online.service.AuthService;
 import com.dark.online.service.TotpManagerService;
 import com.dark.online.service.UserService;
 import com.dark.online.util.JwtTokenUtils;
-import com.dark.online.validation.Validation;
 import dev.samstevens.totp.exceptions.QrGenerationException;
 import io.micrometer.common.util.StringUtils;
 import jakarta.transaction.Transactional;
@@ -22,15 +21,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

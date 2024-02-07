@@ -29,6 +29,7 @@ public class Chat {
     @ManyToOne
     @JoinColumn(name = "companion_id")
     private User companionId;
+
     @ManyToMany
     @JoinTable(
             name = "chat_participants",
@@ -50,9 +51,6 @@ public class Chat {
 
     @OneToMany(mappedBy = "chatId", cascade = CascadeType.ALL)
     private List<Message> messages;
-
-    @OneToMany(mappedBy = "chatId", cascade = CascadeType.ALL)
-    private List<Chat> chats;
 
     @OneToMany
     private List<Product_Image> images;
