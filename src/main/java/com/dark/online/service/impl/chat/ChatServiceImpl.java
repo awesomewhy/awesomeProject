@@ -65,7 +65,7 @@ public class ChatServiceImpl implements ChatService {
             chat.getParticipants().add(userOptional.get());
             chat.getParticipants().add(companionOptional.get());
             chat.getMessages().add(Message.builder()
-                    .chatId(chat)
+                    .chat(chat)
                     .sender(userOptional.get())
                     .message(messageDto.getMessage())
                     .messageStatus(MessageStatus.DELIVERED)
@@ -82,7 +82,7 @@ public class ChatServiceImpl implements ChatService {
         } else {
             List<Message> messageUserOptional = chatOptional.get().getMessages();
             messageUserOptional.add(Message.builder()
-                    .chatId(chatOptional.get())
+                    .chat(chatOptional.get())
                     .sender(userOptional.get())
                     .message(messageDto.getMessage())
                     .messageStatus(MessageStatus.DELIVERED)
@@ -108,6 +108,9 @@ public class ChatServiceImpl implements ChatService {
         if(chats.isEmpty()) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "no chats"));
         }
+        if(chats.get(0).getMessages().isEmpty()) {
+            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "no message"));
+        }
 
         return ResponseEntity.ok().body(userOptional.get().getChats()
                 .stream().map(
@@ -122,6 +125,20 @@ public class ChatServiceImpl implements ChatService {
                                 .lastMessage(chat.getMessages().get(chat.getMessages().size() - 1).getMessage())
                                 .build()
                 ));
+//
+//        var userId = userOptional.get().getId();
+//
+//        var t1 = userOptional.get().getChats().stream()
+//                .filter(chat -> chat.getParticipants().get(0).getId().equals(userId))
+//                .map(ChatsDto::fromT1);
+//
+//        var t2 = userOptional.get().getChats().stream()
+//                .filter(chat -> !chat.getParticipants().get(0).getId().equals(userId))
+//                .map(ChatsDto::fromT2);
+//
+//        var chatsDtoList = Stream.concat(t1, t2).toList();
+//
+//        return ResponseEntity.ok().body(chatsDtoList);
     }
     @Override
     public ResponseEntity<?> openChat(@RequestParam Long chatId) {
