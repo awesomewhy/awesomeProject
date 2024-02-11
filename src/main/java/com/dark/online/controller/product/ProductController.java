@@ -35,7 +35,7 @@ public class ProductController {
 
     @GetMapping("/products")
     public ResponseEntity<?> getAll(@RequestParam("p") Integer offset) {
-        return productService.getAllProducts(PageRequest.of(offset - 1, 10));
+        return productService.getAllProducts(PageRequest.of(offset - 1, 9));
     }
 
     @GetMapping("/myproducts")

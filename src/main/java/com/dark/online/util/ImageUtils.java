@@ -24,6 +24,7 @@ public class ImageUtils {
             outputStream.close();
         } catch (Exception ignored) {
         }
+        byte[] compressedData = outputStream.toByteArray();
         return outputStream.toByteArray();
     }
     public static byte[] decompressImage(byte[] data) {

@@ -35,7 +35,6 @@ public class Order {
     private Chat chatId;
 
     private String name;
-    @DecimalMin(value = "0.0", inclusive = true)
 
     private LocalDateTime createdAt;;
     private String description;

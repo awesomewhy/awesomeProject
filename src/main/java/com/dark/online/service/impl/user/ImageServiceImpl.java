@@ -12,19 +12,26 @@ import com.dark.online.repository.User_AvatarRepository;
 import com.dark.online.service.ImageService;
 import com.dark.online.service.UserService;
 import com.dark.online.util.ImageUtils;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.concurrent.TimeUnit;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -37,12 +44,12 @@ public class ImageServiceImpl implements ImageService {
     public ResponseEntity<?> loadImage(LoadImageDto loadImageDto) {
         return null;
     }
-
     public User_Avatar uploadImage(MultipartFile file) {
         try {
             return userAvatarRepository.save(User_Avatar.builder()
                     .name(file.getOriginalFilename())
                     .type(file.getContentType())
+//                    .type(MimeTypeUtils.IMAGE_PNG_VALUE)
                     .imageData(ImageUtils.compressImage(file.getBytes())).build());
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -61,6 +68,7 @@ public class ImageServiceImpl implements ImageService {
 //            throw new RuntimeException(e);
 //        }
 //    }
+    @Transactional
     public Product_Image uploadImageForProduct(MultipartFile file, User user, Product product) {
         try {
             byte[] compressedImageData = compressImageInSeparateThread(file.getBytes());
@@ -76,7 +84,7 @@ public class ImageServiceImpl implements ImageService {
         }
     }
 
-    private byte[] compressImageInSeparateThread(byte[] imageData) {
+    public byte[] compressImageInSeparateThread(byte[] imageData) {
         CompletableFuture<byte[]> future = CompletableFuture.supplyAsync(() -> ImageUtils.compressImage(imageData));
         try {
             return future.get();
@@ -86,29 +94,25 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<?> downloadAvatar() {
         Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
         if (userOptional.isEmpty()) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
         }
-//        Optional<Image> imageOptional = imageRepository.findByUserId(userOptional.get());
-//        if (imageOptional.isEmpty()) {
-//            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "Image not found"));
-//        }
 
-        if(userOptional.get().getAvatarId() == null) {
+        if (userOptional.get().getAvatarId() == null) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "no avatar"));
         }
 
-        byte[] images = ImageUtils.decompressImage(userOptional.get().getAvatarId().getImageData());
-        return ResponseEntity.status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("image/png"))
-                .body(images);
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_PNG)
+                .body(ImageUtils.decompressImage(
+                        userOptional.get().getAvatarId().getImageData()));
     }
 
     @Override
     public ResponseEntity<?> downloadImage(@RequestBody Long id, Product product) {
-
         byte[] images = ImageUtils.decompressImage(product.getPhotoId().getImageData());
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("image/png"))

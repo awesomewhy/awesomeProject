@@ -1,9 +1,6 @@
 package com.dark.online.service.impl.product;
 
-import com.dark.online.dto.product.CorrectProductDto;
-import com.dark.online.dto.product.CreateProductForSellDto;
-import com.dark.online.dto.product.ProductForShowDto;
-import com.dark.online.dto.product.SortDto;
+import com.dark.online.dto.product.*;
 import com.dark.online.entity.Product;
 import com.dark.online.entity.User;
 import com.dark.online.entity.User_Avatar;
@@ -42,11 +39,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> addProduct(@RequestParam(name = "image") MultipartFile multipartFile, @RequestBody CreateProductForSellDto createOrderForSellDto) {
-        Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
+    public ResponseEntity<?> addProduct(@RequestParam(name = "image") MultipartFile multipartFile,
+                                        @RequestBody CreateProductForSellDto createOrderForSellDto) {
+        Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname(); // requestpart обоим сделать
 
         if (userOptional.isEmpty()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user in spring context not found / user not auth"));
+            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
         }
         User user = userOptional.get();
         Product product = productMapper.mapCreateOrderForSellDtoToProductEntity(multipartFile, createOrderForSellDto, user);
@@ -122,7 +120,8 @@ public class ProductServiceImpl implements ProductService {
         return ResponseEntity.ok(productForShowDto);
     }
 
-    public ResponseEntity<?> searchProduct(@RequestParam String text) {
+    @Override
+    public ResponseEntity<?> searchProduct(@RequestParam("text") String text) {
         List<Product> products = productRepository.findProductByName(text);
         List<ProductForShowDto> productForShowDto = products.stream()
                 .map(productMapper::mapProductToProductForShowDto)
@@ -149,20 +148,26 @@ public class ProductServiceImpl implements ProductService {
         return ResponseEntity.ok().body(productMapper.mapProductCorrectProductDto(productOptional.get()));
     }
 
-//    @Override
+    //    @Override
 //    public ResponseEntity<?> getCorrectProduct(@RequestParam("id") Long id) {
 //        return ResponseEntity.ok().body(productRepository.findById(id).stream()
 //                .map(productMapper::mapProductCorrectProductDto));
 //    }
+    @Override
     public ResponseEntity<?> getMyProducts() {
         Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
         if (userOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
         }
-        User user = userOptional.get();
-//        List<Product> products = user.getProducts();
-//        return ResponseEntity.ok().body(products);
-        return null;
+
+        return ResponseEntity.ok().body(userOptional.get().getProducts().stream().map(
+                product -> MyProductDto.builder()
+                        .id(product.getId())
+                        .name(product.getName())
+                        .createdAt(product.getCreatedAt())
+                        .image(product.getPhotoId().getImageData())
+                        .build()
+        ));
     }
 
 

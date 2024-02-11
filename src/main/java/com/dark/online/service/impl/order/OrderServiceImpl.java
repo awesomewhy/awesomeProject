@@ -33,7 +33,7 @@ public class OrderServiceImpl implements OrderService {
         Optional<User> userOptional2 = userRepository.findByNickname(nickname);
 
         if(userOptional.isEmpty() || userOptional2.isEmpty()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user in spring context not found / user not auth"));
+            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
         }
         User user = userOptional.get();
         User user2 = userOptional2.get();

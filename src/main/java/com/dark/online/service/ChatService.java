@@ -10,7 +10,10 @@ public interface ChatService {
 
     ResponseEntity<?> getMyChats();
 
-    ResponseEntity<?> openChat(@RequestParam Long chatId);
+//    ResponseEntity<?> openChat(@RequestParam Long chatId);
+    ResponseEntity<?> openChat(@RequestParam String userNickname);
 
-    ResponseEntity<?> sendMessage(@RequestPart String userId, @RequestPart MessageDto messageDto);
+    ResponseEntity<?> sendMessage(@RequestParam String userId, @RequestBody MessageDto messageDto);
+
+    ResponseEntity<?> deleteChatById(@RequestParam Long chatId);
 }

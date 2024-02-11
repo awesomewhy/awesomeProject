@@ -21,7 +21,7 @@ public class UserController {
     private final ImageService imageService;
     private final ProductService productService;
 
-    @PostMapping
+    @PostMapping("/set")
     public ResponseEntity<?> setAvatar(@RequestParam("image") MultipartFile file) {
         return productService.addImage(file);
     }

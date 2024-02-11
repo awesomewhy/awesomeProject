@@ -6,11 +6,8 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -23,7 +20,10 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @NamedEntityGraph(name = "productWithPhoto", attributeNodes = {
-        @NamedAttributeNode("avatarId")
+        @NamedAttributeNode("avatarId"),
+        @NamedAttributeNode("orders"),
+        @NamedAttributeNode("products"),
+        @NamedAttributeNode("chats")
 })
 public class User {
     @Id
@@ -63,7 +63,7 @@ public class User {
     @OneToMany(mappedBy = "sellerId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Product> products;
 
-    @ManyToMany(mappedBy = "participants")
+    @ManyToMany(mappedBy = "participants", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Chat> chats;
 
 //    @OneToMany(mappedBy = "senderId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

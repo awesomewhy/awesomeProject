@@ -6,13 +6,16 @@ services:
     container_name: postgres
     environment:
       POSTGRES_DB: test
-      POSTGRES_USER: postgres
+      POSTGRES_USER: postgresuser
       POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/
 
   app:
     build: .
+
     container_name: app
     depends_on:
       - postgres
@@ -22,3 +25,14 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres/test
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
+
+#  bitcoin:
+#    image: bitcoin/bitcoin:26.0
+#    container_name: bitcoin
+#    ports:
+#      - "8333:8333"
+#    volumes:
+#      - bitcoin_data:/root/.bitcoin
+
+volumes:
+  postgres_data:

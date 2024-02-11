@@ -21,6 +21,7 @@ public class Chat_Image {
 
     private String name;
     private String type;
+
     @Lob
     @Column(name = "image_data", length = 1000)
     private byte[] imageData;

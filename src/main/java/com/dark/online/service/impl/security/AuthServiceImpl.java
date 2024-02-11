@@ -54,9 +54,9 @@ public class AuthServiceImpl implements AuthService {
         if (!passwordEncoder.matches(authRequest.getPassword(), user.getPassword())) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "password or nickname incorrect"));
         }
-//        if (user.isAccountVerified()) {
-//            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.PERMANENT_REDIRECT.value(), "write code from google app")); // редирект для написания кода и гугл приложения если включена 2fa
-//        }
+        if (user.isAccountVerified()) {
+            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.PERMANENT_REDIRECT.value(), "write code from google app")); // редирект для написания кода и гугл приложения если включена 2fa
+        }
 
         return getAuthenticateUser(authRequest.getNickname(), authRequest.getPassword());
     }
@@ -85,7 +85,7 @@ public class AuthServiceImpl implements AuthService {
     public ResponseEntity<?> create2FA() {
         Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
         if (userOptional.isEmpty()) {
-            ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user in security context not found"));
+            ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
         }
         User user = userOptional.get();
         user.setAccountVerified(true);
