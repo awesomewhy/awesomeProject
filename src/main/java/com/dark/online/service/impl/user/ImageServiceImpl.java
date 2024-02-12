@@ -2,11 +2,9 @@ package com.dark.online.service.impl.user;
 
 import com.dark.online.dto.user.LoadImageDto;
 
-import com.dark.online.entity.User;
+import com.dark.online.entity.*;
 import com.dark.online.exception.ErrorResponse;
-import com.dark.online.entity.Product_Image;
-import com.dark.online.entity.Product;
-import com.dark.online.entity.User_Avatar;
+import com.dark.online.repository.News_ImageRepository;
 import com.dark.online.repository.Product_ImageRepository;
 import com.dark.online.repository.User_AvatarRepository;
 import com.dark.online.service.ImageService;
@@ -38,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 public class ImageServiceImpl implements ImageService {
     private final User_AvatarRepository userAvatarRepository;
     private final Product_ImageRepository productImageRepository;
+    private final News_ImageRepository newsImageRepository;
     private final UserService userService;
 
     @Override
@@ -83,6 +82,21 @@ public class ImageServiceImpl implements ImageService {
             throw new RuntimeException(e);
         }
     }
+    @Transactional
+    public News_Image uploadImageForNews(MultipartFile file, News news) {
+        try {
+            byte[] compressedImageData = compressImageInSeparateThread(file.getBytes());
+            return newsImageRepository.save(News_Image.builder()
+                    .name(file.getOriginalFilename())
+                    .news(news)
+                    .type(file.getContentType())
+                    .imageData(compressedImageData)
+                    .build());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     public byte[] compressImageInSeparateThread(byte[] imageData) {
         CompletableFuture<byte[]> future = CompletableFuture.supplyAsync(() -> ImageUtils.compressImage(imageData));

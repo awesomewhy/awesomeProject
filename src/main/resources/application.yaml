@@ -4,7 +4,7 @@ spring:
 #      enabled: true
   datasource:
     url: jdbc:postgresql://localhost:5432/test
-    username: postgresuser
+    username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
     hikari:

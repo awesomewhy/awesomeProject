@@ -23,7 +23,7 @@ public class ProductController {
         return productService.addProduct(multipartFile, createOrderForSellDto);
     }
 
-    @GetMapping("/product")
+    @GetMapping("/search")
     public ResponseEntity<?> searchProducts(@RequestParam(required = false, name = "text") String text) {
         return productService.searchProduct(text);
     }

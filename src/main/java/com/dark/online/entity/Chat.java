@@ -32,7 +32,7 @@ public class Chat {
 //    @ManyToOne
 //    @JoinColumn(name = "sender_id")
 //    private User senderId;
-//
+//м
 //    @ManyToOne
 //    @JoinColumn(name = "recipien_id")
 //    private User companionId;

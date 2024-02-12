@@ -30,22 +30,8 @@ public class AuthController {
         return authService.login(loginRequest);
     }
 
-    @PostMapping("/create2FA")
-    public ResponseEntity<?> create2FA() {
-        return authService.create2FA();
-    }
-
     @PostMapping("/verifycode")
     public ResponseEntity<?> verifyTotp(@RequestBody MfaVerificationRequest mfaVerificationRequest) {
         return authService.verifyCode(mfaVerificationRequest);
-    }
-    @GetMapping("/changenickname")
-    public ResponseEntity<?> changeNickname(@RequestBody ChangeNicknameDto changeNicknameDto) {
-        return accountService.changeNickname(changeNicknameDto);
-    }
-
-    @PostMapping("/changepassword")
-    public ResponseEntity<?> verifyTotp(@RequestBody ChangePasswordDto changePasswordDto) {
-        return accountService.changePassword(changePasswordDto);
     }
 }

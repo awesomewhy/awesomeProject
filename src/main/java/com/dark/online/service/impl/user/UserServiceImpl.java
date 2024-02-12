@@ -67,11 +67,11 @@ public class UserServiceImpl
 
     @Override
     public void createNewUser(@RequestBody RegistrationUserDto registrationUserDto) {
-        Optional<User_Avatar> userAvatar = userAvatarRepository.findById(1L);
-        if(userAvatar.isEmpty()) {
-            log.info("user avatar not found");
-            return;
-        }
+//        Optional<User_Avatar> userAvatar = userAvatarRepository.findById(1L);
+//        if(userAvatar.isEmpty()) {
+//            log.info("user avatar not found");
+//            return;
+//        }
         Optional<Role> role = roleService.getUserRole();
         if(role.isEmpty()) {
             log.info("role not found");
@@ -88,8 +88,8 @@ public class UserServiceImpl
                 .createdAt(LocalDateTime.now())
                 .roles(List.of(role.get()))
                 .build();
-        userAvatar.get().setUserId(user);
-        user.setAvatarId(userAvatar.get());
+//        userAvatar.get().setUserId(user);
+//        user.setAvatarId(userAvatar.get());
         userRepository.save(user);
     }
 

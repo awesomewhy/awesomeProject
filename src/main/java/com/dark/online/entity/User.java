@@ -6,6 +6,7 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.springframework.data.jpa.repository.EntityGraph;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -19,12 +20,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@NamedEntityGraph(name = "productWithPhoto", attributeNodes = {
-        @NamedAttributeNode("avatarId"),
-        @NamedAttributeNode("orders"),
-        @NamedAttributeNode("products"),
-        @NamedAttributeNode("chats")
-})
+@NamedEntityGraph(
+        name = "qwe",
+        attributeNodes = {
+                @NamedAttributeNode(value = "roles"),
+        }
+)
 public class User {
     @Id
     private String id;
