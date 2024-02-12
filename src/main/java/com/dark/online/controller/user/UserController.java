@@ -16,13 +16,13 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/v1/profile")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 public class UserController {
     private final ImageService imageService;
     private final ProductService productService;
 
     @PostMapping("/set")
-    public ResponseEntity<?> setAvatar(@RequestParam("image") MultipartFile file) {
+    public ResponseEntity<?> setAvatar(@RequestPart("image") MultipartFile file) {
         return productService.addImage(file);
     }
     @GetMapping("/avatar")

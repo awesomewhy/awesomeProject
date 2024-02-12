@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface NewsService {
-    ResponseEntity<?> changeLinkINCorrectType(NewsType type);
+    ResponseEntity<?> changeLinkInCorrectType(NewsType type);
     ResponseEntity<?> getAllService();
     ResponseEntity<?> createNews(@RequestPart MultipartFile multipart, @RequestPart CreateNewsDto createNewsDto);
 }

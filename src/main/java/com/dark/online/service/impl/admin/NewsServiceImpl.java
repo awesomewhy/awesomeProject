@@ -9,6 +9,7 @@ import com.dark.online.mapper.NewsMapper;
 import com.dark.online.repository.NewsRepository;
 import com.dark.online.repository.News_ImageRepository;
 import com.dark.online.service.ImageService;
+import com.dark.online.service.NewsService;
 import com.dark.online.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class NewsServiceImpl implements com.dark.online.service.NewsService {
+public class NewsServiceImpl implements NewsService {
     private final NewsRepository newsRepository;
     private final UserService userService;
     private final ImageService imageService;
@@ -30,7 +31,7 @@ public class NewsServiceImpl implements com.dark.online.service.NewsService {
     private final NewsMapper newsMapper;
 
     @Override
-    public ResponseEntity<?> changeLinkINCorrectType(NewsType type) {
+    public ResponseEntity<?> changeLinkInCorrectType(NewsType type) {
         return null;
     }
 

@@ -48,7 +48,7 @@ public class SecurityConfiguration {
     private static final String CHANGE_PASSWORD = "/api/v1/safety/changepassword";
     private static final String CREATE2FA = "/api/v1/auth/create2FA";
     private static final String SET_AVATAR = "/api/v1/profile/set";
-    private static final String GET_AVATAR = "/api/v1/profile/set";
+    private static final String GET_AVATAR = "/api/v1/profile/avatar";
 
 
     // PRODUCT
@@ -81,6 +81,8 @@ public class SecurityConfiguration {
 
     private void sharedSecurityConfiguration(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
+//                .csrf(AbstractHttpConfigurer::disable)
+//                .cors(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .securityMatcher("http://localhost:3000/**")
                 .sessionManagement(httpSecuritySessionManagementConfigurer -> {
@@ -98,6 +100,7 @@ public class SecurityConfiguration {
                         CHANGE_PASSWORD, SET_AVATAR, GET_AVATAR, CREATE_PRODUCT, MY_PRODUCTS,
                         ADD_REVIEW, AVERAGE)
                 .authorizeHttpRequests(auth -> {
+//                    auth.anyRequest().authenticated();
                     auth.anyRequest().hasRole("USER");
                 })
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
