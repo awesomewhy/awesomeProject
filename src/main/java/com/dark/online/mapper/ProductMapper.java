@@ -4,26 +4,19 @@ import com.dark.online.dto.product.CorrectProductDto;
 import com.dark.online.dto.product.CreateProductForSellDto;
 import com.dark.online.dto.product.ProductForShowDto;
 import com.dark.online.entity.Product;
-import com.dark.online.entity.Product_Image;
 import com.dark.online.entity.User;
 import com.dark.online.repository.ProductRepository;
-import com.dark.online.repository.Product_ImageRepository;
+import com.dark.online.repository.ProductImageRepository;
 import com.dark.online.repository.UserRepository;
 import com.dark.online.service.ImageService;
-import com.dark.online.service.ProductService;
 import com.dark.online.service.UserService;
 import com.dark.online.util.ImageUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -32,7 +25,7 @@ public class ProductMapper {
     private final ProductRepository productRepository;
     private final UserService userService;
     private final UserRepository userRepository;
-    private final Product_ImageRepository productImageRepository;
+    private final ProductImageRepository productImageRepository;
 
     public Product mapCreateOrderForSellDtoToProductEntity(MultipartFile multipartFile,
                                                            CreateProductForSellDto createOrderForSellDto,

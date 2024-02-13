@@ -3,12 +3,12 @@ package com.dark.online.service.impl.product;
 import com.dark.online.dto.product.*;
 import com.dark.online.entity.Product;
 import com.dark.online.entity.User;
-import com.dark.online.entity.User_Avatar;
+import com.dark.online.entity.UserAvatar;
 import com.dark.online.exception.ErrorResponse;
 import com.dark.online.mapper.ProductMapper;
 import com.dark.online.repository.ProductRepository;
 import com.dark.online.repository.UserRepository;
-import com.dark.online.repository.User_AvatarRepository;
+import com.dark.online.repository.UserAvatarRepository;
 import com.dark.online.service.ImageService;
 import com.dark.online.service.ProductService;
 import com.dark.online.service.UserService;
@@ -32,7 +32,7 @@ import java.util.Optional;
 public class ProductServiceImpl implements ProductService {
     private final UserService userService;
     private final UserRepository userRepository;
-    private final User_AvatarRepository userAvatarRepository;
+    private final UserAvatarRepository userAvatarRepository;
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final ImageService imageService;
@@ -64,18 +64,18 @@ public class ProductServiceImpl implements ProductService {
         }
         User user = userOptional.get();
         if (user.getAvatarId() == null) {
-            User_Avatar image = imageService.uploadImage(multipartFile);
+            UserAvatar image = imageService.uploadImage(multipartFile);
             image.setUserId(user);
             user.setAvatarId(image);
             userAvatarRepository.save(image);
             userRepository.save(user);
         } else {
-            Optional<User_Avatar> imageOptional = userAvatarRepository.findById(user.getAvatarId().getId());
+            Optional<UserAvatar> imageOptional = userAvatarRepository.findById(user.getAvatarId().getId());
             if (imageOptional.isEmpty()) {
                 return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "image not found"));
             }
             try {
-                User_Avatar image = imageOptional.get();
+                UserAvatar image = imageOptional.get();
                 image.setName(multipartFile.getOriginalFilename());
                 image.setType(multipartFile.getContentType());
                 image.setImageData(ImageUtils.compressImage(multipartFile.getBytes()));

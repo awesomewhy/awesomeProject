@@ -7,7 +7,7 @@ import com.dark.online.enums.NewsType;
 import com.dark.online.exception.ErrorResponse;
 import com.dark.online.mapper.NewsMapper;
 import com.dark.online.repository.NewsRepository;
-import com.dark.online.repository.News_ImageRepository;
+import com.dark.online.repository.NewsImageRepository;
 import com.dark.online.service.ImageService;
 import com.dark.online.service.NewsService;
 import com.dark.online.service.UserService;
@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -27,7 +29,7 @@ public class NewsServiceImpl implements NewsService {
     private final NewsRepository newsRepository;
     private final UserService userService;
     private final ImageService imageService;
-    private final News_ImageRepository newsImageRepository;
+    private final NewsImageRepository newsImageRepository;
     private final NewsMapper newsMapper;
 
     @Override

@@ -2,16 +2,12 @@ package com.dark.online.entity;
 
 import com.dark.online.enums.OrderTypeEnum;
 import com.dark.online.enums.PaymentTypeEnum;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Entity
@@ -36,7 +32,7 @@ public class Product {
 
     @OneToOne(mappedBy = "productId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "photo_id")
-    private Product_Image photoId;
+    private ProductImage photoId;
 
     private String name;
     @DecimalMin(value = "0.0", inclusive = true)

@@ -15,7 +15,6 @@ services:
 
   app:
     build: .
-
     container_name: app
     depends_on:
       - postgres

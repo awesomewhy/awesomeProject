@@ -9,9 +9,10 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, String> {
+public interface UserRepository extends JpaRepository<User, UUID> {
     @Query("SELECT new com.dark.online.dto.user.UserLoginDto(u.password, u.accountVerified, u.nickname, u.roles) FROM User u WHERE u.nickname = :nickname")
     Optional<UserLoginDto> findUserDtoByNickname(@Param("nickname") String nickname);
 

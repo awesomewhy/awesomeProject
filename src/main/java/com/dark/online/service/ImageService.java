@@ -8,9 +8,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface ImageService {
     ResponseEntity<?> loadImage(@RequestBody LoadImageDto loadImageDto);
-    User_Avatar uploadImage(MultipartFile file);
+    UserAvatar uploadImage(MultipartFile file);
     ResponseEntity<?> downloadImage(@RequestBody Long id, Product product);
     ResponseEntity<?> downloadAvatar();
-    Product_Image uploadImageForProduct(MultipartFile file, User user, Product product);
+    ProductImage uploadImageForProduct(MultipartFile file, User user, Product product);
     News_Image uploadImageForNews(MultipartFile file, News news);
 }

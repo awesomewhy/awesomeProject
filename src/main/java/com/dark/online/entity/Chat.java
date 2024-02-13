@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -43,5 +42,5 @@ public class Chat {
     private LocalDateTime createdAt;
 
     @OneToMany
-    private List<Product_Image> images;
+    private List<ProductImage> images;
 }
