@@ -48,7 +48,7 @@ public class User {
     @OneToOne(mappedBy = "userId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private UserAvatar avatarId;
 
-    @OneToOne(mappedBy = "userId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private RefreshToken refreshToken;
 
     @ManyToMany
