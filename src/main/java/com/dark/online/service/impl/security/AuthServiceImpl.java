@@ -62,7 +62,7 @@ public class AuthServiceImpl implements AuthService {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.PERMANENT_REDIRECT.value(), "write code from google app")); // редирект для написания кода и гугл приложения если включена 2fa
         }
         ResponseEntity<?> response = getAccessToken(authRequest.getNickname(), authRequest.getPassword());
-        if(response.getStatusCode().value() == (HttpStatus.OK.value())) {
+        if(response.getStatusCode().value() == HttpStatus.BAD_REQUEST.value()) {
             return getRefreshToken(authRequest.getNickname(), authRequest.getPassword());
         }
         return getAccessToken(authRequest.getNickname(), authRequest.getPassword());
@@ -137,7 +137,7 @@ public class AuthServiceImpl implements AuthService {
             if (accessToken != null) {
                 return ResponseEntity.ok(new AccessResponseDto(accessToken));
             } else {
-                return ResponseEntity.ok(new ErrorResponse(HttpStatus.NOT_FOUND.value(), YOU_NEED_TO_RE_LOGIN));
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
             }
 
         } catch (BadCredentialsException e) {
@@ -152,7 +152,7 @@ public class AuthServiceImpl implements AuthService {
             UserDetails userDetails = userService.loadUserByUsername(nickname);
 
             RefreshToken refreshToken = jwtTokenUtils.createRefreshToken(userDetails);
-            return ResponseEntity.ok(new AccessAndRefreshResponseDto(getAccessToken(nickname, password).getBody().toString(),
+            return ResponseEntity.ok(new AccessAndRefreshResponseDto(jwtTokenUtils.generateAccessToken(userDetails),
                     String.valueOf(refreshToken.getToken())));
 
         } catch (BadCredentialsException e) {
