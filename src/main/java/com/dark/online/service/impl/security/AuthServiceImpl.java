@@ -1,11 +1,12 @@
 package com.dark.online.service.impl.security;
 
-import com.dark.online.dto.jwt.JwtResponseDto;
+import com.dark.online.dto.jwt.AccessAndRefreshResponseDto;
+import com.dark.online.dto.jwt.AccessResponseDto;
 import com.dark.online.dto.mfa.MfaTokenData;
 import com.dark.online.dto.jwt.JwtRequestDto;
 import com.dark.online.dto.mfa.MfaVerificationRequest;
 import com.dark.online.dto.user.RegistrationUserDto;
-import com.dark.online.dto.user.UserLoginDto;
+import com.dark.online.entity.RefreshToken;
 import com.dark.online.entity.User;
 import com.dark.online.exception.ErrorResponse;
 import com.dark.online.repository.UserRepository;
@@ -32,6 +33,8 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
+    private static final String YOU_NEED_TO_RE_LOGIN = "you need to re-login";
+
     private final UserRepository userRepository;
     private final UserService userService;
     private final TotpManagerService totpManagerService;
@@ -58,8 +61,11 @@ public class AuthServiceImpl implements AuthService {
         if (user.isAccountVerified()) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.PERMANENT_REDIRECT.value(), "write code from google app")); // редирект для написания кода и гугл приложения если включена 2fa
         }
-
-        return getAuthenticateUser(authRequest.getNickname(), authRequest.getPassword());
+        ResponseEntity<?> response = getAccessToken(authRequest.getNickname(), authRequest.getPassword());
+        if(response.getStatusCode().value() == (HttpStatus.OK.value())) {
+            return getRefreshToken(authRequest.getNickname(), authRequest.getPassword());
+        }
+        return getAccessToken(authRequest.getNickname(), authRequest.getPassword());
     }
 
     @Override
@@ -78,7 +84,7 @@ public class AuthServiceImpl implements AuthService {
 //        }
         userService.createNewUser(registrationUserDto);
         return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "user register"));
-//        return getAuthenticateUser(registrationUserDto.getNickname(), registrationUserDto.getPassword()); если при регистрации надо будет токен выдовать
+//        return getAccessToken(registrationUserDto.getNickname(), registrationUserDto.getPassword()); если при регистрации надо будет токен выдовать
     }
 
     @Override
@@ -113,7 +119,7 @@ public class AuthServiceImpl implements AuthService {
             User user = userOptional.get();
             boolean isCodeValid = totpManagerService.verifyTotp(user.getSecretKey(), mfaVerificationRequest.getCode());
             if (isCodeValid) {
-                return getAuthenticateUser(user.getNickname(), passwordEncoder.encode(user.getPassword()));
+                return getAccessToken(user.getNickname(), passwordEncoder.encode(user.getPassword()));
             } else {
                 return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "incorrect code"));
             }
@@ -122,13 +128,33 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
-    private ResponseEntity<?> getAuthenticateUser(String nickname, String password) {
+    private ResponseEntity<?> getAccessToken(String nickname, String password) {
         try {
             authenticateUser(nickname, password);
             UserDetails userDetails = userService.loadUserByUsername(nickname);
-            userDetails.getPassword();
-            String token = jwtTokenUtils.generateToken(userDetails);
-            return ResponseEntity.ok(new JwtResponseDto(token));
+
+            String accessToken = jwtTokenUtils.generateAccessToken(userDetails);
+            if (accessToken != null) {
+                return ResponseEntity.ok(new AccessResponseDto(accessToken));
+            } else {
+                return ResponseEntity.ok(new ErrorResponse(HttpStatus.NOT_FOUND.value(), YOU_NEED_TO_RE_LOGIN));
+            }
+
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.ok()
+                    .body(new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "INCORRECT_LOGIN_OR_PASSWORD"));
+        }
+    }
+
+    private ResponseEntity<?> getRefreshToken(String nickname, String password) {
+        try {
+            authenticateUser(nickname, password);
+            UserDetails userDetails = userService.loadUserByUsername(nickname);
+
+            RefreshToken refreshToken = jwtTokenUtils.createRefreshToken(userDetails);
+            return ResponseEntity.ok(new AccessAndRefreshResponseDto(getAccessToken(nickname, password).getBody().toString(),
+                    String.valueOf(refreshToken.getToken())));
+
         } catch (BadCredentialsException e) {
             return ResponseEntity.ok()
                     .body(new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "INCORRECT_LOGIN_OR_PASSWORD"));

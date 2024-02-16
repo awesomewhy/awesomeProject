@@ -27,6 +27,6 @@ logging:
 
 jwt:
   secret: pojk2499W4GNOUwgnNUIjytwRNmiraegoanepMGigiwendwanmGNM0min4G9UNwg4OGI4N0
-  access_lifetime: 3m
-  refresh_lifetime: 1000m
+  access_lifetime: 5s
+  refresh_lifetime: 10s
 

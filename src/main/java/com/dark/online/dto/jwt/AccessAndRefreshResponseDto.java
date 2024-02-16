@@ -5,13 +5,16 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @NotNull
 @NotEmpty
 @NotBlank
-public class JwtResponseDto {
-    private String token;
+public class AccessAndRefreshResponseDto {
+    private String accessToken;
+    private String refreshToken;
 }
 
