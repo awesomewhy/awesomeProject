@@ -27,7 +27,7 @@ public class TotpManagerImpl implements TotpManagerService {
     public String getQRCode(String secret) throws QrGenerationException {
         QrData qrData = new QrData.Builder()
                 .label("2FA Server")
-                .issuer("dark online 2FA")
+                .issuer("ozon online 2FA")
                 .secret(secret)
                 .digits(6)
                 .period(30)

@@ -8,11 +8,11 @@
         <version>3.2.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.dark</groupId>
+    <groupId>com.ozon</groupId>
     <artifactId>online</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>darkOnline</name>
-    <description>darkOnline</description>
+    <name>ozonOnline</name>
+    <description>ozonOnline</description>
     <properties>
         <java.version>17</java.version>
     </properties>

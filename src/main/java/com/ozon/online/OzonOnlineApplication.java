@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 @SpringBootApplication
 @CrossOrigin(origins = "*")
-public class DarkOnlineApplication {
+public class OzonOnlineApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(DarkOnlineApplication.class, args);
+        SpringApplication.run(OzonOnlineApplication.class, args);
     }
 
 }

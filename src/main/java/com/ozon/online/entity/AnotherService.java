@@ -17,7 +17,7 @@ import java.util.List;
 public class AnotherService {
     @Id
     @GeneratedValue(generator = "custom-id")
-    @GenericGenerator(name = "custom-id", strategy = "com.dark.online.util.CustomLongIdGenerator")
+    @GenericGenerator(name = "custom-id", strategy = "com.ozon.online.util.CustomLongIdGenerator")
     private Long id;
 
     private ServiceStatus status;
