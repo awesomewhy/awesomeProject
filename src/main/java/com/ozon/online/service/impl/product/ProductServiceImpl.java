@@ -124,22 +124,12 @@ public class ProductServiceImpl implements ProductService {
         return ResponseEntity.ok().body(productMapper.mapProductCorrectProductDto(productOptional));
     }
 
-    //    @Override
-//    public ResponseEntity<?> getCorrectProduct(@RequestParam("id") Long id) {
-//        return ResponseEntity.ok().body(productRepository.findById(id).stream()
-//                .map(productMapper::mapProductCorrectProductDto));
-//    }
     @Override
     public ResponseEntity<?> getMyProducts() {
         User userOptional = userService.getAuthenticationPrincipalUserByNickname().orElseThrow();
 
         return ResponseEntity.ok().body(userOptional.getProducts().stream().map(
-                product -> MyProductDto.builder()
-                        .id(product.getId())
-                        .name(product.getName())
-                        .createdAt(product.getCreatedAt())
-                        .image(product.getPhotoId().getImageData())
-                        .build()
+                productMapper::mapProductToMyProductDto
         ));
     }
 
