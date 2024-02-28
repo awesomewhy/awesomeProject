@@ -5,6 +5,7 @@ import com.ozon.online.entity.Product;
 import com.ozon.online.entity.User;
 import com.ozon.online.entity.UserAvatar;
 import com.ozon.online.exception.ErrorResponse;
+import com.ozon.online.exception.UserNotAuthException;
 import com.ozon.online.mapper.ProductMapper;
 import com.ozon.online.repository.ProductRepository;
 import com.ozon.online.repository.UserRepository;
@@ -12,12 +13,10 @@ import com.ozon.online.repository.UserAvatarRepository;
 import com.ozon.online.service.ImageService;
 import com.ozon.online.service.ProductService;
 import com.ozon.online.service.UserService;
-import com.ozon.online.util.ImageUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,7 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 @Service
@@ -42,9 +40,12 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public ResponseEntity<?> addProduct(@RequestParam(name = "image") MultipartFile multipartFile,
-                                        @RequestBody CreateProductForSellDto createOrderForSellDto) throws IOException, ExecutionException, InterruptedException {
+                                        @RequestBody CreateProductForSellDto createOrderForSellDto) throws IOException, ExecutionException, InterruptedException, UserNotAuthException {
 
-        User user = userService.getAuthenticationPrincipalUserByNickname().orElseThrow();
+        User user = userService.getAuthenticationPrincipalUserByNickname().orElseThrow(
+                () -> new UserNotAuthException(HttpStatus.NOT_FOUND.value(), "user not auth")
+        );
+
         Product product = productMapper.mapCreateOrderForSellDtoToProductEntity(multipartFile, createOrderForSellDto, user);
         productRepository.save(product);
 
@@ -53,9 +54,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> addImage(@RequestParam("image") MultipartFile multipartFile) throws IOException {
-
-        User user = userService.getAuthenticationPrincipalUserByNickname().orElseThrow();
+    public ResponseEntity<?> addImage(@RequestParam("image") MultipartFile multipartFile) throws IOException, UserNotAuthException {
+        User user = userService.getAuthenticationPrincipalUserByNickname().orElseThrow(
+                () -> new UserNotAuthException(HttpStatus.NOT_FOUND.value(), "user not auth")
+        );
 
         if (user.getAvatarId() != null) {
             UserAvatar imageOptional = userAvatarRepository.findById(user.getAvatarId().getId()).orElseThrow();

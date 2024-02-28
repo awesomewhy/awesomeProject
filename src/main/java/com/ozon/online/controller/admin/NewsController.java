@@ -1,6 +1,7 @@
 package com.ozon.online.controller.admin;
 
 import com.ozon.online.dto.news.CreateNewsDto;
+import com.ozon.online.exception.UserNotAuthException;
 import com.ozon.online.service.NewsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class NewsController {
     private final NewsService newsService;
 
     @PostMapping("/news/create")
-    public ResponseEntity<?> deleteChat(@RequestPart("image") MultipartFile file, @RequestPart("news") CreateNewsDto news) throws IOException, ExecutionException, InterruptedException {
+    public ResponseEntity<?> deleteChat(@RequestPart("image") MultipartFile file, @RequestPart("news") CreateNewsDto news) throws IOException, ExecutionException, InterruptedException, UserNotAuthException {
         return newsService.createNews(file, news);
     }
 

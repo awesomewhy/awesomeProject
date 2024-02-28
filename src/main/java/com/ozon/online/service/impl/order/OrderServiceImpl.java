@@ -4,6 +4,7 @@ import com.ozon.online.dto.order.CreateOrderForChatShowDto;
 import com.ozon.online.entity.Order;
 import com.ozon.online.entity.User;
 import com.ozon.online.exception.ErrorResponse;
+import com.ozon.online.exception.UserNotAuthException;
 import com.ozon.online.mapper.OrderMapper;
 import com.ozon.online.repository.OrderRepository;
 import com.ozon.online.repository.UserRepository;
@@ -16,8 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
@@ -27,9 +26,14 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
 
     @Override
-    public ResponseEntity<?> createOrderForChat(@PathVariable String nickname, @RequestBody CreateOrderForChatShowDto createOrderForChatShowDto) {
-        User user = userService.getAuthenticationPrincipalUserByNickname().orElseThrow();
-        User user2 = userRepository.findByNickname(nickname).orElseThrow();
+    public ResponseEntity<?> createOrderForChat(@PathVariable String nickname, @RequestBody CreateOrderForChatShowDto createOrderForChatShowDto) throws UserNotAuthException {
+        User user = userService.getAuthenticationPrincipalUserByNickname().orElseThrow(
+                () -> new UserNotAuthException(HttpStatus.NOT_FOUND.value(), "user not auth")
+        );
+        User user2 = userRepository.findByNickname(nickname).orElseThrow(
+                () -> new UserNotAuthException(HttpStatus.NOT_FOUND.value(), "user not auth")
+        );
+
 
         Order order = orderMapper.mapCreateOrderForChatShowDtoToEntity(user2, createOrderForChatShowDto, user);
 

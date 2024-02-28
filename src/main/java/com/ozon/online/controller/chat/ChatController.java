@@ -1,6 +1,7 @@
 package com.ozon.online.controller.chat;
 
 import com.ozon.online.dto.chat.MessageDto;
+import com.ozon.online.exception.UserNotAuthException;
 import com.ozon.online.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class ChatController {
     private final ChatService chatService;
 
     @PostMapping("/chats/send")
-    public ResponseEntity<?> sendMessage(@RequestParam("id") String userId, @RequestBody MessageDto messageDto) {
+    public ResponseEntity<?> sendMessage(@RequestParam("id") String userId, @RequestBody MessageDto messageDto) throws UserNotAuthException {
         return chatService.sendMessage(userId, messageDto);
     }
 
@@ -28,7 +29,7 @@ public class ChatController {
 //    }
 
     @GetMapping("/chats")
-    public ResponseEntity<?> getChat(@RequestParam("id") String userNickname) {
+    public ResponseEntity<?> getChat(@RequestParam("id") String userNickname) throws UserNotAuthException {
         return chatService.openChat(userNickname);
     }
 
@@ -38,12 +39,12 @@ public class ChatController {
 //    }
 
     @GetMapping("/chats/my")
-    public ResponseEntity<?> getChat() {
+    public ResponseEntity<?> getChat() throws UserNotAuthException {
         return chatService.getMyChats();
     }
 
     @GetMapping("/chats/delete/{id}")
-    public ResponseEntity<?> deleteChat(@PathVariable Long id) {
+    public ResponseEntity<?> deleteChat(@PathVariable Long id) throws UserNotAuthException {
         return chatService.deleteChatById(id);
     }
 

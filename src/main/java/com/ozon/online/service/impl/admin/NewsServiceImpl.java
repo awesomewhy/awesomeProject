@@ -5,6 +5,7 @@ import com.ozon.online.entity.News;
 import com.ozon.online.entity.User;
 import com.ozon.online.enums.NewsType;
 import com.ozon.online.exception.ErrorResponse;
+import com.ozon.online.exception.UserNotAuthException;
 import com.ozon.online.mapper.NewsMapper;
 import com.ozon.online.repository.NewsRepository;
 import com.ozon.online.repository.NewsImageRepository;
@@ -20,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 @Service
@@ -46,8 +46,11 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> createNews(@RequestPart MultipartFile multipart, @RequestPart CreateNewsDto createNewsDto) throws IOException, ExecutionException, InterruptedException {
-        User user = userService.getAuthenticationPrincipalUserByNickname().orElseThrow();
+    public ResponseEntity<?> createNews(@RequestPart MultipartFile multipart, @RequestPart CreateNewsDto createNewsDto)
+            throws IOException, ExecutionException, InterruptedException, UserNotAuthException {
+        User user = userService.getAuthenticationPrincipalUserByNickname().orElseThrow(
+                () -> new UserNotAuthException(HttpStatus.NOT_FOUND.value(), "user not auth")
+        );
 
         News news = newsMapper.mapCreateNewsToNewsEntity(createNewsDto);
         newsRepository.save(news);

@@ -1,5 +1,6 @@
 package com.ozon.online.controller.user;
 
+import com.ozon.online.exception.UserNotAuthException;
 import com.ozon.online.service.ImageService;
 import com.ozon.online.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ public class UserController {
     private final ProductService productService;
 
     @PostMapping("/set")
-    public ResponseEntity<?> setAvatar(@RequestPart("image") MultipartFile file) throws IOException {
+    public ResponseEntity<?> setAvatar(@RequestPart("image") MultipartFile file) throws IOException, UserNotAuthException {
         return productService.addImage(file);
     }
     @GetMapping("/avatar")

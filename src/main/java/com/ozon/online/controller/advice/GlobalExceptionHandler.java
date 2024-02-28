@@ -1,5 +1,6 @@
 package com.ozon.online.controller.advice;
 
+import com.ozon.online.exception.UserNotAuthException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,13 @@ public class GlobalExceptionHandler {
         String errorMessage = ex.getMessage();
         String errorType = ex.getClass().getSimpleName();
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("some problem with server \n" + errorType + "\n" + errorMessage);
+    }
+
+    @ExceptionHandler(UserNotAuthException.class)
+    public ResponseEntity<?> handleException(UserNotAuthException ex) {
+        String errorMessage = ex.getMessage();
+        String errorType = ex.getClass().getSimpleName();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("user not auth \n" + errorType + "\n" + errorMessage);
     }
 
     protected ResponseEntity<?> handleExc(MethodArgumentNotValidException ex, HttpHeaders httpHeaders, HttpStatus httpStatus, WebRequest webRequest) {

@@ -9,13 +9,13 @@ import com.ozon.online.dto.user.RegistrationUserDto;
 import com.ozon.online.entity.RefreshToken;
 import com.ozon.online.entity.User;
 import com.ozon.online.exception.ErrorResponse;
+import com.ozon.online.exception.UserNotAuthException;
 import com.ozon.online.repository.UserRepository;
 import com.ozon.online.service.AuthService;
 import com.ozon.online.service.TotpManagerService;
 import com.ozon.online.service.UserService;
 import com.ozon.online.util.JwtTokenUtils;
 import dev.samstevens.totp.exceptions.QrGenerationException;
-import io.micrometer.common.util.StringUtils;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,9 +28,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
-
-import java.util.Iterator;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -45,8 +42,10 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public ResponseEntity<?> login(@Valid @RequestBody JwtRequestDto authRequest) {
-        User user = userRepository.findByNickname(authRequest.getNickname()).orElseThrow();
+    public ResponseEntity<?> login(@Valid @RequestBody JwtRequestDto authRequest) throws UserNotAuthException {
+        User user = userService.getAuthenticationPrincipalUserByNickname().orElseThrow(
+                () -> new UserNotAuthException(HttpStatus.NOT_FOUND.value(), "user not auth")
+        );
 
         if (!passwordEncoder.matches(authRequest.getPassword(), user.getPassword())) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "password or nickname incorrect"));
@@ -82,8 +81,10 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> create2FA() throws QrGenerationException {
-        User user = userService.getAuthenticationPrincipalUserByNickname().orElseThrow();
+    public ResponseEntity<?> create2FA() throws QrGenerationException, UserNotAuthException {
+        User user = userService.getAuthenticationPrincipalUserByNickname().orElseThrow(
+                () -> new UserNotAuthException(HttpStatus.NOT_FOUND.value(), "user not auth")
+        );
         user.setAccountVerified(true);
         userRepository.save(user);
         String qrCode = totpManagerService.getQRCode(user.getSecretKey());
@@ -96,8 +97,10 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ResponseEntity<?> verifyCode(@RequestBody MfaVerificationRequest mfaVerificationRequest) {
-        User user = userRepository.findByNickname(mfaVerificationRequest.getNickname()).orElseThrow();
+    public ResponseEntity<?> verifyCode(@RequestBody MfaVerificationRequest mfaVerificationRequest) throws UserNotAuthException {
+        User user = userService.getAuthenticationPrincipalUserByNickname().orElseThrow(
+                () -> new UserNotAuthException(HttpStatus.NOT_FOUND.value(), "user not auth")
+        );
 
         boolean isCodeValid = totpManagerService.verifyTotp(user.getSecretKey(), mfaVerificationRequest.getCode());
         if (isCodeValid) {

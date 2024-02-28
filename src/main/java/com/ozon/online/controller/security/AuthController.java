@@ -3,6 +3,7 @@ package com.ozon.online.controller.security;
 import com.ozon.online.dto.jwt.JwtRequestDto;
 import com.ozon.online.dto.mfa.MfaVerificationRequest;
 import com.ozon.online.dto.user.RegistrationUserDto;
+import com.ozon.online.exception.UserNotAuthException;
 import com.ozon.online.service.AccountService;
 import com.ozon.online.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +25,12 @@ public class AuthController {
     }
 
     @PostMapping( "/login")
-    public ResponseEntity<?> login(@RequestBody JwtRequestDto loginRequest) {
+    public ResponseEntity<?> login(@RequestBody JwtRequestDto loginRequest) throws UserNotAuthException {
         return authService.login(loginRequest);
     }
 
     @PostMapping("/verifycode")
-    public ResponseEntity<?> verifyTotp(@RequestBody MfaVerificationRequest mfaVerificationRequest) {
+    public ResponseEntity<?> verifyTotp(@RequestBody MfaVerificationRequest mfaVerificationRequest) throws UserNotAuthException {
         return authService.verifyCode(mfaVerificationRequest);
     }
 }
