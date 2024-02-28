@@ -4,6 +4,7 @@ import com.ozon.online.dto.security.ChangePasswordDto;
 import com.ozon.online.dto.user.ChangeNicknameDto;
 import com.ozon.online.service.AccountService;
 import com.ozon.online.service.AuthService;
+import dev.samstevens.totp.exceptions.QrGenerationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +28,7 @@ public class AccountController {
     }
 
     @PostMapping("/create2FA")
-    public ResponseEntity<?> create2FA() {
+    public ResponseEntity<?> create2FA() throws QrGenerationException {
         return authService.create2FA();
     }
 }

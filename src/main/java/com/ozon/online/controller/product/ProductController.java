@@ -9,6 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -19,7 +22,7 @@ public class ProductController {
 
     @PostMapping("/create")
     public ResponseEntity<?> addProduct(@RequestPart("image") MultipartFile multipartFile,
-                                        @RequestPart("order") CreateProductForSellDto createOrderForSellDto) {
+                                        @RequestPart("order") CreateProductForSellDto createOrderForSellDto) throws IOException, ExecutionException, InterruptedException {
         return productService.addProduct(multipartFile, createOrderForSellDto);
     }
 

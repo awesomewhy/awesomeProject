@@ -17,6 +17,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @RequiredArgsConstructor
@@ -40,15 +42,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public ResponseEntity<?> addProduct(@RequestParam(name = "image") MultipartFile multipartFile,
-                                        @RequestBody CreateProductForSellDto createOrderForSellDto) {
-        Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname(); // requestpart обоим сделать
+                                        @RequestBody CreateProductForSellDto createOrderForSellDto) throws IOException, ExecutionException, InterruptedException {
 
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
-        }
-        User user = userOptional.get();
+        User user = userService.getAuthenticationPrincipalUserByNickname().orElseThrow();
         Product product = productMapper.mapCreateOrderForSellDtoToProductEntity(multipartFile, createOrderForSellDto, user);
-
         productRepository.save(product);
 
         return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "product added"));
@@ -57,22 +54,17 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public ResponseEntity<?> addImage(@RequestParam("image") MultipartFile multipartFile) throws IOException {
-        Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
-        }
 
-        if (userOptional.get().getAvatarId() != null) {
-            Optional<UserAvatar> imageOptional = userAvatarRepository.findById(userOptional.get().getAvatarId().getId());
-            if (imageOptional.isEmpty()) {
-                return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "image not found"));
-            }
+        User user = userService.getAuthenticationPrincipalUserByNickname().orElseThrow();
 
-            productMapper.mapMultipartFileToUserAvatarAndSave(imageOptional.get(), multipartFile);
+        if (user.getAvatarId() != null) {
+            UserAvatar imageOptional = userAvatarRepository.findById(user.getAvatarId().getId()).orElseThrow();
+            productMapper.mapMultipartFileToUserAvatarAndSave(imageOptional, multipartFile);
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "avatar added"));
         }
 
-        productMapper.saveUserAvatar(multipartFile, userOptional.get());
+        productMapper.saveUserAvatar(multipartFile, user);
+
         return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "avatar added"));
     }
 
@@ -128,11 +120,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ResponseEntity<?> getCorrectProduct(@RequestParam("id") Long id) {
-        Optional<Product> productOptional = productRepository.findById(id);
-        if (productOptional.isEmpty()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "product not found"));
-        }
-        return ResponseEntity.ok().body(productMapper.mapProductCorrectProductDto(productOptional.get()));
+        Product productOptional = productRepository.findById(id).orElseThrow();
+        return ResponseEntity.ok().body(productMapper.mapProductCorrectProductDto(productOptional));
     }
 
     //    @Override
@@ -142,12 +131,9 @@ public class ProductServiceImpl implements ProductService {
 //    }
     @Override
     public ResponseEntity<?> getMyProducts() {
-        Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
-        }
+        User userOptional = userService.getAuthenticationPrincipalUserByNickname().orElseThrow();
 
-        return ResponseEntity.ok().body(userOptional.get().getProducts().stream().map(
+        return ResponseEntity.ok().body(userOptional.getProducts().stream().map(
                 product -> MyProductDto.builder()
                         .id(product.getId())
                         .name(product.getName())

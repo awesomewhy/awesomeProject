@@ -19,7 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @RequiredArgsConstructor
@@ -44,11 +46,8 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> createNews(@RequestPart MultipartFile multipart, @RequestPart CreateNewsDto createNewsDto) {
-        Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
-        }
+    public ResponseEntity<?> createNews(@RequestPart MultipartFile multipart, @RequestPart CreateNewsDto createNewsDto) throws IOException, ExecutionException, InterruptedException {
+        User user = userService.getAuthenticationPrincipalUserByNickname().orElseThrow();
 
         News news = newsMapper.mapCreateNewsToNewsEntity(createNewsDto);
         newsRepository.save(news);

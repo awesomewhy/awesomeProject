@@ -7,6 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/admin")
@@ -15,7 +18,7 @@ public class NewsController {
     private final NewsService newsService;
 
     @PostMapping("/news/create")
-    public ResponseEntity<?> deleteChat(@RequestPart("image") MultipartFile file, @RequestPart("news") CreateNewsDto news) {
+    public ResponseEntity<?> deleteChat(@RequestPart("image") MultipartFile file, @RequestPart("news") CreateNewsDto news) throws IOException, ExecutionException, InterruptedException {
         return newsService.createNews(file, news);
     }
 

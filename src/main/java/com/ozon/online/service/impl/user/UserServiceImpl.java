@@ -42,12 +42,7 @@ public class UserServiceImpl
 
     @Override
     public ResponseEntity<?> createOrder(@RequestBody CreateOrderDto createOrderDto) {
-        Optional<User> userOptional = getAuthenticationPrincipalUserByNickname();
-
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
-        }
-
+        User userOptional = getAuthenticationPrincipalUserByNickname().orElseThrow();
         return null;
     }
 

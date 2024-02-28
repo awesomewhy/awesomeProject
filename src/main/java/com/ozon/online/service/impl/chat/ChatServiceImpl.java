@@ -37,56 +37,39 @@ public class ChatServiceImpl implements ChatService {
     @Override
     @Transactional
     public ResponseEntity<?> sendMessage(@RequestParam String userId, @RequestBody MessageDto messageDto) {
-        Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
-        Optional<User> companionOptional = userRepository.findById(UUID.fromString(userId));
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
-        }
-        if (companionOptional.isEmpty()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "companion not found"));
-        }
-        if (UUID.fromString(userId).equals(userOptional.get().getId())) {
+        User userOptional = userService.getAuthenticationPrincipalUserByNickname().orElseThrow();
+        User companionOptional = userRepository.findById(UUID.fromString(userId)).orElseThrow();
+
+        if (UUID.fromString(userId).equals(userOptional.getId())) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "you can't send a message to yourself"));
         }
 
-        Optional<Chat> chatOptional = chatRepository.findChatByUserIds(companionOptional.get().getId(), userOptional.get().getId());
+        Chat chatOptional = chatRepository.findChatByUserIds(companionOptional.getId(), userOptional.getId()).orElseThrow();
         List<MessageForChatDto> messages;
-
-        if (chatOptional.isEmpty()) {
+        if (chatOptional == null) {
             Chat chat = messageMapper.mapMessageToChatIfNotExistsAndSave(
-                    messageDto, userOptional.get(), companionOptional.get());
+                    messageDto, userOptional, companionOptional);
 
             messages = chat.getMessages().stream().map(
-                    messageMapper::mapMessageFromChatToMessageForChatDto)
+                            messageMapper::mapMessageFromChatToMessageForChatDto)
                     .toList();
-//            return ResponseEntity.ok().body(chat.getMessages().stream().map(
-//                    messageMapper::mapMessageFromChatToMessageForChatDto
-//            ));
-
-        } else {
-            messageMapper.mapMessageFromChatToMessageForChatDto(
-                    chatOptional.get().getMessages(), chatOptional.get(), userOptional.get(), messageDto);
-
-            messages = chatOptional.get().getMessages().stream().map(
-                    messageMapper::mapMessageFromChatToMessageForChatDto)
-                    .toList();
-//            return ResponseEntity.ok().body(chatOptional.get().getMessages().stream().map(
-//                    messageMapper::mapMessageFromChatToMessageForChatDto
-//            ));
-
         }
+
+        messageMapper.mapMessageFromChatToMessageForChatDto(
+                chatOptional.getMessages(), chatOptional, userOptional, messageDto);
+
+        messages = chatOptional.getMessages().stream().map(
+                        messageMapper::mapMessageFromChatToMessageForChatDto)
+                .toList();
         return ResponseEntity.ok().body(messages);
 
     }
 
     @Override
     public ResponseEntity<?> getMyChats() {
-        Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
+        User userOptional = userService.getAuthenticationPrincipalUserByNickname().orElseThrow();
 
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
-        }
-        List<Chat> chats = userOptional.get().getChats();
+        List<Chat> chats = userOptional.getChats();
         if (chats.isEmpty()) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "no chats"));
         }
@@ -94,24 +77,20 @@ public class ChatServiceImpl implements ChatService {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "no message"));
         }
 
-        return ResponseEntity.ok().body(userOptional.get().getChats().stream().map(
-                        chat -> messageMapper.mapChatToChatDto(chat, userOptional.get())
-                ));
+        return ResponseEntity.ok().body(userOptional.getChats().stream().map(
+                chat -> messageMapper.mapChatToChatDto(chat, userOptional)
+        ));
     }
 
     @Override
     public ResponseEntity<?> openChat(@RequestParam String userNickname) {
-        Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
+        User userOptional = userService.getAuthenticationPrincipalUserByNickname().orElseThrow();
 
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
-        }
-
-        if (userNickname.equals(userOptional.get().getNickname())) {
+        if (userNickname.equals(userOptional.getNickname())) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "you can't send a message to yourself"));
         }
 
-        Optional<Chat> chatOptional = userOptional.get().getChats().stream()
+        Optional<Chat> chatOptional = userOptional.getChats().stream()
                 .filter(chat -> chat.getParticipants().stream()
                         .anyMatch(participant -> participant.getNickname().equals(userNickname)))
                 .findFirst();
@@ -127,11 +106,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     @Transactional
     public ResponseEntity<?> deleteChatById(@RequestParam Long chatId) {
-        Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
-
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
-        }
+        User userOptional = userService.getAuthenticationPrincipalUserByNickname().orElseThrow();
 
         chatRepository.deleteById(chatId);
         return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "chat deleted"));
