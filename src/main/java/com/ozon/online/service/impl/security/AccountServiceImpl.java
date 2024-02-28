@@ -28,11 +28,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordDto changePasswordDto) {
-        Optional<User> updateUser = userService.getAuthenticationPrincipalUserByNickname();
-        if (updateUser.isEmpty()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "USER_NOT_FOUND"));
-        }
-        User user = updateUser.get();
+        User user = userService.getAuthenticationPrincipalUserByNickname().orElseThrow();
 
         if (StringUtils.isEmpty(changePasswordDto.getOldPassword())
                 || StringUtils.isEmpty(changePasswordDto.getNewPassword())
@@ -54,13 +50,10 @@ public class AccountServiceImpl implements AccountService {
     }
 
     public ResponseEntity<?> changeNickname(@RequestBody ChangeNicknameDto changeNicknameDto) {
-        Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
-        }
-        User user = userOptional.get();
-        user.setNickname(changeNicknameDto.getNickname());
-        userRepository.save(user);
+        User userOptional = userService.getAuthenticationPrincipalUserByNickname().orElseThrow();
+        userOptional.setNickname(changeNicknameDto.getNickname());
+
+        userRepository.save(userOptional);
         return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "NICKNAME_CHANGED_SUCCESSFULLY"));
     }
 }

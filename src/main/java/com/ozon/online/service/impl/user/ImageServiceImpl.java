@@ -36,6 +36,7 @@ public class ImageServiceImpl implements ImageService {
     public ResponseEntity<?> loadImage(LoadImageDto loadImageDto) {
         return null;
     }
+
     @Transactional
     public UserAvatar uploadImage(MultipartFile file) {
         try {
@@ -62,61 +63,47 @@ public class ImageServiceImpl implements ImageService {
 //        }
 //    }
     @Transactional
-    public ProductImage uploadImageForProduct(MultipartFile file, User user, Product product) {
-        try {
-            byte[] compressedImageData = compressImageInSeparateThread(file.getBytes());
-            return productImageRepository.save(ProductImage.builder()
-                    .name(file.getOriginalFilename())
-                    .productId(product)
-                    .userId(user)
-                    .type(file.getContentType())
-                    .imageData(compressedImageData)
-                    .build());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    @Transactional
-    public News_Image uploadImageForNews(MultipartFile file, News news) {
-        try {
-            byte[] compressedImageData = compressImageInSeparateThread(file.getBytes());
-            return newsImageRepository.save(News_Image.builder()
-                    .name(file.getOriginalFilename())
-                    .news(news)
-                    .type(file.getContentType())
-                    .imageData(compressedImageData)
-                    .build());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public ProductImage uploadImageForProduct(MultipartFile file, User user, Product product) throws IOException, ExecutionException, InterruptedException {
+        byte[] compressedImageData = compressImageInSeparateThread(file.getBytes());
+        return productImageRepository.save(ProductImage.builder()
+                .name(file.getOriginalFilename())
+                .productId(product)
+                .userId(user)
+                .type(file.getContentType())
+                .imageData(compressedImageData)
+                .build());
     }
 
     @Transactional
-    public byte[] compressImageInSeparateThread(byte[] imageData) {
+    public News_Image uploadImageForNews(MultipartFile file, News news) throws IOException, ExecutionException, InterruptedException {
+        byte[] compressedImageData = compressImageInSeparateThread(file.getBytes());
+        return newsImageRepository.save(News_Image.builder()
+                .name(file.getOriginalFilename())
+                .news(news)
+                .type(file.getContentType())
+                .imageData(compressedImageData)
+                .build());
+    }
+
+    @Transactional
+    public byte[] compressImageInSeparateThread(byte[] imageData) throws ExecutionException, InterruptedException {
         CompletableFuture<byte[]> future = CompletableFuture.supplyAsync(() -> ImageUtils.compressImage(imageData));
-        try {
-            return future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
-        }
+        return future.get();
     }
 
     @Override
     @Transactional
     public ResponseEntity<?> downloadAvatar() {
-        Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
-        }
+        User user = userService.getAuthenticationPrincipalUserByNickname().orElseThrow();
 
-        if (userOptional.get().getAvatarId() == null) {
+        if (user.getAvatarId() == null) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "no avatar"));
         }
 
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_PNG)
                 .body(ImageUtils.decompressImage(
-                        userOptional.get().getAvatarId().getImageData()));
+                        user.getAvatarId().getImageData()));
     }
 
     @Override

@@ -9,10 +9,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 public interface ProductService {
     ResponseEntity<?> addProduct(@RequestParam(name = "image") MultipartFile multipartFile,
-                                 @RequestBody CreateProductForSellDto createOrderForSellDto);
+                                 @RequestBody CreateProductForSellDto createOrderForSellDto) throws IOException, ExecutionException, InterruptedException;
 
     ResponseEntity<?> getAllProducts(PageRequest pageRequest);
 

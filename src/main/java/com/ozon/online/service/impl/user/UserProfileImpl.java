@@ -38,13 +38,14 @@ public class UserProfileImpl implements DeleteService {
     @Override
     @Transactional
     public ResponseEntity<?> deleteProfile(@RequestBody DeleteProfileDto deleteProfileDto) {
-        Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
-        if (userOptional.isPresent() && passwordEncoder.matches(deleteProfileDto.getPassword(), userOptional.get().getPassword())) {
-            userRepository.delete(userOptional.get());
+        User userOptional = userService.getAuthenticationPrincipalUserByNickname().orElseThrow();
+
+        if (passwordEncoder.matches(deleteProfileDto.getPassword(), userOptional.getPassword())) {
+            userRepository.delete(userOptional);
             return ResponseEntity.ok().body("PROFILE_DELETED_SUCCESSFULLY");
-        } else {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "PROFILE_NOT_DELETED"));
         }
+
+        return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "PROFILE_NOT_DELETED"));
     }
 
 

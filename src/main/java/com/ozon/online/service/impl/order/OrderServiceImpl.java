@@ -28,14 +28,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ResponseEntity<?> createOrderForChat(@PathVariable String nickname, @RequestBody CreateOrderForChatShowDto createOrderForChatShowDto) {
-        Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
-        Optional<User> userOptional2 = userRepository.findByNickname(nickname);
+        User user = userService.getAuthenticationPrincipalUserByNickname().orElseThrow();
+        User user2 = userRepository.findByNickname(nickname).orElseThrow();
 
-        if(userOptional.isEmpty() || userOptional2.isEmpty()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
-        }
-        User user = userOptional.get();
-        User user2 = userOptional2.get();
         Order order = orderMapper.mapCreateOrderForChatShowDtoToEntity(user2, createOrderForChatShowDto, user);
 
         orderRepository.save(order);

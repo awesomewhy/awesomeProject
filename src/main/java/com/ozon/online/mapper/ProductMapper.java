@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.concurrent.ExecutionException;
 
 @Component
 @RequiredArgsConstructor
@@ -33,7 +34,7 @@ public class ProductMapper {
 
     public Product mapCreateOrderForSellDtoToProductEntity (MultipartFile multipartFile,
                                                             CreateProductForSellDto createOrderForSellDto,
-                                                            User user) {
+                                                            User user) throws IOException, ExecutionException, InterruptedException {
         Product product = Product.builder()
                 .sellerId(user)
                 .name(createOrderForSellDto.getName())
