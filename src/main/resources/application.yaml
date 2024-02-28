@@ -8,7 +8,7 @@ spring:
     password: postgres
     driver-class-name: org.postgresql.Driver
     hikari:
-      auto-commit: true
+      auto-commit: false
 
   jpa:
     properties:
@@ -25,10 +25,7 @@ spring:
     redis:
       host: localhost
       port: 6379
-      .
       connect-timeout: 5000
-
-
 
 logging:
   level:

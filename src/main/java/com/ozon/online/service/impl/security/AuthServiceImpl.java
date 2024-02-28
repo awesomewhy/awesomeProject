@@ -28,6 +28,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.Iterator;
 import java.util.Optional;
 
 @Service
@@ -84,7 +85,7 @@ public class AuthServiceImpl implements AuthService {
 //        }
         userService.createNewUser(registrationUserDto);
         return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "user register"));
-//        return getAccessToken(registrationUserDto.getNickname(), registrationUserDto.getPassword()); если при регистрации надо будет токен выдовать / if during registration you need to issue a token
+//        return getAccessToken(registrationUserDto.getNickname(), registrationUserDto.getPassword()); если при регистрации надо будет токен выдавать / if during registration you need to issue a token
     }
 
     @Override
