@@ -47,22 +47,17 @@ public class ChatServiceImpl implements ChatService {
         Optional<Chat> chatOptional = chatRepository.findChatByUserIds(companionOptional.getId(), userOptional.getId());
         List<MessageForChatDto> messages;
 
-        if (chatOptional.isEmpty()) {
-            Chat chat = messageMapper.mapMessageToChatIfNotExistsAndSave(
-                    messageDto, userOptional, companionOptional);
-
-            messages = chat.getMessages().stream().map(
-                            messageMapper::mapMessageFromChatToMessageForChatDto)
-                    .toList();
-
-        } else {
+        if (chatOptional.isPresent()) {
             messageMapper.mapMessageFromChatToMessageForChatDto(
                     chatOptional.get().getMessages(), chatOptional.get(), userOptional, messageDto);
-
-            messages = chatOptional.get().getMessages().stream().map(
-                            messageMapper::mapMessageFromChatToMessageForChatDto)
-                    .toList();
+        } else {
+            messageMapper.mapMessageToChatIfNotExistsAndSave(
+                    messageDto, userOptional, companionOptional);
         }
+
+        messages = chatOptional.get().getMessages().stream().map(
+                        messageMapper::mapMessageFromChatToMessageForChatDto)
+                .toList();
         return ResponseEntity.ok().body(messages);
     }
 
