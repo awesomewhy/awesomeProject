@@ -44,25 +44,26 @@ public class ChatServiceImpl implements ChatService {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "you can't send a message to yourself"));
         }
 
-        Chat chatOptional = chatRepository.findChatByUserIds(companionOptional.getId(), userOptional.getId()).orElse(null);
+        Optional<Chat> chatOptional = chatRepository.findChatByUserIds(companionOptional.getId(), userOptional.getId());
         List<MessageForChatDto> messages;
-        if (chatOptional == null) {
+
+        if (chatOptional.isEmpty()) {
             Chat chat = messageMapper.mapMessageToChatIfNotExistsAndSave(
                     messageDto, userOptional, companionOptional);
 
             messages = chat.getMessages().stream().map(
                             messageMapper::mapMessageFromChatToMessageForChatDto)
                     .toList();
+
+        } else {
+            messageMapper.mapMessageFromChatToMessageForChatDto(
+                    chatOptional.get().getMessages(), chatOptional.get(), userOptional, messageDto);
+
+            messages = chatOptional.get().getMessages().stream().map(
+                            messageMapper::mapMessageFromChatToMessageForChatDto)
+                    .toList();
         }
-        messageMapper.mapMessageFromChatToMessageForChatDto(
-                chatOptional.getMessages(), chatOptional, userOptional, messageDto);
-
-        messages = chatOptional.getMessages().stream().map(
-                        messageMapper::mapMessageFromChatToMessageForChatDto)
-                .toList();
-
         return ResponseEntity.ok().body(messages);
-
     }
 
     @Override
