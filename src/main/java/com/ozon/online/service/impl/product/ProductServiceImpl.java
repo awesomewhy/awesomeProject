@@ -56,40 +56,28 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> addImage(@RequestParam("image") MultipartFile multipartFile) {
+    public ResponseEntity<?> addImage(@RequestParam("image") MultipartFile multipartFile) throws IOException {
         Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
-
         if (userOptional.isEmpty()) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
         }
-        User user = userOptional.get();
-        if (user.getAvatarId() == null) {
-            UserAvatar image = imageService.uploadImage(multipartFile);
-            image.setUserId(user);
-            user.setAvatarId(image);
-            userAvatarRepository.save(image);
-            userRepository.save(user);
-        } else {
-            Optional<UserAvatar> imageOptional = userAvatarRepository.findById(user.getAvatarId().getId());
+
+        if (userOptional.get().getAvatarId() != null) {
+            Optional<UserAvatar> imageOptional = userAvatarRepository.findById(userOptional.get().getAvatarId().getId());
             if (imageOptional.isEmpty()) {
                 return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "image not found"));
             }
-            try {
-                UserAvatar image = imageOptional.get();
-                image.setName(multipartFile.getOriginalFilename());
-                image.setType(multipartFile.getContentType());
-                image.setImageData(ImageUtils.compressImage(multipartFile.getBytes()));
-                userAvatarRepository.save(image);
-            } catch (IOException e) {
-                return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "IOException"));
-            }
+
+            productMapper.mapMultipartFileToUserAvatarAndSave(imageOptional.get(), multipartFile);
+            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "avatar added"));
         }
+
+        productMapper.saveUserAvatar(multipartFile, userOptional.get());
         return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "avatar added"));
     }
 
     public ResponseEntity<?> sort(@RequestBody SortDto sortDto) {
         List<Product> products = productRepository.findAll();
-
         if (!sortDto.getCategories().isEmpty()) {
             List<Integer> categoryIndexes = sortDto.getCategories().stream()
                     .map(category -> category.getOrderTypeEnum().ordinal())
@@ -128,7 +116,6 @@ public class ProductServiceImpl implements ProductService {
                 .toList();
         return ResponseEntity.ok(productForShowDto);
     }
-    //qqwe
 
     @Override
     public ResponseEntity<?> getAllProducts(PageRequest pageRequest) {
@@ -169,6 +156,5 @@ public class ProductServiceImpl implements ProductService {
                         .build()
         ));
     }
-//qq
 
 }

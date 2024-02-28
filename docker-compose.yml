@@ -6,12 +6,12 @@ services:
     container_name: postgres
     environment:
       POSTGRES_DB: test
-      POSTGRES_USER: postgresuser
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
-    volumes:
-      - postgres_data:/
+#    volumes:
+#      - postgres_data:/
 
   app:
     build: .
@@ -25,6 +25,11 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
 
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/src/main/resources/prometheus.yml
+
 #  bitcoin:
 #    image: bitcoin/bitcoin:26.0
 #    container_name: bitcoin
@@ -33,5 +38,5 @@ services:
 #    volumes:
 #      - bitcoin_data:/root/.bitcoin
 
-volumes:
-  postgres_data:
+#volumes:
+#  postgres_data:

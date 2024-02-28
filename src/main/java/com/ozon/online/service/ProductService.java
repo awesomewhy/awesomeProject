@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 public interface ProductService {
     ResponseEntity<?> addProduct(@RequestParam(name = "image") MultipartFile multipartFile,
                                  @RequestBody CreateProductForSellDto createOrderForSellDto);
@@ -16,7 +18,7 @@ public interface ProductService {
 
     ResponseEntity<?> getCorrectProduct(@RequestParam("id") Long id);
 
-    ResponseEntity<?> addImage(@RequestParam(name = "image") MultipartFile multipartFile);
+    ResponseEntity<?> addImage(@RequestParam(name = "image") MultipartFile multipartFile) throws IOException;
 
     ResponseEntity<?> sort(@RequestBody SortDto sortDto);
 
