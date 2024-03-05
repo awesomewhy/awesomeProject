@@ -14,16 +14,13 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 
-public interface
-ProductService {
+public interface ProductService {
     ResponseEntity<?> addProduct(@RequestParam(name = "image") MultipartFile multipartFile,
                                  @RequestBody CreateProductForSellDto createOrderForSellDto) throws IOException, ExecutionException, InterruptedException, UserNotAuthException;
 
     ResponseEntity<?> getAllProducts(PageRequest pageRequest);
 
     ResponseEntity<?> getCorrectProduct(@RequestParam("id") Long id);
-
-    ResponseEntity<?> addImage(@RequestParam(name = "image") MultipartFile multipartFile) throws IOException, UserNotAuthException;
 
     ResponseEntity<?> sort(@RequestBody SortDto sortDto);
 

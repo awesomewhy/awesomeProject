@@ -20,7 +20,7 @@ public class TotpManagerImpl implements TotpManagerService {
 
     @Override
     public String generateSecretKey() {
-        return secretGenerator.generate(); // 32 Byte Secret Key
+        return secretGenerator.generate();
     }
 
     @Override

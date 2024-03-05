@@ -38,30 +38,16 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Transactional
-    public UserAvatar uploadImage(MultipartFile file) {
-        try {
-            return userAvatarRepository.save(UserAvatar.builder()
-                    .name(file.getOriginalFilename())
-                    .type(file.getContentType())
+    public UserAvatar uploadImage(MultipartFile file) throws IOException {
+
+        return userAvatarRepository.save(UserAvatar.builder()
+                .name(file.getOriginalFilename())
+                .type(file.getContentType())
 //                    .type(MimeTypeUtils.IMAGE_PNG_VALUE)
-                    .imageData(ImageUtils.compressImage(file.getBytes())).build());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+                .imageData(ImageUtils.compressImage(file.getBytes())).build());
+
     }
 
-    //    public Product_Image uploadImageForProduct(MultipartFile file, User user, Product product) {
-//        try {
-//            return productImageRepository.save(Product_Image.builder()
-//                    .name(file.getOriginalFilename())
-//                    .productId(product)
-//                    .userId(user)
-//                    .type(file.getContentType())
-//                    .imageData(ImageUtils.compressImage(file.getBytes())).build());
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
     @Transactional
     public ProductImage uploadImageForProduct(MultipartFile file, User user, Product product) throws IOException, ExecutionException, InterruptedException {
         byte[] compressedImageData = compressImageInSeparateThread(file.getBytes());
@@ -87,7 +73,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Transactional
     public byte[] compressImageInSeparateThread(byte[] imageData) throws ExecutionException, InterruptedException {
-        CompletableFuture<byte[]> future = CompletableFuture.supplyAsync(() -> ImageUtils.compressImage(imageData));
+        var future = CompletableFuture.supplyAsync(() -> ImageUtils.compressImage(imageData));
         return future.get();
     }
 

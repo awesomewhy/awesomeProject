@@ -1,6 +1,7 @@
 package com.ozon.online.controller.user;
 
 import com.ozon.online.exception.UserNotAuthException;
+import com.ozon.online.service.AccountService;
 import com.ozon.online.service.ImageService;
 import com.ozon.online.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +17,11 @@ import java.io.IOException;
 @CrossOrigin(origins = "*")
 public class UserController {
     private final ImageService imageService;
-    private final ProductService productService;
+    private final AccountService accountService;
 
     @PostMapping("/set")
     public ResponseEntity<?> setAvatar(@RequestPart("image") MultipartFile file) throws IOException, UserNotAuthException {
-        return productService.addImage(file);
+        return accountService.addImage(file);
     }
     @GetMapping("/avatar")
     public ResponseEntity<?> downloadImage() {

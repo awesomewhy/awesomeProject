@@ -15,6 +15,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 public class UserProfileImpl implements DeleteService {
@@ -48,6 +51,5 @@ public class UserProfileImpl implements DeleteService {
 
         return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "PROFILE_NOT_DELETED"));
     }
-
 
 }

@@ -16,6 +16,7 @@ import com.ozon.online.service.ProductService;
 import com.ozon.online.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.eclipse.angus.mail.imap.protocol.INTERNALDATE;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -28,11 +29,8 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
     private final UserService userService;
-    private final ProductService productService;
     private final ChatRepository chatRepository;
     private final UserRepository userRepository;
-    private final MessageRepository messageRepository;
-    private final ImageService imageService;
     private final MessageMapper messageMapper;
 
     @Override
@@ -99,17 +97,15 @@ public class ChatServiceImpl implements ChatService {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "you can't send a message to yourself"));
         }
 
-        Optional<Chat> chatOptional = user.getChats().stream()
+        Chat chatOptional = user.getChats().stream()
                 .filter(chat -> chat.getParticipants().stream()
                         .anyMatch(participant -> participant.getNickname().equals(userNickname)))
-                .findFirst();
+                .findFirst()
+                .orElseThrow(
+                        () -> new UserNotAuthException(HttpStatus.NOT_FOUND.value(), "chat not found")
+                );
 
-        if (chatOptional.isEmpty()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "chat not found"));
-        }
-
-        return ResponseEntity.ok().body(messageMapper.mapMessageFromChatToSortedByTimeMessageForChatDto
-                (chatOptional.get().getMessages()));
+        return ResponseEntity.ok().body(messageMapper.mapMessageFromChatToSortedByTimeMessageForChatDto(chatOptional.getMessages()));
     }
 
     @Override
@@ -118,36 +114,7 @@ public class ChatServiceImpl implements ChatService {
         User user = userService.getAuthenticationPrincipalUserByNickname().orElseThrow(
                 () -> new UserNotAuthException(HttpStatus.NOT_FOUND.value(), "user not auth")
         );
-
         chatRepository.deleteById(chatId);
         return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "chat deleted"));
     }
-
-
-    // поиск чта по айди
-//    @Override
-//    public ResponseEntity<?> openChat(@RequestParam Long chatId) {
-//        Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
-//
-//        if (userOptional.isEmpty()) {
-//            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
-//        }
-//
-//        Optional<Chat> chatOptional = userOptional.get().getChats().stream()
-//                .filter(chat -> chat.getId().equals(chatId))
-//                .findFirst();
-//
-//        if(chatOptional.isEmpty()) {
-//            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "chat not found"));
-//        }
-//
-//        return ResponseEntity.ok().body(chatOptional.get().getMessages().stream()
-//                .sorted(Comparator.comparing(Message::getTime)).map(
-//                        message -> MessageForChatDto.builder()
-//                                .name(message.getSender().getNickname())
-//                                .localDateTime(message.getTime())
-//                                .message(message.getMessage())
-//                                .avatar(message.getSender().getAvatarId().getImageData())
-//                                .build()));
-//    }
 }

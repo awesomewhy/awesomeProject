@@ -38,7 +38,6 @@ public class UserServiceImpl
     private final PasswordEncoder passwordEncoder;
     private final TotpManagerService totpManagerService;
     private final RoleService roleService;
-    private final UserAvatarRepository userAvatarRepository;
 
     @Override
     public ResponseEntity<?> createOrder(@RequestBody CreateOrderDto createOrderDto) {

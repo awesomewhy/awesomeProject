@@ -31,11 +31,8 @@ import java.util.concurrent.ExecutionException;
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
     private final UserService userService;
-    private final UserRepository userRepository;
-    private final UserAvatarRepository userAvatarRepository;
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
-    private final ImageService imageService;
 
     @Override
     @Transactional
@@ -50,24 +47,6 @@ public class ProductServiceImpl implements ProductService {
         productRepository.save(product);
 
         return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "product added"));
-    }
-
-    @Override
-    @Transactional
-    public ResponseEntity<?> addImage(@RequestParam("image") MultipartFile multipartFile) throws IOException, UserNotAuthException {
-        User user = userService.getAuthenticationPrincipalUserByNickname().orElseThrow(
-                () -> new UserNotAuthException(HttpStatus.NOT_FOUND.value(), "user not auth")
-        );
-
-        if (user.getAvatarId() != null) {
-            UserAvatar imageOptional = userAvatarRepository.findById(user.getAvatarId().getId()).orElseThrow();
-            productMapper.mapMultipartFileToUserAvatarAndSave(imageOptional, multipartFile);
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "avatar added"));
-        }
-
-        productMapper.saveUserAvatar(multipartFile, user);
-
-        return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "avatar added"));
     }
 
     public ResponseEntity<?> sort(@RequestBody SortDto sortDto) {

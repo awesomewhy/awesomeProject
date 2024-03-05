@@ -11,7 +11,7 @@ import java.util.concurrent.ExecutionException;
 
 public interface ImageService {
     ResponseEntity<?> loadImage(@RequestBody LoadImageDto loadImageDto);
-    UserAvatar uploadImage(MultipartFile file);
+    UserAvatar uploadImage(MultipartFile file) throws IOException;
     ResponseEntity<?> downloadImage(@RequestBody Long id, Product product);
     ResponseEntity<?> downloadAvatar();
     ProductImage uploadImageForProduct(MultipartFile file, User user, Product product) throws IOException, ExecutionException, InterruptedException;

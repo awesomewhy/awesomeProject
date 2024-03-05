@@ -104,7 +104,7 @@ public class ProductMapper {
         userAvatarRepository.save(userAvatar1);
     }
 
-    public void saveUserAvatar(MultipartFile multipartFile, User user) {
+    public void saveUserAvatar(MultipartFile multipartFile, User user) throws IOException {
         UserAvatar image = imageService.uploadImage(multipartFile);
         image.setUserId(user);
         user.setAvatarId(image);
