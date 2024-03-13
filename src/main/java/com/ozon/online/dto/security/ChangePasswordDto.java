@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 @NotBlank
 @NotNull
+@NotBlank
 public class ChangePasswordDto {
     private String oldPassword;
     private String newPassword;

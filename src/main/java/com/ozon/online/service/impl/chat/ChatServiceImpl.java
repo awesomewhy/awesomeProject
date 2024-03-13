@@ -5,6 +5,7 @@ import com.ozon.online.dto.chat.MessageForChatDto;
 import com.ozon.online.entity.Chat;
 import com.ozon.online.entity.User;
 import com.ozon.online.exception.ErrorResponse;
+import com.ozon.online.exception.UserNotAuthException;
 import com.ozon.online.mapper.MessageMapper;
 import com.ozon.online.repository.ChatRepository;
 import com.ozon.online.repository.MessageRepository;
@@ -15,8 +16,10 @@ import com.ozon.online.service.ProductService;
 import com.ozon.online.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.eclipse.angus.mail.imap.protocol.INTERNALDATE;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.SQLWarningException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,66 +30,52 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
     private final UserService userService;
-    private final ProductService productService;
     private final ChatRepository chatRepository;
     private final UserRepository userRepository;
-    private final MessageRepository messageRepository;
-    private final ImageService imageService;
     private final MessageMapper messageMapper;
 
     @Override
     @Transactional
-    public ResponseEntity<?> sendMessage(@RequestParam String userId, @RequestBody MessageDto messageDto) {
-        Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
-        Optional<User> companionOptional = userRepository.findById(UUID.fromString(userId));
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
-        }
-        if (companionOptional.isEmpty()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "companion not found"));
-        }
-        if (UUID.fromString(userId).equals(userOptional.get().getId())) {
+    public ResponseEntity<?> sendMessage(@RequestParam String userId, @RequestBody MessageDto messageDto) throws UserNotAuthException {
+        User user = userService.getAuthenticationPrincipalUserByNickname().orElseThrow(
+                () -> new UserNotAuthException(HttpStatus.NOT_FOUND.value(), "user not auth")
+        );
+        User companionOptional = userRepository.findById(UUID.fromString(userId)).orElseThrow(
+                () -> new UserNotAuthException(HttpStatus.NOT_FOUND.value(), "companion not found")
+        );
+
+        if (UUID.fromString(userId).equals(user.getId())) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "you can't send a message to yourself"));
         }
 
-        Optional<Chat> chatOptional = chatRepository.findChatByUserIds(companionOptional.get().getId(), userOptional.get().getId());
+        Optional<Chat> chatOptional = chatRepository.findChatByUserIds(companionOptional.getId(), user.getId());
         List<MessageForChatDto> messages;
 
         if (chatOptional.isEmpty()) {
             Chat chat = messageMapper.mapMessageToChatIfNotExistsAndSave(
-                    messageDto, userOptional.get(), companionOptional.get());
+                    messageDto, user, companionOptional);
 
             messages = chat.getMessages().stream().map(
-                    messageMapper::mapMessageFromChatToMessageForChatDto)
+                            messageMapper::mapMessageFromChatToMessageForChatDto)
                     .toList();
-//            return ResponseEntity.ok().body(chat.getMessages().stream().map(
-//                    messageMapper::mapMessageFromChatToMessageForChatDto
-//            ));
-
         } else {
             messageMapper.mapMessageFromChatToMessageForChatDto(
-                    chatOptional.get().getMessages(), chatOptional.get(), userOptional.get(), messageDto);
+                    chatOptional.get().getMessages(), chatOptional.get(), user, messageDto);
 
             messages = chatOptional.get().getMessages().stream().map(
-                    messageMapper::mapMessageFromChatToMessageForChatDto)
+                            messageMapper::mapMessageFromChatToMessageForChatDto)
                     .toList();
-//            return ResponseEntity.ok().body(chatOptional.get().getMessages().stream().map(
-//                    messageMapper::mapMessageFromChatToMessageForChatDto
-//            ));
-
         }
         return ResponseEntity.ok().body(messages);
-
     }
 
     @Override
-    public ResponseEntity<?> getMyChats() {
-        Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
-
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
-        }
-        List<Chat> chats = userOptional.get().getChats();
+    public ResponseEntity<?> getMyChats() throws UserNotAuthException {
+        User user = userService.getAuthenticationPrincipalUserByNickname().orElseThrow(
+                () -> new UserNotAuthException(HttpStatus.NOT_FOUND.value(), "user not auth")
+        );
+        //qwe
+        List<Chat> chats = user.getChats();
         if (chats.isEmpty()) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "no chats"));
         }
@@ -94,74 +83,38 @@ public class ChatServiceImpl implements ChatService {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "no message"));
         }
 
-        return ResponseEntity.ok().body(userOptional.get().getChats().stream().map(
-                        chat -> messageMapper.mapChatToChatDto(chat, userOptional.get())
-                ));
+        return ResponseEntity.ok().body(user.getChats().stream().map(
+                chat -> messageMapper.mapChatToChatDto(chat, user)
+        ));
     }
 
     @Override
-    public ResponseEntity<?> openChat(@RequestParam String userNickname) {
-        Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
+    public ResponseEntity<?> openChat(@RequestParam String userNickname) throws UserNotAuthException {
+        User user = userService.getAuthenticationPrincipalUserByNickname().orElseThrow(
+                () -> new UserNotAuthException(HttpStatus.NOT_FOUND.value(), "user not auth")
+        );
 
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
-        }
-
-        if (userNickname.equals(userOptional.get().getNickname())) {
+        if (userNickname.equals(user.getNickname())) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "you can't send a message to yourself"));
         }
 
-        Optional<Chat> chatOptional = userOptional.get().getChats().stream()
+        Chat chatOptional = user.getChats().stream()
                 .filter(chat -> chat.getParticipants().stream()
                         .anyMatch(participant -> participant.getNickname().equals(userNickname)))
-                .findFirst();
-
-        if (chatOptional.isEmpty()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "chat not found"));
-        }
-
-        return ResponseEntity.ok().body(messageMapper.mapMessageFromChatToSortedByTimeMessageForChatDto
-                (chatOptional.get().getMessages()));
+                .findFirst()
+                .orElseThrow(
+                        () -> new UserNotAuthException(HttpStatus.NOT_FOUND.value(), "chat not found")
+                );
+        return ResponseEntity.ok().body(messageMapper.mapMessageFromChatToSortedByTimeMessageForChatDto(chatOptional.getMessages()));
     }
 
     @Override
     @Transactional
-    public ResponseEntity<?> deleteChatById(@RequestParam Long chatId) {
-        Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
-
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
-        }
-
+    public ResponseEntity<?> deleteChatById(@RequestParam Long chatId) throws UserNotAuthException {
+        User user = userService.getAuthenticationPrincipalUserByNickname().orElseThrow(
+                () -> new UserNotAuthException(HttpStatus.NOT_FOUND.value(), "user not auth")
+        );
         chatRepository.deleteById(chatId);
         return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "chat deleted"));
     }
-
-
-    // поиск чта по айди
-//    @Override
-//    public ResponseEntity<?> openChat(@RequestParam Long chatId) {
-//        Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
-//
-//        if (userOptional.isEmpty()) {
-//            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user not auth"));
-//        }
-//
-//        Optional<Chat> chatOptional = userOptional.get().getChats().stream()
-//                .filter(chat -> chat.getId().equals(chatId))
-//                .findFirst();
-//
-//        if(chatOptional.isEmpty()) {
-//            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "chat not found"));
-//        }
-//
-//        return ResponseEntity.ok().body(chatOptional.get().getMessages().stream()
-//                .sorted(Comparator.comparing(Message::getTime)).map(
-//                        message -> MessageForChatDto.builder()
-//                                .name(message.getSender().getNickname())
-//                                .localDateTime(message.getTime())
-//                                .message(message.getMessage())
-//                                .avatar(message.getSender().getAvatarId().getImageData())
-//                                .build()));
-//    }
 }

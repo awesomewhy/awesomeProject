@@ -2,11 +2,14 @@ package com.ozon.online.mapper;
 
 import com.ozon.online.dto.product.CorrectProductDto;
 import com.ozon.online.dto.product.CreateProductForSellDto;
+import com.ozon.online.dto.product.MyProductDto;
 import com.ozon.online.dto.product.ProductForShowDto;
 import com.ozon.online.entity.Product;
 import com.ozon.online.entity.User;
+import com.ozon.online.entity.UserAvatar;
 import com.ozon.online.repository.ProductRepository;
 import com.ozon.online.repository.ProductImageRepository;
+import com.ozon.online.repository.UserAvatarRepository;
 import com.ozon.online.repository.UserRepository;
 import com.ozon.online.service.ImageService;
 import com.ozon.online.service.UserService;
@@ -15,8 +18,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.concurrent.ExecutionException;
 
 @Component
 @RequiredArgsConstructor
@@ -26,10 +31,11 @@ public class ProductMapper {
     private final UserService userService;
     private final UserRepository userRepository;
     private final ProductImageRepository productImageRepository;
+    private final UserAvatarRepository userAvatarRepository;
 
     public Product mapCreateOrderForSellDtoToProductEntity(MultipartFile multipartFile,
                                                            CreateProductForSellDto createOrderForSellDto,
-                                                           User user) {
+                                                           User user) throws IOException, ExecutionException, InterruptedException {
         Product product = Product.builder()
                 .sellerId(user)
                 .name(createOrderForSellDto.getName())
@@ -46,7 +52,6 @@ public class ProductMapper {
     }
 
     public void addPhotoToProduct(MultipartFile multipartFile, Product product) {
-
 
 
 //        Optional<User> userOptional = userService.getAuthenticationPrincipalUserByNickname();
@@ -87,6 +92,32 @@ public class ProductMapper {
                 .discount(product.getDiscount())
                 .rating(product.getRating())
                 .image(ImageUtils.decompressImage(productImageRepository.findById(product.getPhotoId().getId()).get().getImageData()))
+                .build();
+    }
+
+    public void mapMultipartFileToUserAvatarAndSave(UserAvatar userAvatar, MultipartFile multipartFile) throws IOException {
+        UserAvatar userAvatar1 = userAvatar.builder()
+                .name(multipartFile.getOriginalFilename())
+                .type(multipartFile.getContentType())
+                .imageData(ImageUtils.compressImage(multipartFile.getBytes()))
+                .build();
+        userAvatarRepository.save(userAvatar1);
+    }
+
+    public void saveUserAvatar(MultipartFile multipartFile, User user) throws IOException {
+        UserAvatar image = imageService.uploadImage(multipartFile);
+        image.setUserId(user);
+        user.setAvatarId(image);
+        userAvatarRepository.save(image);
+        userRepository.save(user);
+    }
+
+    public MyProductDto mapProductToMyProductDto(Product product) {
+        return MyProductDto.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .createdAt(product.getCreatedAt())
+                .image(product.getPhotoId().getImageData())
                 .build();
     }
 }

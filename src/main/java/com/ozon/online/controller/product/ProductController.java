@@ -2,12 +2,16 @@ package com.ozon.online.controller.product;
 
 import com.ozon.online.dto.product.CreateProductForSellDto;
 import com.ozon.online.dto.product.SortDto;
+import com.ozon.online.exception.UserNotAuthException;
 import com.ozon.online.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 
 @RestController
@@ -19,7 +23,8 @@ public class ProductController {
 
     @PostMapping("/create")
     public ResponseEntity<?> addProduct(@RequestPart("image") MultipartFile multipartFile,
-                                        @RequestPart("order") CreateProductForSellDto createOrderForSellDto) {
+                                        @RequestPart("order") CreateProductForSellDto createOrderForSellDto)
+            throws IOException, ExecutionException, InterruptedException, UserNotAuthException {
         return productService.addProduct(multipartFile, createOrderForSellDto);
     }
 
