@@ -73,14 +73,10 @@ public class SecurityConfiguration {
 
     private void sharedSecurityConfiguration(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-//                .csrf(AbstractHttpConfigurer::disable)
-//                .cors(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .securityMatcher("http://localhost:3000/**")
-                .sessionManagement(httpSecuritySessionManagementConfigurer -> {
-                    httpSecuritySessionManagementConfigurer
-                            .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-                });
+                .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
     }
 
@@ -92,7 +88,6 @@ public class SecurityConfiguration {
                         CHANGE_PASSWORD, SET_AVATAR, GET_AVATAR, CREATE_PRODUCT, MY_PRODUCTS,
                         ADD_REVIEW, AVERAGE)
                 .authorizeHttpRequests(auth -> {
-//                    auth.anyRequest().authenticated();
                     auth.anyRequest().hasRole("USER");
                 })
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);

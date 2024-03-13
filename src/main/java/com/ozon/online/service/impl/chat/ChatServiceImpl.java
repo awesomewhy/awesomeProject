@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.eclipse.angus.mail.imap.protocol.INTERNALDATE;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.SQLWarningException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -104,7 +105,6 @@ public class ChatServiceImpl implements ChatService {
                 .orElseThrow(
                         () -> new UserNotAuthException(HttpStatus.NOT_FOUND.value(), "chat not found")
                 );
-
         return ResponseEntity.ok().body(messageMapper.mapMessageFromChatToSortedByTimeMessageForChatDto(chatOptional.getMessages()));
     }
 

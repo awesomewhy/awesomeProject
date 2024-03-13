@@ -6,6 +6,8 @@ import com.ozon.online.service.ImageService;
 import com.ozon.online.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,6 +22,7 @@ public class UserController {
     private final AccountService accountService;
 
     @PostMapping("/set")
+    @Retryable(value = RuntimeException.class, maxAttempts = 5, backoff = @Backoff(delay = 500, multiplier = 2))
     public ResponseEntity<?> setAvatar(@RequestPart("image") MultipartFile file) throws IOException, UserNotAuthException {
         return accountService.addImage(file);
     }
