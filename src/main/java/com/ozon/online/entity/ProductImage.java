@@ -23,7 +23,7 @@ public class ProductImage {
     @JoinColumn(name = "product_id")
     private Product productId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_id")
     private Chat chatId;
 

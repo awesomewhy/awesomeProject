@@ -31,7 +31,6 @@ public class JwtTokenUtils {
     private Duration refreshLifeTime;
 
     private final RefreshTokenRepository refreshTokenRepository;
-    private final UserService userService;
     private final UserRepository userRepository;
 
     public String generateAccessToken(UserDetails userDetails) {
@@ -41,29 +40,17 @@ public class JwtTokenUtils {
                 .map(User::getRefreshToken)
                 .orElse(null);
 
-        if (refreshToken != null && verifyExpiration(refreshToken)) {
-            Date issuedDate = new Date();
-            Date expiredDate = new Date(issuedDate.getTime() + accessLifeTime.toMillis());
-            return Jwts.builder()
-                    .setClaims(claims)
-                    .setSubject(userDetails.getUsername()) // nickname
-                    .setIssuedAt(issuedDate)
-                    .setExpiration(expiredDate)
-                    .signWith(SignatureAlgorithm.HS256, secret)
-                    .compact();
-        } else {
-            return null;
-        }
+        if (refreshToken == null || !verifyExpiration(refreshToken)) return null;
 
-//        Date issuedDate = new Date();
-//        Date expiredDate = new Date(issuedDate.getTime() + accessLifeTime.toMillis());
-//        return Jwts.builder()
-//                .setClaims(claims)
-//                .setSubject(userDetails.getUsername()) // nickname
-//                .setIssuedAt(issuedDate)
-//                .setExpiration(expiredDate)
-//                .signWith(SignatureAlgorithm.HS256, secret)
-//                .compact();
+        Date issuedDate = new Date();
+        Date expiredDate = new Date(issuedDate.getTime() + accessLifeTime.toMillis());
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(issuedDate)
+                .setExpiration(expiredDate)
+                .signWith(SignatureAlgorithm.HS256, secret)
+                .compact();
     }
 
     public Map<String, Object> getClaimRoles(UserDetails userDetails) {
@@ -91,25 +78,24 @@ public class JwtTokenUtils {
 
         String token = Jwts.builder()
                 .setClaims(getClaimRoles(userDetails))
-                .setSubject(userDetails.getUsername()) // nickname
+                .setSubject(userDetails.getUsername())
                 .setIssuedAt(issuedDate)
                 .setExpiration(expiredDate)
                 .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
 
-        if (existingRefreshToken != null) {
-            existingRefreshToken.setToken(token);
-            existingRefreshToken.setExpiryDate(expiredDate.toInstant());
-            return refreshTokenRepository.save(existingRefreshToken);
-        } else {
+        if (existingRefreshToken == null) {
             RefreshToken refreshToken = RefreshToken.builder()
                     .token(token)
                     .user(userOptional.get())
                     .expiryDate(expiredDate.toInstant())
                     .build();
-
             return refreshTokenRepository.save(refreshToken);
         }
+
+        existingRefreshToken.setToken(token);
+        existingRefreshToken.setExpiryDate(expiredDate.toInstant());
+        return refreshTokenRepository.save(existingRefreshToken);
     }
 
     public boolean verifyExpiration(RefreshToken token) {
