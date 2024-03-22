@@ -1,8 +1,4 @@
-# How to start:
-
-
-
-# Stack
+# Technologies
 Java 17
 
 Spring / Boot / Data JPA / Sequrity
@@ -26,3 +22,20 @@ Swagger
 REST API
 
 Maven
+
+
+# How to start:
+
+1. Clone
+```sh
+git clone https://github.com/awesomewhy/awesomeProject.git
+```
+2. Build
+```sh
+mvn install package
+```
+
+2. start in docker
+```sh
+docker-compose up --build -d
+```
