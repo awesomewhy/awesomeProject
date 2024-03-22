@@ -44,7 +44,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ResponseEntity<?> login(@Valid @RequestBody JwtRequestDto authRequest) throws UserNotAuthException {
         User user = userRepository.findByNickname(authRequest.getNickname()).orElseThrow(
-                () -> new UserNotAuthException(HttpStatus.NOT_FOUND.value(), "user not auth")
+                () -> new UserNotAuthException(HttpStatus.NOT_FOUND.value(), "user not found")
         );
 
         if (!passwordEncoder.matches(authRequest.getPassword(), user.getPassword())) {

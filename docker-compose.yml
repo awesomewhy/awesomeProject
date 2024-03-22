@@ -51,6 +51,7 @@ services:
   app:
     build: .
     container_name: ozon
+    restart: on-failure
     depends_on:
       - postgres
       - kafka
