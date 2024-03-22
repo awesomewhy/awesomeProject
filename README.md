@@ -35,7 +35,7 @@ git clone https://github.com/awesomewhy/awesomeProject.git
 mvn install package
 ```
 
-2. start in docker
+3. Start in docker
 ```sh
 docker-compose up --build -d
 ```
