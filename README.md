@@ -24,7 +24,7 @@ REST API
 Maven
 
 
-# How to start:
+# How to start (Linux):
 
 1. Clone
 ```sh
