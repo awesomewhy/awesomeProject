@@ -31,4 +31,5 @@ build/
 !**/src/test/**/build/
 
 ### VS Code ###
+/machinet.conf
 .vscode/

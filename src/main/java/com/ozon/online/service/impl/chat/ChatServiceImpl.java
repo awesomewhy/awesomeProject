@@ -69,7 +69,6 @@ public class ChatServiceImpl implements ChatService {
         User user = userService.getAuthenticationPrincipalUserByNickname().orElseThrow(
                 () -> new UserNotAuthException(HttpStatus.NOT_FOUND.value(), "user not auth")
         );
-
         List<Chat> chats = user.getChats();
         if (chats.isEmpty()) {
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "no chats"));
@@ -82,6 +81,7 @@ public class ChatServiceImpl implements ChatService {
                 chat -> messageMapper.mapChatToChatDto(chat, user)
         ));
     }
+    
 
     @Override
     public ResponseEntity<?> openChat(@RequestParam String userNickname) throws UserNotAuthException {

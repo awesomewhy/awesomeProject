@@ -43,7 +43,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResponseEntity<?> login(@Valid @RequestBody JwtRequestDto authRequest) throws UserNotAuthException {
-        User user = userService.getAuthenticationPrincipalUserByNickname().orElseThrow(
+        User user = userRepository.findByNickname(authRequest.getNickname()).orElseThrow(
                 () -> new UserNotAuthException(HttpStatus.NOT_FOUND.value(), "user not auth")
         );
 
