@@ -36,8 +36,6 @@ public class UserServiceImpl
         implements UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final TotpManagerService totpManagerService;
     private final RoleService roleService;
     private final UserMapper userMapper;
 

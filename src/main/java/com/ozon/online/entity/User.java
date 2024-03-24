@@ -33,17 +33,20 @@ public class User {
     @NotNull
     private String password;
     @Column(unique = true)
-    @NotBlank
     @NotNull
     private String nickname;
-    @DecimalMin(value = "0.0", inclusive = true)
     private BigDecimal balance;
-    @JsonIgnore
     private String secretKey;
     private String username;
     private String surname;
     private LocalDateTime createdAt;
     private boolean accountVerified;
+
+    @OneToOne(mappedBy = "userId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private UserAvatar avatarId;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private RefreshToken refreshToken;
 
     @ManyToMany
     @JoinTable(
@@ -55,11 +58,6 @@ public class User {
 
     // BAD (will clean)
 
-    @OneToOne(mappedBy = "userId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private UserAvatar avatarId;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private RefreshToken refreshToken;
 
 
     @OneToMany(mappedBy = "sellerId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

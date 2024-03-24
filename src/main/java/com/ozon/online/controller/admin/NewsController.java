@@ -19,7 +19,7 @@ public class NewsController {
     private final NewsService newsService;
 
     @PostMapping("/news/create")
-    public ResponseEntity<?> deleteChat(@RequestPart("image") MultipartFile file, @RequestPart("news") CreateNewsDto news) throws IOException, ExecutionException, InterruptedException, UserNotAuthException {
+    public ResponseEntity<?> createChat(@RequestPart("image") MultipartFile file, @RequestPart("news") CreateNewsDto news) throws IOException, ExecutionException, InterruptedException, UserNotAuthException {
         return newsService.createNews(file, news);
     }
 

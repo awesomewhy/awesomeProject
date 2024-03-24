@@ -52,7 +52,7 @@ public class AccountServiceImpl implements AccountService {
         }
         user.setPassword(passwordEncoder.encode(changePasswordDto.getNewPassword()));
         userRepository.save(user);
-        return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "PASSWORD_CHANGED_SUCCESSFULLY"));
+        return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "PASSWORD_CHANGED_SUCCESSFULLY"));
     }
 
     public ResponseEntity<?> changeNickname(@RequestBody ChangeNicknameDto changeNicknameDto) throws UserNotAuthException {
@@ -63,7 +63,7 @@ public class AccountServiceImpl implements AccountService {
         user.setNickname(changeNicknameDto.getNickname());
 
         userRepository.save(user);
-        return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "NICKNAME_CHANGED_SUCCESSFULLY"));
+        return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "NICKNAME_CHANGED_SUCCESSFULLY"));
     }
 
     @Override

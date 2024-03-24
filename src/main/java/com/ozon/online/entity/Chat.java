@@ -28,14 +28,6 @@ public class Chat {
     )
     private List<User> participants;
 
-//    @ManyToOne
-//    @JoinColumn(name = "sender_id")
-//    private User senderId;
-//м
-//    @ManyToOne
-//    @JoinColumn(name = "recipien_id")
-//    private User companionId;
-
     @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL)
     private List<Message> messages;
 

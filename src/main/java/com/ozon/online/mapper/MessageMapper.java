@@ -21,7 +21,7 @@ public class MessageMapper {
 
     private final ChatRepository chatRepository;
 
-    public Chat mapMessageToChatIfNotExistsAndSave (
+    public Chat mapMessageToChatIfNotExistsAndSave(
             MessageDto message, User user, User companion) {
         Chat chat = Chat.builder()
                 .messages(new ArrayList<>())
@@ -42,7 +42,7 @@ public class MessageMapper {
         return chat;
     }
 
-    public MessageForChatDto mapMessageFromChatToMessageForChatDto (Message message) {
+    public MessageForChatDto mapMessageFromChatToMessageForChatDto(Message message) {
         return MessageForChatDto.builder()
                 .name(message.getSender().getNickname())
                 .localDateTime(message.getTime())
@@ -50,7 +50,7 @@ public class MessageMapper {
                 .build();
     }
 
-    public void mapMessageFromChatToMessageForChatDto (
+    public void mapMessageFromChatToMessageForChatDto(
             List<Message> message, Chat chat, User user, MessageDto messageDto) {
         message.add(Message.builder()
                 .chat(chat)
@@ -61,7 +61,7 @@ public class MessageMapper {
                 .build());
     }
 
-    public ChatsDto mapChatToChatDto (Chat chat, User user) {
+    public ChatsDto mapChatToChatDto(Chat chat, User user) {
         return ChatsDto.builder()
                 .chatId(chat.getId())
                 .messageType(MessageStatus.DELIVERED)
@@ -80,7 +80,7 @@ public class MessageMapper {
                 .build();
     }
 
-    public List<MessageForChatDto> mapMessageFromChatToSortedByTimeMessageForChatDto (List<Message> messages) {
+    public List<MessageForChatDto> mapMessageFromChatToSortedByTimeMessageForChatDto(List<Message> messages) {
         return messages.stream()
                 .sorted(Comparator.comparing(Message::getTime))
                 .map(message -> MessageForChatDto.builder()
