@@ -87,7 +87,7 @@ public class JwtTokenUtils {
         if (existingRefreshToken == null) {
             RefreshToken refreshToken = RefreshToken.builder()
                     .token(token)
-                    .user(userOptional.get())
+                    .userId(userOptional.get())
                     .expiryDate(expiredDate.toInstant())
                     .build();
             return refreshTokenRepository.save(refreshToken);

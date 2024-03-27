@@ -3,14 +3,10 @@ package com.ozon.online.service.impl.product;
 import com.ozon.online.dto.product.*;
 import com.ozon.online.entity.Product;
 import com.ozon.online.entity.User;
-import com.ozon.online.entity.UserAvatar;
 import com.ozon.online.exception.ErrorResponse;
 import com.ozon.online.exception.UserNotAuthException;
 import com.ozon.online.mapper.ProductMapper;
 import com.ozon.online.repository.ProductRepository;
-import com.ozon.online.repository.UserRepository;
-import com.ozon.online.repository.UserAvatarRepository;
-import com.ozon.online.service.ImageService;
 import com.ozon.online.service.ProductService;
 import com.ozon.online.service.UserService;
 import jakarta.transaction.Transactional;
@@ -25,7 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @RequiredArgsConstructor
@@ -50,31 +47,39 @@ public class ProductServiceImpl implements ProductService {
     }
 
     public ResponseEntity<?> sort(@RequestBody SortDto sortDto) {
-        List<Product> products = productRepository.findAll();
-        if (!sortDto.getCategories().isEmpty()) {
-            List<Integer> categoryIndexes = sortDto.getCategories().stream()
-                    .map(category -> category.getOrderTypeEnum().ordinal())
-                    .toList();
+        AtomicReference<List<Product>> products = new AtomicReference<>(productRepository.findAll());
+        ExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
 
-            products = products.stream()
-                    .filter(product -> categoryIndexes.contains(product.getOrderType().ordinal()))
-                    .toList();
-        }
+        scheduledExecutorService.submit(() -> {
+            if (!sortDto.getCategories().isEmpty()) {
+                List<Integer> categoryIndexes = sortDto.getCategories().stream()
+                        .map(category -> category.getOrderTypeEnum().ordinal())
+                        .toList();
 
-        if (sortDto.getPaymentTypeEnum() != null) {
-            products = products.stream()
-                    .filter(product -> product.getPaymentType() == sortDto.getPaymentTypeEnum())
-                    .toList();
-        }
+                products.set(products.get().stream()
+                        .filter(product -> categoryIndexes.contains(product.getOrderType().ordinal()))
+                        .toList());
+            }
+        });
 
-        if (sortDto.getStartPrice() != null && sortDto.getEndPrice() != null) {
-            products = products.stream()
-                    .filter(product -> product.getPrice().compareTo(sortDto.getStartPrice()) >= 0 &&
-                            product.getPrice().compareTo(sortDto.getEndPrice()) <= 0)
-                    .toList();
-        }
+        scheduledExecutorService.submit(() -> {
+            if (sortDto.getPaymentTypeEnum() != null) {
+                products.set(products.get().stream()
+                        .filter(product -> product.getPaymentType() == sortDto.getPaymentTypeEnum())
+                        .toList());
+            }
+        });
 
-        List<ProductForShowDto> productForShowDto = products.stream()
+        scheduledExecutorService.submit(() -> {
+            if (sortDto.getStartPrice() != null && sortDto.getEndPrice() != null) {
+                products.set(products.get().stream()
+                        .filter(product -> product.getPrice().compareTo(sortDto.getStartPrice()) >= 0 &&
+                                product.getPrice().compareTo(sortDto.getEndPrice()) <= 0)
+                        .toList());
+            }
+        });
+
+        List<ProductForShowDto> productForShowDto = products.get().stream()
                 .map(productMapper::mapProductToProductForShowDto)
                 .toList();
 

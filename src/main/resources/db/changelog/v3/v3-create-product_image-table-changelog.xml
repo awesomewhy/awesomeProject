@@ -1,0 +1,45 @@
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="v3-1" author="serenty">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="users"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="product_image">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="text"/>
+            <column name="type" type="text"/>
+            <column name="image_data" type="oid"/>
+            <column name="chat_id" type="bigint"/>
+            <column name="product_id" type="bigint"/>
+            <column name="user_id" type="uuid"/>
+
+        </createTable>
+    </changeSet>
+
+    <changeSet id="v3-2" author="serenty">
+        <addForeignKeyConstraint baseTableName="product_image"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_product_image_user_id"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="product_image"
+                                 baseColumnNames="product_id"
+                                 constraintName="fk_product_image_product_id"
+                                 referencedTableName="products"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="product_image"
+                                 baseColumnNames="chat_id"
+                                 constraintName="fk_product_image_chat_id"
+                                 referencedTableName="chats"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+</databaseChangeLog>

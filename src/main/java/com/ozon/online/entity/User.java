@@ -43,9 +43,11 @@ public class User {
     private boolean accountVerified;
 
     @OneToOne(mappedBy = "userId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "avatar_id")
     private UserAvatar avatarId;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "userId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "refresh_token")
     private RefreshToken refreshToken;
 
     @ManyToMany

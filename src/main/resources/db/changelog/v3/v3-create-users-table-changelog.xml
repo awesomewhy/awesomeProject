@@ -1,0 +1,47 @@
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="v3-1" author="serenty">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="users"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="users">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="password" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="text">
+                <constraints unique="true"/>
+            </column>
+            <column name="nickname" type="text"/>
+            <column name="balance" type="numeric(38,2)"/>
+            <column name="secretKey" type="text"/>
+            <column name="username" type="text"/>
+            <column name="surname" type="text"/>
+            <column name="surname" type="timestamp(6) without time zone"/>
+            <column name="accountVerified" type="boolean"/>
+
+
+        </createTable>
+    </changeSet>
+
+    <changeSet id="v3-2"  author="serenty">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="users"/>
+            </not>
+        </preConditions>
+        <createTable tableName="users_roles">
+            <column name="user_id" type="uuid"/>
+            <column name="role_id" type="integer"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

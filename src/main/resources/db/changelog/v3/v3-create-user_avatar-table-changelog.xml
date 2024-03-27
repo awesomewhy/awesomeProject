@@ -1,0 +1,33 @@
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="v3-1" author="serenty">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="users"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="user_avatar">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="text"/>
+            <column name="type" type="text"/>
+            <column name="image_data" type="oid"/>
+            <column name="user_id" type="uuid"/>
+
+        </createTable>
+    </changeSet>
+
+    <changeSet id="v3-3" author="serenty">
+        <addForeignKeyConstraint baseTableName="user_avatar"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_user_avatar_user_id"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+</databaseChangeLog>
