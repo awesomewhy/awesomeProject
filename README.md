@@ -9,6 +9,8 @@ Kafka
 
 Liquibase
 
+Redis
+
 Postgres
 
 Docker
