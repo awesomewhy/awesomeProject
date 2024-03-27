@@ -22,21 +22,19 @@
             </column>
             <column name="nickname" type="text"/>
             <column name="balance" type="numeric(38,2)"/>
-            <column name="secretKey" type="text"/>
+            <column name="secret_key" type="text"/>
             <column name="username" type="text"/>
             <column name="surname" type="text"/>
             <column name="created_at" type="timestamp(6) without time zone"/>
-            <column name="accountVerified" type="boolean"/>
+            <column name="account_verified" type="boolean"/>
 
 
         </createTable>
     </changeSet>
 
-    <changeSet id="v3-2"  author="serenty">
+    <changeSet id="v3-2" author="serenty">
         <preConditions onFail="MARK_RAN">
-            <not>
                 <tableExists tableName="users"/>
-            </not>
         </preConditions>
         <createTable tableName="users_roles">
             <column name="user_id" type="uuid"/>
