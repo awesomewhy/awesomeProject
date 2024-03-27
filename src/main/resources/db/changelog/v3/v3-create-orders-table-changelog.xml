@@ -10,20 +10,19 @@
             </not>
         </preConditions>
 
-        <createTable tableName="products">
+        <createTable tableName="orders">
             <column name="id" type="bigint">
                 <constraints primaryKey="true"/>
             </column>
             <column name="created_at" type="timestamp(6) without time zone"/>
             <column name="description" type="text"/>
-            <column name="discount" type="numeric(38,2)"/>
             <column name="name" type="text"/>
-            <column name="order_type" type="smallint"/>
-            <column name="payment_type" type="smallint"/>
-            <column name="account_verified" type="boolean"/>
-            <column name="price" type="boolean"/>
-            <column name="rating" type="boolean"/>
+            <column name="order_type" type="smallint">
+                    <constraints nullable="false"/>
+            </column>
+            <column name="buyer_id" type="uuid"/>
             <column name="seller_id" type="uuid"/>
+            <column name="chat_id" type="bigint"/>
 
         </createTable>
     </changeSet>
@@ -32,10 +31,20 @@
         <preConditions onFail="MARK_RAN">
             <tableExists tableName="users"/>
         </preConditions>
-        <addForeignKeyConstraint baseTableName="products"
+        <addForeignKeyConstraint baseTableName="orders"
                                  baseColumnNames="seller_id"
                                  constraintName="fk_products_seller_id"
                                  referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="orders"
+                                 baseColumnNames="buyer_id"
+                                 constraintName="fk_products_buyer_id"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="orders"
+                                 baseColumnNames="chat_id"
+                                 constraintName="fk_products_chat_id"
+                                 referencedTableName="chats"
                                  referencedColumnNames="id"/>
     </changeSet>
 

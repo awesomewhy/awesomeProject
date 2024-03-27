@@ -3,16 +3,28 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <!--    <include file="v1/v1-accumulate-changelog.xml" relativeToChangelogFile="true"/>-->
-    <!--    -->
-    <!--    <include file="v2/v2-accumulative-changelog.yml" relativeToChangelogFile="true"/>-->
+<!--    <include file="v3/v3-accumulate-changelog.xml" relativeToChangelogFile="true"/>-->
 
-<!--    <include file="v3/v3-create-users-table-changelog.xml" relativeToChangelogFile="true"/>-->
+    <include file="v3/v3-create-chat_image-table-changelog.xml" relativeToChangelogFile="true"/>
 
-<!--    <include file="v3/v3-create-roles-table-changelog.xml" relativeToChangelogFile="true"/>-->
+    <include file="v3/v3-create-message-table-changelog.xml" relativeToChangelogFile="true"/>
 
-<!--    <include file="v3/v3-create-products-table-changelog.xml" relativeToChangelogFile="true"/>-->
+    <include file="v3/v3-create-orders-table-changelog.xml" relativeToChangelogFile="true"/>
 
-<!--    <include file="v3/v3-create-reviews-table-changelog.xml" relativeToChangelogFile="true"/>-->
+    <include file="v3/v3-create-chats-table-changelog.xml" relativeToChangelogFile="true"/>
+
+    <include file="v3/v3-create-product_image-table-changelog.xml" relativeToChangelogFile="true"/>
+
+    <include file="v3/v3-create-refresh_token-table-changelog.xml" relativeToChangelogFile="true"/>
+
+    <include file="v3/v3-create-user_avatar-table-changelog.xml" relativeToChangelogFile="true"/>
+
+    <include file="v3/v3-create-products-table-changelog.xml" relativeToChangelogFile="true"/>
+
+    <include file="v3/v3-create-users-table-changelog.xml" relativeToChangelogFile="true"/>
+
+    <include file="v3/v3-create-roles-table-changelog.xml" relativeToChangelogFile="true"/>
+
+
 
 </databaseChangeLog>

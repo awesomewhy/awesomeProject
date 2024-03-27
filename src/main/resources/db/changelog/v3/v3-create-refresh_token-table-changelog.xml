@@ -10,25 +10,25 @@
             </not>
         </preConditions>
 
-        <createTable tableName="user_avatar">
-            <column name="id" type="uuid">
+        <createTable tableName="refresh_token">
+            <column name="id" type="bigint">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="name" type="text"/>
-            <column name="type" type="text"/>
-            <column name="image_data" type="oid"/>
+            <column name="expiry_date" type="timestamp(6) with time zone"/>
+            <column name="token" type="text"/>
             <column name="user_id" type="uuid"/>
+
 
         </createTable>
     </changeSet>
 
-    <changeSet id="v3-3" author="serenty">
+    <changeSet id="v3-2" author="serenty">
         <preConditions onFail="MARK_RAN">
             <tableExists tableName="users"/>
         </preConditions>
-        <addForeignKeyConstraint baseTableName="user_avatar"
+        <addForeignKeyConstraint baseTableName="refresh_token"
                                  baseColumnNames="user_id"
-                                 constraintName="fk_user_avatar_user_id"
+                                 constraintName="fk_products_user_id"
                                  referencedTableName="users"
                                  referencedColumnNames="id"/>
     </changeSet>

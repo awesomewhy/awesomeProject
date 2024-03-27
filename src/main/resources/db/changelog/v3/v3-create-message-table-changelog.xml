@@ -10,16 +10,16 @@
             </not>
         </preConditions>
 
-        <createTable tableName="product_image">
+        <createTable tableName="message">
             <column name="id" type="bigint">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="name" type="text"/>
-            <column name="type" type="text"/>
-            <column name="image_data" type="oid"/>
+            <column name="message" type="text"/>
+            <column name="message_status" type="smallint"/>
+            <column name="time" type="timestamp(6) without time zone"/>
             <column name="chat_id" type="bigint"/>
-            <column name="product_id" type="bigint"/>
-            <column name="user_id" type="uuid"/>
+            <column name="sender_id" type="uuid"/>
+            <column name="recipient_id" type="uuid"/>
 
         </createTable>
     </changeSet>
@@ -28,19 +28,19 @@
         <preConditions onFail="MARK_RAN">
             <tableExists tableName="users"/>
         </preConditions>
-        <addForeignKeyConstraint baseTableName="product_image"
-                                 baseColumnNames="user_id"
-                                 constraintName="fk_product_image_user_id"
+        <addForeignKeyConstraint baseTableName="message"
+                                 baseColumnNames="sender_id"
+                                 constraintName="fk_message_sender_id"
                                  referencedTableName="users"
                                  referencedColumnNames="id"/>
-        <addForeignKeyConstraint baseTableName="product_image"
-                                 baseColumnNames="product_id"
-                                 constraintName="fk_product_image_product_id"
-                                 referencedTableName="products"
+        <addForeignKeyConstraint baseTableName="message"
+                                 baseColumnNames="recipient_id"
+                                 constraintName="fk_message_recipient_id"
+                                 referencedTableName="users"
                                  referencedColumnNames="id"/>
-        <addForeignKeyConstraint baseTableName="product_image"
+        <addForeignKeyConstraint baseTableName="message"
                                  baseColumnNames="chat_id"
-                                 constraintName="fk_product_image_chat_id"
+                                 constraintName="fk_message_chat_id"
                                  referencedTableName="chats"
                                  referencedColumnNames="id"/>
     </changeSet>

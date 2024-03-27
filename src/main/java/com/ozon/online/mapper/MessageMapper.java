@@ -33,7 +33,7 @@ public class MessageMapper {
         chat.getParticipants().add(companion);
         chat.getMessages().add(Message.builder()
                 .chat(chat)
-                .sender(user)
+                .senderId(user)
                 .message(message.getMessage())
                 .messageStatus(MessageStatus.DELIVERED)
                 .time(LocalDateTime.now())
@@ -44,7 +44,7 @@ public class MessageMapper {
 
     public MessageForChatDto mapMessageFromChatToMessageForChatDto(Message message) {
         return MessageForChatDto.builder()
-                .name(message.getSender().getNickname())
+                .name(message.getSenderId().getNickname())
                 .localDateTime(message.getTime())
                 .message(message.getMessage())
                 .build();
@@ -54,7 +54,7 @@ public class MessageMapper {
             List<Message> message, Chat chat, User user, MessageDto messageDto) {
         message.add(Message.builder()
                 .chat(chat)
-                .sender(user)
+                .senderId(user)
                 .message(messageDto.getMessage())
                 .messageStatus(MessageStatus.DELIVERED)
                 .time(LocalDateTime.now())
@@ -84,10 +84,10 @@ public class MessageMapper {
         return messages.stream()
                 .sorted(Comparator.comparing(Message::getTime))
                 .map(message -> MessageForChatDto.builder()
-                        .name(message.getSender().getNickname())
+                        .name(message.getSenderId().getNickname())
                         .localDateTime(message.getTime())
                         .message(message.getMessage())
-                        .avatar(message.getSender().getAvatarId().getImageData())
+                        .avatar(message.getSenderId().getAvatarId().getImageData())
                         .build())
                 .toList();
     }

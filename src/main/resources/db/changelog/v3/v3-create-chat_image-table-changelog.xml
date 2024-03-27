@@ -4,14 +4,14 @@
    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
     <changeSet id="v3-1" author="serenty">
+
         <preConditions onFail="MARK_RAN">
-            <not>
+                <tableExists tableName="chats"/>
                 <tableExists tableName="users"/>
-            </not>
         </preConditions>
 
-        <createTable tableName="user_avatar">
-            <column name="id" type="uuid">
+        <createTable tableName="chat_image">
+            <column name="id" type="bigint">
                 <constraints primaryKey="true"/>
             </column>
             <column name="name" type="text"/>
@@ -22,13 +22,14 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="v3-3" author="serenty">
+    <changeSet id="v3-2" author="serenty">
         <preConditions onFail="MARK_RAN">
+            <tableExists tableName="chat_image"/>
             <tableExists tableName="users"/>
         </preConditions>
-        <addForeignKeyConstraint baseTableName="user_avatar"
+        <addForeignKeyConstraint baseTableName="chat_image"
                                  baseColumnNames="user_id"
-                                 constraintName="fk_user_avatar_user_id"
+                                 constraintName="fk_chat_image_user_id"
                                  referencedTableName="users"
                                  referencedColumnNames="id"/>
     </changeSet>

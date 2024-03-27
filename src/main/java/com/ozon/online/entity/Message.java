@@ -25,9 +25,9 @@ public class Message {
     private Chat chat;
 
     @ManyToOne
-    private User sender;
+    private User senderId;
     @ManyToOne
-    private User recipient;
+    private User recipientId;
 
     private String message;
     private MessageStatus messageStatus;
