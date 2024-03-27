@@ -11,7 +11,7 @@
         </preConditions>
 
         <createTable tableName="refresh_token">
-            <column name="id" type="bigint">
+            <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
             <column name="expiry_date" type="timestamp(6) with time zone"/>

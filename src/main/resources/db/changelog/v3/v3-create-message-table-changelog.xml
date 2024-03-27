@@ -11,7 +11,7 @@
         </preConditions>
 
         <createTable tableName="message">
-            <column name="id" type="bigint">
+            <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
             <column name="message" type="text"/>

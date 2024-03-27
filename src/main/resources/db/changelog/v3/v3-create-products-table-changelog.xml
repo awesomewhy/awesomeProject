@@ -11,7 +11,7 @@
         </preConditions>
 
         <createTable tableName="products">
-            <column name="id" type="bigint">
+            <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
             <column name="created_at" type="timestamp(6) without time zone"/>
@@ -21,8 +21,8 @@
             <column name="order_type" type="smallint"/>
             <column name="payment_type" type="smallint"/>
             <column name="account_verified" type="boolean"/>
-            <column name="price" type="boolean"/>
-            <column name="rating" type="boolean"/>
+            <column name="price" type="numeric(38,2)"/>
+            <column name="rating" type="numeric(38,2)"/>
             <column name="seller_id" type="uuid"/>
 
         </createTable>

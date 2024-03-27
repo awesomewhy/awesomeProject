@@ -11,7 +11,7 @@
         </preConditions>
 
         <createTable tableName="orders">
-            <column name="id" type="bigint">
+            <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
             <column name="created_at" type="timestamp(6) without time zone"/>
