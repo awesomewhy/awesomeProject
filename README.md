@@ -15,6 +15,8 @@ Postgres
 
 Docker
 
+Gitlab CI/CD
+
 JUnit
 
 JWT
