@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -47,44 +48,53 @@ public class ProductServiceImpl implements ProductService {
     }
 
     public ResponseEntity<?> sort(@RequestBody SortDto sortDto) {
-        AtomicReference<List<Product>> products = new AtomicReference<>(productRepository.findAll());
-        ExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+        List<Product> products = productRepository.findAll();
+        ExecutorService executorService = Executors.newFixedThreadPool(16);
 
-        scheduledExecutorService.submit(() -> {
-            if (!sortDto.getCategories().isEmpty()) {
-                List<Integer> categoryIndexes = sortDto.getCategories().stream()
-                        .map(category -> category.getOrderTypeEnum().ordinal())
-                        .toList();
+        List<Callable<Void>> tasks = new ArrayList<>();
 
-                products.set(products.get().stream()
-                        .filter(product -> categoryIndexes.contains(product.getOrderType().ordinal()))
-                        .toList());
-            }
-        });
+        if (!sortDto.getCategories().isEmpty()) {
+            List<Integer> categoryIndexes = sortDto.getCategories().stream()
+                    .map(category -> category.getOrderTypeEnum().ordinal())
+                    .toList();
 
-        scheduledExecutorService.submit(() -> {
-            if (sortDto.getPaymentTypeEnum() != null) {
-                products.set(products.get().stream()
-                        .filter(product -> product.getPaymentType() == sortDto.getPaymentTypeEnum())
-                        .toList());
-            }
-        });
+            tasks.add(() -> {
+                products.removeIf(product -> !categoryIndexes.contains(product.getOrderType().ordinal()));
+                return null;
+            });
+        }
 
-        scheduledExecutorService.submit(() -> {
-            if (sortDto.getStartPrice() != null && sortDto.getEndPrice() != null) {
-                products.set(products.get().stream()
-                        .filter(product -> product.getPrice().compareTo(sortDto.getStartPrice()) >= 0 &&
-                                product.getPrice().compareTo(sortDto.getEndPrice()) <= 0)
-                        .toList());
-            }
-        });
+        if (sortDto.getPaymentTypeEnum() != null) {
+            tasks.add(() -> {
+                products.removeIf(product -> product.getPaymentType() != sortDto.getPaymentTypeEnum());
+                return null;
+            });
+        }
 
-        List<ProductForShowDto> productForShowDto = products.get().stream()
+        if (sortDto.getStartPrice() != null && sortDto.getEndPrice() != null) {
+            tasks.add(() -> {
+                products.removeIf(product -> product.getPrice().compareTo(sortDto.getStartPrice()) < 0 ||
+                        product.getPrice().compareTo(sortDto.getEndPrice()) > 0);
+                return null;
+            });
+        }
+
+        try {
+            executorService.invokeAll(tasks);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.I_AM_A_TEAPOT.value(), "some problem with sort"));
+        } finally {
+            executorService.shutdown();
+        }
+
+        List<ProductForShowDto> productForShowDto = products.stream()
                 .map(productMapper::mapProductToProductForShowDto)
                 .toList();
 
         return ResponseEntity.ok(productForShowDto);
     }
+
 
     @Override
     public ResponseEntity<?> searchProduct(@RequestParam("text") String text) {

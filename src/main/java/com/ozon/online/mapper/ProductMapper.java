@@ -72,7 +72,7 @@ public class ProductMapper {
         return ProductForShowDto.builder()
                 .id(product.getId())
                 .sellerId(String.valueOf(product.getSellerId().getId()))
-                .image(productImageRepository.findById(product.getPhotoId().getId()).get().getImageData())
+//                .image(productImageRepository.findById(product.getPhotoId().getId()).get().getImageData())
                 .name(product.getName())
                 .rating(product.getRating())
                 .build();
