@@ -15,7 +15,7 @@ Postgres
 
 Docker
 
-Gitlab CI/CD
+GitLab CI/CD
 
 JUnit
 
