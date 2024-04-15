@@ -36,7 +36,7 @@ git clone https://github.com/awesomewhy/awesomeProject.git
 ```
 2. Build
 ```sh
-mvn install package -DskipTests
+mvn install -DskipTests
 ```
 
 3. Start in docker
