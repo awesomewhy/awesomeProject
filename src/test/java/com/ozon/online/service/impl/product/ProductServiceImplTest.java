@@ -88,7 +88,6 @@ class ProductServiceImplTest {
 
     @Test
     public void testSort() {
-        // Arrange
         SortDto sortDto = new SortDto();
         sortDto.setCategories(List.of(new CategoryDto()));
         sortDto.setPaymentTypeEnum(PaymentTypeEnum.VISA);
@@ -102,10 +101,8 @@ class ProductServiceImplTest {
         when(userService.getAuthenticationPrincipalUserByNickname()).thenReturn(Optional.of(new User()));
         when(productMapper.mapProductToProductForShowDto(any())).thenReturn(new ProductForShowDto());
 
-        // Act
         ResponseEntity<?> responseEntity = productService.sort(sortDto);
 
-        // Assert
         assertEquals(200, ((List<ProductForShowDto>) responseEntity.getBody()).size());
     }
 
