@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 
 @Service
 @RequiredArgsConstructor
@@ -71,9 +72,8 @@ public class ImageServiceImpl implements ImageService {
                 .build());
     }
 
-    @Transactional
     public byte[] compressImageInSeparateThread(byte[] imageData) throws ExecutionException, InterruptedException {
-        var future = CompletableFuture.supplyAsync(() -> ImageUtils.compressImage(imageData));
+        var future = CompletableFuture.supplyAsync(() -> ImageUtils.compressImage(imageData), new ForkJoinPool(100));
         return future.get();
     }
 

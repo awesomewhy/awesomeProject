@@ -74,10 +74,10 @@ public class AccountServiceImpl implements AccountService {
         );
 
         if (user.getAvatarId() != null) {
-            UserAvatar imageOptional = userAvatarRepository.findById(user.getAvatarId().getId()).orElseThrow(
+            UserAvatar userAvatar = userAvatarRepository.findById(user.getAvatarId().getId()).orElseThrow(
                     () -> new UserNotAuthException(HttpStatus.NOT_FOUND.value(), "avatar not found")
             );
-            productMapper.mapMultipartFileToUserAvatarAndSave(imageOptional, multipartFile);
+            productMapper.mapMultipartFileToUserAvatarAndSave(userAvatar, multipartFile);
             return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "avatar added"));
         }
 

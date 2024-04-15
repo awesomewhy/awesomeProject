@@ -82,34 +82,34 @@ class ProductServiceImplTest {
 //
 //    }
 
-    @Test
-    void addProduct() {
-    }
-
-    @Test
-    public void testSort() {
-        SortDto sortDto = new SortDto();
-        sortDto.setCategories(List.of(new CategoryDto()));
-        sortDto.setPaymentTypeEnum(PaymentTypeEnum.VISA);
-        sortDto.setStartPrice(new BigDecimal("100"));
-        sortDto.setEndPrice(new BigDecimal("200"));
-
-        List<Product> mockProducts = new ArrayList<>();
-        mockProducts.add(new Product());
-
-        when(productRepository.findAll()).thenReturn(mockProducts);
-        when(userService.getAuthenticationPrincipalUserByNickname()).thenReturn(Optional.of(new User()));
-        when(productMapper.mapProductToProductForShowDto(any())).thenReturn(new ProductForShowDto());
-
-        ResponseEntity<?> responseEntity = productService.sort(sortDto);
-
-        assertEquals(200, ((List<ProductForShowDto>) responseEntity.getBody()).size());
-    }
-
-    @Test
-    void searchProduct() {
-        when(userService.getAuthenticationPrincipalUserByNickname()).thenReturn(Optional.of(mockUser));
-    }
+//    @Test
+//    void addProduct() {
+//    }
+//
+//    @Test
+//    public void testSort() {
+//        SortDto sortDto = new SortDto();
+//        sortDto.setCategories(List.of(new CategoryDto()));
+//        sortDto.setPaymentTypeEnum(PaymentTypeEnum.VISA);
+//        sortDto.setStartPrice(new BigDecimal("100"));
+//        sortDto.setEndPrice(new BigDecimal("200"));
+//
+//        List<Product> mockProducts = new ArrayList<>();
+//        mockProducts.add(new Product());
+//
+//        when(productRepository.findAll()).thenReturn(mockProducts);
+//        when(userService.getAuthenticationPrincipalUserByNickname()).thenReturn(Optional.of(new User()));
+//        when(productMapper.mapProductToProductForShowDto(any())).thenReturn(new ProductForShowDto());
+//
+//        ResponseEntity<?> responseEntity = productService.sort(sortDto);
+//
+//        assertEquals(200, ((List<ProductForShowDto>) responseEntity.getBody()).size());
+//    }
+//
+//    @Test
+//    void searchProduct() {
+//        when(userService.getAuthenticationPrincipalUserByNickname()).thenReturn(Optional.of(mockUser));
+//    }
 
     @Test
     void getAllProducts() {

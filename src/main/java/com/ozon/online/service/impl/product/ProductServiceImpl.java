@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @RequiredArgsConstructor
@@ -45,7 +46,7 @@ public class ProductServiceImpl implements ProductService {
 
         return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "product added"));
     }
-    
+
     public ResponseEntity<?> sort(@RequestBody SortDto sortDto) {
         List<Product> products = new ArrayList<>(productRepository.findAll());
 
@@ -62,16 +63,16 @@ public class ProductServiceImpl implements ProductService {
         }
 
         if (sortDto.getPaymentTypeEnum() != null) {
-            futures.add(CompletableFuture.runAsync(() -> {
-                products.removeIf(product -> product.getPaymentType() != sortDto.getPaymentTypeEnum());
-            }, forkJoinPool));
+            futures.add(CompletableFuture.runAsync(() ->
+                            products.removeIf(product -> product.getPaymentType() != sortDto.getPaymentTypeEnum()),
+                    forkJoinPool));
         }
 
         if (sortDto.getStartPrice() != null && sortDto.getEndPrice() != null) {
-            futures.add(CompletableFuture.runAsync(() -> {
-                products.removeIf(product -> product.getPrice().compareTo(sortDto.getStartPrice()) < 0 ||
-                        product.getPrice().compareTo(sortDto.getEndPrice()) > 0);
-            }, forkJoinPool));
+            futures.add(CompletableFuture.runAsync(() ->
+                            products.removeIf(product -> product.getPrice().compareTo(sortDto.getStartPrice()) < 0 ||
+                                    product.getPrice().compareTo(sortDto.getEndPrice()) > 0),
+                    forkJoinPool));
         }
 
         CompletableFuture<Void> allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
@@ -83,57 +84,6 @@ public class ProductServiceImpl implements ProductService {
 
         return ResponseEntity.ok(productForShowDto);
     }
-
-
-//    public ResponseEntity<?> sort(@RequestBody SortDto sortDto) {
-//        List<Product> products = new ArrayList<>(productRepository.findAll());
-//        ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
-//
-//        List<Future<?>> futures = new ArrayList<>();
-//        if (sortDto.getCategories() != null) {
-//            futures.add(
-//                    cachedThreadPool.submit(() -> {
-//                        List<Integer> categoryIndexes = sortDto.getCategories().stream()
-//                                .map(category -> category.getOrderTypeEnum().ordinal())
-//                                .toList();
-//
-//                        products.removeIf(product -> !categoryIndexes.contains(product.getOrderType().ordinal()));
-//                    })
-//            );
-//        }
-//        if (sortDto.getPaymentTypeEnum() != null) {
-//            futures.add(
-//                    cachedThreadPool.submit(() -> {
-//                        products.removeIf(product -> product.getPaymentType() != sortDto.getPaymentTypeEnum());
-//                    })
-//            );
-//        }
-//
-//        if (sortDto.getStartPrice() != null && sortDto.getEndPrice() != null) {
-//            futures.add(
-//                    cachedThreadPool.submit(() -> {
-//                        products.removeIf(product -> product.getPrice().compareTo(sortDto.getStartPrice()) < 0 ||
-//                                product.getPrice().compareTo(sortDto.getEndPrice()) > 0);
-//                    })
-//            );
-//        }
-//
-//        futures.forEach(future -> {
-//            try {
-//                future.get();
-//            } catch (InterruptedException | ExecutionException e) {
-//                throw new RuntimeException(e);
-//            } finally {
-//                cachedThreadPool.shutdown();
-//            }
-//        });
-//
-//        List<ProductForShowDto> productForShowDto = products.stream()
-//                .map(productMapper::mapProductToProductForShowDto)
-//                .toList();
-//
-//        return ResponseEntity.ok(productForShowDto);
-//    }
 
 
     @Override
