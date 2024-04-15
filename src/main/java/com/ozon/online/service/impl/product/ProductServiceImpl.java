@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @RequiredArgsConstructor
@@ -46,47 +45,37 @@ public class ProductServiceImpl implements ProductService {
 
         return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "product added"));
     }
-
+    
     public ResponseEntity<?> sort(@RequestBody SortDto sortDto) {
-        List<Product> products = productRepository.findAll();
-        ExecutorService executorService = Executors.newFixedThreadPool(16);
+        List<Product> products = new ArrayList<>(productRepository.findAll());
 
-        List<Callable<Void>> tasks = new ArrayList<>();
+        ForkJoinPool forkJoinPool = new ForkJoinPool(100);
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
 
-        if (!sortDto.getCategories().isEmpty()) {
-            List<Integer> categoryIndexes = sortDto.getCategories().stream()
-                    .map(category -> category.getOrderTypeEnum().ordinal())
-                    .toList();
-
-            tasks.add(() -> {
+        if (sortDto.getCategories() != null) {
+            futures.add(CompletableFuture.runAsync(() -> {
+                List<Integer> categoryIndexes = sortDto.getCategories().stream()
+                        .map(category -> category.getOrderTypeEnum().ordinal())
+                        .toList();
                 products.removeIf(product -> !categoryIndexes.contains(product.getOrderType().ordinal()));
-                return null;
-            });
+            }, forkJoinPool));
         }
 
         if (sortDto.getPaymentTypeEnum() != null) {
-            tasks.add(() -> {
+            futures.add(CompletableFuture.runAsync(() -> {
                 products.removeIf(product -> product.getPaymentType() != sortDto.getPaymentTypeEnum());
-                return null;
-            });
+            }, forkJoinPool));
         }
 
         if (sortDto.getStartPrice() != null && sortDto.getEndPrice() != null) {
-            tasks.add(() -> {
+            futures.add(CompletableFuture.runAsync(() -> {
                 products.removeIf(product -> product.getPrice().compareTo(sortDto.getStartPrice()) < 0 ||
                         product.getPrice().compareTo(sortDto.getEndPrice()) > 0);
-                return null;
-            });
+            }, forkJoinPool));
         }
 
-        try {
-            executorService.invokeAll(tasks);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.I_AM_A_TEAPOT.value(), "some problem with sort"));
-        } finally {
-            executorService.shutdown();
-        }
+        CompletableFuture<Void> allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+        allOf.join();
 
         List<ProductForShowDto> productForShowDto = products.stream()
                 .map(productMapper::mapProductToProductForShowDto)
@@ -94,6 +83,57 @@ public class ProductServiceImpl implements ProductService {
 
         return ResponseEntity.ok(productForShowDto);
     }
+
+
+//    public ResponseEntity<?> sort(@RequestBody SortDto sortDto) {
+//        List<Product> products = new ArrayList<>(productRepository.findAll());
+//        ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
+//
+//        List<Future<?>> futures = new ArrayList<>();
+//        if (sortDto.getCategories() != null) {
+//            futures.add(
+//                    cachedThreadPool.submit(() -> {
+//                        List<Integer> categoryIndexes = sortDto.getCategories().stream()
+//                                .map(category -> category.getOrderTypeEnum().ordinal())
+//                                .toList();
+//
+//                        products.removeIf(product -> !categoryIndexes.contains(product.getOrderType().ordinal()));
+//                    })
+//            );
+//        }
+//        if (sortDto.getPaymentTypeEnum() != null) {
+//            futures.add(
+//                    cachedThreadPool.submit(() -> {
+//                        products.removeIf(product -> product.getPaymentType() != sortDto.getPaymentTypeEnum());
+//                    })
+//            );
+//        }
+//
+//        if (sortDto.getStartPrice() != null && sortDto.getEndPrice() != null) {
+//            futures.add(
+//                    cachedThreadPool.submit(() -> {
+//                        products.removeIf(product -> product.getPrice().compareTo(sortDto.getStartPrice()) < 0 ||
+//                                product.getPrice().compareTo(sortDto.getEndPrice()) > 0);
+//                    })
+//            );
+//        }
+//
+//        futures.forEach(future -> {
+//            try {
+//                future.get();
+//            } catch (InterruptedException | ExecutionException e) {
+//                throw new RuntimeException(e);
+//            } finally {
+//                cachedThreadPool.shutdown();
+//            }
+//        });
+//
+//        List<ProductForShowDto> productForShowDto = products.stream()
+//                .map(productMapper::mapProductToProductForShowDto)
+//                .toList();
+//
+//        return ResponseEntity.ok(productForShowDto);
+//    }
 
 
     @Override

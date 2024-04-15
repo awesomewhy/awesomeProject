@@ -29,6 +29,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.print.attribute.HashAttributeSet;
+
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
