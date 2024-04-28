@@ -13,6 +13,7 @@ import com.ozon.online.service.ChatService;
 import com.ozon.online.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
+
     private final UserService userService;
     private final ChatRepository chatRepository;
     private final UserRepository userRepository;

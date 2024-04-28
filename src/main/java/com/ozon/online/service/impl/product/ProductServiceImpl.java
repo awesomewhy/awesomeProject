@@ -11,6 +11,7 @@ import com.ozon.online.service.ProductService;
 import com.ozon.online.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProductServiceImpl implements ProductService {
     private final UserService userService;
     private final ProductRepository productRepository;
@@ -51,32 +53,55 @@ public class ProductServiceImpl implements ProductService {
         List<Product> products = new ArrayList<>(productRepository.findAll());
 
         ForkJoinPool forkJoinPool = new ForkJoinPool(100);
-        List<CompletableFuture<Void>> futures = new ArrayList<>();
 
-        if (sortDto.getCategories() != null) {
-            futures.add(CompletableFuture.runAsync(() -> {
-                List<Integer> categoryIndexes = sortDto.getCategories().stream()
-                        .map(category -> category.getOrderTypeEnum().ordinal())
-                        .toList();
-                products.removeIf(product -> !categoryIndexes.contains(product.getOrderType().ordinal()));
-            }, forkJoinPool));
+        var qwe = CompletableFuture.runAsync(() -> {
+            List<Integer> categoryIndexes = sortDto.getCategories().stream()
+                    .map(category -> category.getOrderTypeEnum().ordinal())
+                    .toList();
+            products.removeIf(product -> !categoryIndexes.contains(product.getOrderType().ordinal()));
+        }, forkJoinPool);
+
+        var qwe2 = CompletableFuture.runAsync(() -> {
+            products.removeIf(product -> product.getPaymentType() != sortDto.getPaymentTypeEnum());
+        }, forkJoinPool);
+
+        var qwe3 = CompletableFuture.runAsync(() -> {
+            products.removeIf(product -> product.getPrice().compareTo(sortDto.getStartPrice()) < 0 ||
+                    product.getPrice().compareTo(sortDto.getEndPrice()) > 0);
+        }, forkJoinPool);
+
+        try {
+            qwe.get();
+            qwe2.get();
+            qwe3.get();
+        } catch (ExecutionException | InterruptedException e) {
+            log.info("xd unlucky");
         }
 
-        if (sortDto.getPaymentTypeEnum() != null) {
-            futures.add(CompletableFuture.runAsync(() ->
-                            products.removeIf(product -> product.getPaymentType() != sortDto.getPaymentTypeEnum()),
-                    forkJoinPool));
-        }
-
-        if (sortDto.getStartPrice() != null && sortDto.getEndPrice() != null) {
-            futures.add(CompletableFuture.runAsync(() ->
-                            products.removeIf(product -> product.getPrice().compareTo(sortDto.getStartPrice()) < 0 ||
-                                    product.getPrice().compareTo(sortDto.getEndPrice()) > 0),
-                    forkJoinPool));
-        }
-
-        CompletableFuture<Void> allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
-        allOf.join();
+//        if (sortDto.getCategories() != null) {
+//            futures.add(CompletableFuture.runAsync(() -> {
+//                List<Integer> categoryIndexes = sortDto.getCategories().stream()
+//                        .map(category -> category.getOrderTypeEnum().ordinal())
+//                        .toList();
+//                products.removeIf(product -> !categoryIndexes.contains(product.getOrderType().ordinal()));
+//            }, forkJoinPool));
+//        }
+//
+//        if (sortDto.getPaymentTypeEnum() != null) {
+//            futures.add(CompletableFuture.runAsync(() ->
+//                            products.removeIf(product -> product.getPaymentType() != sortDto.getPaymentTypeEnum()),
+//                    forkJoinPool));
+//        }
+//
+//        if (sortDto.getStartPrice() != null && sortDto.getEndPrice() != null) {
+//            futures.add(CompletableFuture.runAsync(() ->
+//                            products.removeIf(product -> product.getPrice().compareTo(sortDto.getStartPrice()) < 0 ||
+//                                    product.getPrice().compareTo(sortDto.getEndPrice()) > 0),
+//                    forkJoinPool));
+//        }
+//
+//        CompletableFuture<Void> allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+//        allOf.join();
 
         List<ProductForShowDto> productForShowDto = products.stream()
                 .map(productMapper::mapProductToProductForShowDto)

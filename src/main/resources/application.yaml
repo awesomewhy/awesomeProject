@@ -16,6 +16,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: none
+    show-sql: true
 
   liquibase:
     enabled: true
@@ -36,7 +37,6 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       batch-size: 16384
       acks: "1"
-
 
     consumer:
 #      bootstrap-servers: 127.0.0.1:29092
