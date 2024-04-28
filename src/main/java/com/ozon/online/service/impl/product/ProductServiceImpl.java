@@ -55,19 +55,25 @@ public class ProductServiceImpl implements ProductService {
         ForkJoinPool forkJoinPool = new ForkJoinPool(100);
 
         var qwe = CompletableFuture.runAsync(() -> {
-            List<Integer> categoryIndexes = sortDto.getCategories().stream()
-                    .map(category -> category.getOrderTypeEnum().ordinal())
-                    .toList();
-            products.removeIf(product -> !categoryIndexes.contains(product.getOrderType().ordinal()));
+            if (sortDto.getCategories() != null) {
+                List<Integer> categoryIndexes = sortDto.getCategories().stream()
+                        .map(category -> category.getOrderTypeEnum().ordinal())
+                        .toList();
+                products.removeIf(product -> !categoryIndexes.contains(product.getOrderType().ordinal()));
+            }
         }, forkJoinPool);
 
         var qwe2 = CompletableFuture.runAsync(() -> {
-            products.removeIf(product -> product.getPaymentType() != sortDto.getPaymentTypeEnum());
+            if (sortDto.getPaymentTypeEnum() != null) {
+                products.removeIf(product -> product.getPaymentType() != sortDto.getPaymentTypeEnum());
+            }
         }, forkJoinPool);
 
         var qwe3 = CompletableFuture.runAsync(() -> {
-            products.removeIf(product -> product.getPrice().compareTo(sortDto.getStartPrice()) < 0 ||
-                    product.getPrice().compareTo(sortDto.getEndPrice()) > 0);
+            if (sortDto.getStartPrice() != null && sortDto.getEndPrice() != null) {
+                products.removeIf(product -> product.getPrice().compareTo(sortDto.getStartPrice()) < 0 ||
+                        product.getPrice().compareTo(sortDto.getEndPrice()) > 0);
+            }
         }, forkJoinPool);
 
         try {
