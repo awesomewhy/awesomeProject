@@ -50,7 +50,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     public ResponseEntity<?> sort(@RequestBody SortDto sortDto) {
-        List<Product> products = new ArrayList<>(productRepository.findAll());
+        List<Product> products = new CopyOnWriteArrayList<>(productRepository.findAll());
 
         ForkJoinPool forkJoinPool = new ForkJoinPool(100);
 
