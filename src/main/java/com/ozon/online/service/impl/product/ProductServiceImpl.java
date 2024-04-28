@@ -52,7 +52,7 @@ public class ProductServiceImpl implements ProductService {
     public ResponseEntity<?> sort(@RequestBody SortDto sortDto) {
         List<Product> products = new CopyOnWriteArrayList<>(productRepository.findAll());
 
-        ForkJoinPool forkJoinPool = new ForkJoinPool(100);
+        var executorService = Executors.newCachedThreadPool();
 
         var qwe = CompletableFuture.runAsync(() -> {
             if (sortDto.getCategories() != null) {
@@ -61,20 +61,20 @@ public class ProductServiceImpl implements ProductService {
                         .toList();
                 products.removeIf(product -> !categoryIndexes.contains(product.getOrderType().ordinal()));
             }
-        }, forkJoinPool);
+        }, executorService);
 
         var qwe2 = CompletableFuture.runAsync(() -> {
             if (sortDto.getPaymentTypeEnum() != null) {
                 products.removeIf(product -> product.getPaymentType() != sortDto.getPaymentTypeEnum());
             }
-        }, forkJoinPool);
+        }, executorService);
 
         var qwe3 = CompletableFuture.runAsync(() -> {
             if (sortDto.getStartPrice() != null && sortDto.getEndPrice() != null) {
                 products.removeIf(product -> product.getPrice().compareTo(sortDto.getStartPrice()) < 0 ||
                         product.getPrice().compareTo(sortDto.getEndPrice()) > 0);
             }
-        }, forkJoinPool);
+        }, executorService);
 
         try {
             qwe.get();
@@ -142,10 +142,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ResponseEntity<?> getMyProducts() {
-        User userOptional = userService.getAuthenticationPrincipalUserByNickname().orElseThrow();
+    public ResponseEntity<?> getMyProducts() throws UserNotAuthException {
+        User user = userService.getAuthenticationPrincipalUserByNickname().orElseThrow(
+                () -> new UserNotAuthException(HttpStatus.NOT_FOUND.value(), "user not auth")
+        );
 
-        return ResponseEntity.ok().body(userOptional.getProducts().stream().map(
+        return ResponseEntity.ok().body(user.getProducts().stream().map(
                 productMapper::mapProductToMyProductDto
         ));
     }

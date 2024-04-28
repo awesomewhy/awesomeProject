@@ -26,5 +26,5 @@ public interface ProductService {
 
     ResponseEntity<?> searchProduct(@RequestParam("text") String text);
 
-    ResponseEntity<?> getMyProducts();
+    ResponseEntity<?> getMyProducts() throws UserNotAuthException;
 }

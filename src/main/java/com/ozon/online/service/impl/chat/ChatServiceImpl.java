@@ -42,7 +42,7 @@ public class ChatServiceImpl implements ChatService {
         );
 
         if (UUID.fromString(userId).equals(user.getId())) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "you can't send a message to yourself"));
+            return ResponseEntity.badRequest().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "you can't send a message to yourself"));
         }
 
         Optional<Chat> chatOptional = chatRepository.findChatByUserIds(companionOptional.getId(), user.getId());
@@ -73,10 +73,10 @@ public class ChatServiceImpl implements ChatService {
         );
         List<Chat> chats = user.getChats();
         if (chats.isEmpty()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "no chats"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "no chats"));
         }
         if (chats.get(0).getMessages().isEmpty()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "no message"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "no chats"));
         }
 
         return ResponseEntity.ok().body(user.getChats().stream().map(
@@ -92,7 +92,7 @@ public class ChatServiceImpl implements ChatService {
         );
 
         if (userNickname.equals(user.getNickname())) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "you can't send a message to yourself"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "you can't send a message to yourself"));
         }
 
         Chat chatOptional = user.getChats().stream()

@@ -49,7 +49,7 @@ public class UserProfileImpl implements DeleteService {
             return ResponseEntity.ok().body("PROFILE_DELETED_SUCCESSFULLY");
         }
 
-        return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "PROFILE_NOT_DELETED"));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "PROFILE_NOT_DELETED"));
     }
 
 }

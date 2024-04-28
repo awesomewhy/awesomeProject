@@ -44,7 +44,7 @@ public class ProductController {
     }
 
     @GetMapping("/myproducts")
-    public ResponseEntity<?> getMyProducts() {
+    public ResponseEntity<?> getMyProducts() throws UserNotAuthException {
         return productService.getMyProducts();
     }
 

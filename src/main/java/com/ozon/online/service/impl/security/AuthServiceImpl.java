@@ -50,10 +50,10 @@ public class AuthServiceImpl implements AuthService {
         );
 
         if (!passwordEncoder.matches(authRequest.getPassword(), user.getPassword())) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "password or nickname incorrect"));
+            return ResponseEntity.badRequest().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "password or nickname incorrect"));
         }
         if (user.isAccountVerified()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.PERMANENT_REDIRECT.value(), "write code from google app")); // redirect for writing code and google applications if 2fa is enabled
+            return ResponseEntity.status(HttpStatus.PERMANENT_REDIRECT).body(new ErrorResponse(HttpStatus.PERMANENT_REDIRECT.value(), "write code from google app")); // redirect for writing code and google applications if 2fa is enabled
         }
         ResponseEntity<?> response = getAccessToken(authRequest.getNickname(), authRequest.getPassword());
         if (response.getStatusCode().value() == HttpStatus.BAD_REQUEST.value()) {
@@ -65,16 +65,16 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ResponseEntity<?> register(@RequestBody RegistrationUserDto registrationUserDto) {
         if (userRepository.findByNickname(registrationUserDto.getNickname()).isPresent()) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user with this nickname exists"));
+            return ResponseEntity.badRequest().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "user with this nickname exists"));
         }
         if (!registrationUserDto.getPassword().equals(registrationUserDto.getConfirmPassword())) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "password did not match"));
+            return ResponseEntity.badRequest().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "password did not match"));
         }
 //        if(!Validation.isValidEmailAddress(registrationUserDto.getNickname())) {
-//            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "INVALID_EMAIL"));
+//            return ResponseEntity.badRequest().body(new ErrorResponse(HttpStatus.OK.value(), "INVALID_EMAIL"));
 //        }
 //        if(!Validation.isValidPassword(registrationUserDto.getPassword())) {
-//            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "INVALID_PASSWORD"));
+//            return ResponseEntity.badRequest().body(new ErrorResponse(HttpStatus.OK.value(), "INVALID_PASSWORD"));
 //        }
         userService.createNewUser(registrationUserDto);
         return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.OK.value(), "user register"));
@@ -108,7 +108,7 @@ public class AuthServiceImpl implements AuthService {
         if (isCodeValid) {
             return getAccessToken(user.getNickname(), passwordEncoder.encode(user.getPassword()));
         } else {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "incorrect code"));
+            return ResponseEntity.badRequest().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "incorrect code"));
         }
 
     }
@@ -121,7 +121,7 @@ public class AuthServiceImpl implements AuthService {
         if (accessToken != null) {
             return ResponseEntity.ok(new AccessResponseDto(accessToken));
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), YOU_NEED_TO_RE_LOGIN));
+            return ResponseEntity.badRequest().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), YOU_NEED_TO_RE_LOGIN));
         }
     }
 

@@ -17,10 +17,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@NamedEntityGraph(name = "productWithSellerAndPhoto", attributeNodes = {
-        @NamedAttributeNode("sellerId"),
-        @NamedAttributeNode("photoId")
-})
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

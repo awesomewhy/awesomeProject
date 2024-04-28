@@ -20,12 +20,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@NamedEntityGraph(
-        name = "qwe",
-        attributeNodes = {
-                @NamedAttributeNode(value = "roles"),
-        }
-)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

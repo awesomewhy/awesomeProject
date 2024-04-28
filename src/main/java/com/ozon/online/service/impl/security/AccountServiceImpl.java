@@ -42,13 +42,13 @@ public class AccountServiceImpl implements AccountService {
                 () -> new UserNotAuthException(HttpStatus.NOT_FOUND.value(), "user not auth")
         );
         if (!passwordEncoder.matches(changePasswordDto.getOldPassword(), user.getPassword())) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "OLD_PASSWORD_NOT_MATCH"));
+            return ResponseEntity.badRequest().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "OLD_PASSWORD_NOT_MATCH"));
         }
         if (passwordEncoder.matches(changePasswordDto.getNewPassword(), user.getPassword())) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "PASSWORD_MATCHED"));
+            return ResponseEntity.badRequest().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "PASSWORD_MATCHED"));
         }
         if (!changePasswordDto.getNewPassword().equals(changePasswordDto.getRepeatPassword())) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "BAD_REPEAT_PASSWORD"));
+            return ResponseEntity.badRequest().body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "BAD_REPEAT_PASSWORD"));
         }
         user.setPassword(passwordEncoder.encode(changePasswordDto.getNewPassword()));
         userRepository.save(user);

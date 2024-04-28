@@ -83,7 +83,7 @@ public class ImageServiceImpl implements ImageService {
         User user = userService.getAuthenticationPrincipalUserByNickname().orElseThrow();
 
         if (user.getAvatarId() == null) {
-            return ResponseEntity.ok().body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "no avatar"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), "no avatar"));
         }
 
         return ResponseEntity.ok()
