@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "another_service")
@@ -26,4 +27,25 @@ public class AnotherService {
     @ElementCollection(fetch = FetchType.LAZY)
     List<String> links;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AnotherService that = (AnotherService) o;
+        return Objects.equals(id, that.id) && status == that.status && Objects.equals(description, that.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, status, description);
+    }
+
+    @Override
+    public String toString() {
+        return "AnotherService{" +
+                "id=" + id +
+                ", status=" + status +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }

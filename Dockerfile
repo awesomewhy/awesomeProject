@@ -8,11 +8,9 @@ EXPOSE 8080
 
 CMD ["java", "-jar" , "online-back.jar"]
 
-
-
 #FROM openjdk:17
 #
-##WORKDIR /app
+#WORKDIR /app
 #
 #ADD ./pom.xml ./pom.xml
 #

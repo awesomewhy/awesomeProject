@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -71,4 +72,32 @@ public class User {
 //    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 //    @JsonIdentityReference(alwaysAsId = true)
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return accountVerified == user.accountVerified && Objects.equals(id, user.id) && Objects.equals(password, user.password) && Objects.equals(nickname, user.nickname) && Objects.equals(balance, user.balance) && Objects.equals(secretKey, user.secretKey) && Objects.equals(username, user.username) && Objects.equals(surname, user.surname) && Objects.equals(createdAt, user.createdAt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, password, nickname, balance, secretKey, username, surname, createdAt, accountVerified);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", password='" + password + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", balance=" + balance +
+                ", secretKey='" + secretKey + '\'' +
+                ", username='" + username + '\'' +
+                ", surname='" + surname + '\'' +
+                ", createdAt=" + createdAt +
+                ", accountVerified=" + accountVerified +
+                '}';
+    }
 }

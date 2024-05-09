@@ -15,5 +15,5 @@ public interface ImageService {
     ResponseEntity<?> downloadImage(@RequestBody Long id, Product product);
     ResponseEntity<?> downloadAvatar();
     ProductImage uploadImageForProduct(MultipartFile file, User user, Product product) throws IOException, ExecutionException, InterruptedException;
-    News_Image uploadImageForNews(MultipartFile file, News news) throws IOException, ExecutionException, InterruptedException;
+    NewsImage uploadImageForNews(MultipartFile file, News news) throws IOException, ExecutionException, InterruptedException;
 }

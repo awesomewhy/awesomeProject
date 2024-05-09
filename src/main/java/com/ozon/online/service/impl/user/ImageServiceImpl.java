@@ -62,9 +62,9 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Transactional
-    public News_Image uploadImageForNews(MultipartFile file, News news) throws IOException, ExecutionException, InterruptedException {
+    public NewsImage uploadImageForNews(MultipartFile file, News news) throws IOException, ExecutionException, InterruptedException {
         byte[] compressedImageData = compressImageInSeparateThread(file.getBytes());
-        return newsImageRepository.save(News_Image.builder()
+        return newsImageRepository.save(NewsImage.builder()
                 .name(file.getOriginalFilename())
                 .news(news)
                 .type(file.getContentType())

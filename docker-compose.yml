@@ -4,6 +4,7 @@ services:
   postgres:
     image: postgres:16-alpine
     container_name: postgres
+    restart: on-failure
     environment:
       POSTGRES_DB: test
       POSTGRES_USER: postgres
@@ -15,6 +16,8 @@ services:
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    restart: on-failure
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -23,6 +26,8 @@ services:
 
   kafka:
     image: confluentinc/cp-kafka:latest
+    restart: on-failure
+    container_name: kafka
     depends_on:
       - zookeeper
     ports:
@@ -41,7 +46,7 @@ services:
     container_name: kafka-ui
     ports:
       - "8090:8080"
-    restart: always
+    restart: on-failure
     environment:
       - KAFKA_CLUSTERS_0_NAME=local
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:29092

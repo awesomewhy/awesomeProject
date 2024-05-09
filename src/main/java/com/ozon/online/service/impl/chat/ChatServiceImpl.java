@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
 import java.util.*;
 
 @Service
